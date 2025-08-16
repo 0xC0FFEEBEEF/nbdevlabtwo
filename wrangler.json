@@ -14,14 +14,14 @@
 
 
 
-  {
-    "routes": [
-      {
-        "pattern": "www.nbdevlab.com",
-        "custom_domain": true
-      }
+  
+   "routes": [
+    {
+      "pattern": "www.nbdevlab.com",
+      "custom_domain": true
+    }
     ]
-  }
+  
 }
 
 
