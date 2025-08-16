@@ -5,46 +5,59 @@ import Footer from '../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+<main class="container pt-14 md:pt-24 space-y-12">
+  <!-- Hero -->
+  <section>
+    <h1 class="text-4xl md:text-6xl font-black leading-tight mb-4">
+      Nathan Bullock
+    </h1>
+    <p class="text-lg md:text-xl text-[var(--muted)] max-w-2xl">
+      Sysadmin • DevOps • Homelab tinkerer. Building resilient systems that just work.
+    </p>
+  </section>
+
+  <!-- About -->
+  <section>
+    <h2 class="text-2xl font-bold mb-3">About</h2>
+    <div class="card">
+      <p>
+        I manage infrastructure at scale—from school district networks to my own Proxmox clusters. Passionate about automation, monitoring, and clean design.
+      </p>
+    </div>
+  </section>
+
+  <!-- Projects preview -->
+  <section>
+    <h2 class="text-2xl font-bold mb-3">Featured Projects</h2>
+    <div class="grid md:grid-cols-3 gap-6">
+      <a href="/projects#cryoai" class="card block">
+        <h3 class="font-semibold text-lg">CryoAI VM</h3>
+        <p class="text-[var(--muted)]">Local AI with GPU passthrough and Ollama.</p>
+      </a>
+      <a href="/projects#weather" class="card block">
+        <h3 class="font-semibold text-lg">Weather Engine</h3>
+        <p class="text-[var(--muted)]">RTL_433 sensors integrated into Home Assistant with custom alerts.</p>
+      </a>
+      <a href="/projects#decoy" class="card block">
+        <h3 class="font-semibold text-lg">DecoyBotPage</h3>
+        <p class="text-[var(--muted)]">Cloudflare honeypot with stealth logging.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <h2 class="text-2xl font-bold mb-3">Contact</h2>
+    <div class="card">
+      <p>Email: <strong>nbadmin@nbdevlab.com</strong></p>
+      <p>GitHub: <a href="https://github.com/nbull" target="_blank" rel="noreferrer">@nbull</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="mt-16 mb-10">
+  <div class="container text-center text-sm text-[var(--muted)]">
+    <p>© 2025 Nathan Bullock. Built with Astro • Deployed on Cloudflare.</p>
+  </div>
+</footer>
 </html>
