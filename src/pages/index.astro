@@ -1,63 +1,159 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+// Minimal Astro index with no external imports
+const SITE_TITLE = "Nathan Bullock — Sysadmin / DevOps";
+const SITE_DESCRIPTION = "Dark, modern, and fast portfolio. Homelab, sysadmin, and DevOps projects.";
 ---
 
-<main class="container pt-14 md:pt-24 space-y-12">
-  <!-- Hero -->
-  <section>
-    <h1 class="text-4xl md:text-6xl font-black leading-tight mb-4">
-      Nathan Bullock
-    </h1>
-    <p class="text-lg md:text-xl text-[var(--muted)] max-w-2xl">
-      Sysadmin • DevOps • Homelab tinkerer. Building resilient systems that just work.
-    </p>
-  </section>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{SITE_TITLE}</title>
+    <meta name="description" content={SITE_DESCRIPTION} />
+    <meta property="og:title" content={SITE_TITLE} />
+    <meta property="og:description" content={SITE_DESCRIPTION} />
+    <meta property="og:type" content="website" />
+    <style>
+      :root {
+        --bg: #0b0d12;
+        --card: #11141b;
+        --card-2: #0f1218;
+        --fg: #e6e9ef;
+        --muted: #9aa3b2;
+        --link: #8ab4ff;
+        --accent: #6ee7ff;
+        --ring: rgba(138,180,255,.25);
+        --radius: 16px;
+        --shadow: 0 10px 30px rgba(0,0,0,.35);
+        --container: 1100px;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: radial-gradient(1200px 800px at 20% -10%, #111523 0%, transparent 60%),
+                    radial-gradient(1000px 700px at 120% 20%, #0a2a34 0%, transparent 55%),
+                    var(--bg);
+        color: var(--fg);
+        font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+        letter-spacing: .2px;
+      }
+      .container { max-width: var(--container); margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+      header { position: sticky; top: 0; backdrop-filter: blur(6px); background: linear-gradient(to bottom, rgba(11,13,18,.85), rgba(11,13,18,.35)); border-bottom: 1px solid rgba(255,255,255,.06); }
+      .nav { display:flex; align-items:center; justify-content:space-between; max-width: var(--container); margin: 0 auto; padding: .9rem 1.25rem; }
+      .brand { display:flex; gap:.6rem; align-items:center; font-weight:800; letter-spacing:.3px; }
+      .dot { width: .6rem; height: .6rem; border-radius: 999px; background: linear-gradient(135deg, var(--accent), #4ca3ff); box-shadow: 0 0 16px var(--accent); }
+      .links a { color: var(--muted); text-decoration: none; margin-left: 1rem; padding:.35rem .6rem; border-radius: 8px; border:1px solid transparent; }
+      .links a:hover { color: var(--fg); border-color: rgba(255,255,255,.08); background: rgba(255,255,255,.03); }
 
-  <!-- About -->
-  <section>
-    <h2 class="text-2xl font-bold mb-3">About</h2>
-    <div class="card">
-      <p>
-        I manage infrastructure at scale—from school district networks to my own Proxmox clusters. Passionate about automation, monitoring, and clean design.
-      </p>
-    </div>
-  </section>
+      h1 { font-size: clamp(2rem, 2.6vw + 1.2rem, 3.4rem); line-height: 1.1; margin: 0 0 .4rem; font-weight: 900; }
+      h2 { font-size: clamp(1.3rem, 1.2vw + .9rem, 1.8rem); margin: 0 0 .75rem; font-weight: 800; }
+      h3 { font-size: 1.05rem; margin: 0 0 .25rem; font-weight: 700; }
+      p  { margin: 0 0 .75rem; color: var(--fg); }
+      .muted { color: var(--muted); }
 
-  <!-- Projects preview -->
-  <section>
-    <h2 class="text-2xl font-bold mb-3">Featured Projects</h2>
-    <div class="grid md:grid-cols-3 gap-6">
-      <a href="/projects#cryoai" class="card block">
-        <h3 class="font-semibold text-lg">CryoAI VM</h3>
-        <p class="text-[var(--muted)]">Local AI with GPU passthrough and Ollama.</p>
-      </a>
-      <a href="/projects#weather" class="card block">
-        <h3 class="font-semibold text-lg">Weather Engine</h3>
-        <p class="text-[var(--muted)]">RTL_433 sensors integrated into Home Assistant with custom alerts.</p>
-      </a>
-      <a href="/projects#decoy" class="card block">
-        <h3 class="font-semibold text-lg">DecoyBotPage</h3>
-        <p class="text-[var(--muted)]">Cloudflare honeypot with stealth logging.</p>
-      </a>
-    </div>
-  </section>
+      .hero { padding-top: 3.5rem; padding-bottom: 1.5rem; }
+      .badges { display:flex; flex-wrap:wrap; gap:.5rem; margin-top: .75rem; }
+      .badge { font-size:.8rem; color:var(--muted); border:1px solid rgba(255,255,255,.08); padding:.35rem .6rem; border-radius:999px; }
 
-  <!-- Contact -->
-  <section id="contact">
-    <h2 class="text-2xl font-bold mb-3">Contact</h2>
-    <div class="card">
-      <p>Email: <strong>nbadmin@nbdevlab.com</strong></p>
-      <p>GitHub: <a href="https://github.com/nbull" target="_blank" rel="noreferrer">@nbull</a></p>
-    </div>
-  </section>
-</main>
+      .grid { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+      @media (min-width: 820px) { .grid { grid-template-columns: repeat(3, 1fr); } }
 
-<footer class="mt-16 mb-10">
-  <div class="container text-center text-sm text-[var(--muted)]">
-    <p>© 2025 Nathan Bullock. Built with Astro • Deployed on Cloudflare.</p>
-  </div>
-</footer>
+      .card { background: linear-gradient(180deg, var(--card), var(--card-2)); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); transition: transform .15s ease, border-color .15s ease; }
+      .card:hover { transform: translateY(-2px); border-color: rgba(110,231,255,.35); }
+      a.card { color: inherit; text-decoration: none; display:block; }
+
+      .section { margin: 2.2rem 0 1.2rem; }
+      .cta-row { display:flex; gap:.8rem; flex-wrap:wrap; margin-top:1rem; }
+      .btn { display:inline-flex; align-items:center; gap:.5rem; padding:.65rem .9rem; border-radius:12px; text-decoration:none; border:1px solid rgba(255,255,255,.09); }
+      .btn:hover { border-color: rgba(255,255,255,.18); }
+      .btn.primary { background: linear-gradient(135deg, var(--accent), #4ca3ff); color:#00131a; border-color: transparent; }
+      footer { border-top: 1px solid rgba(255,255,255,.06); margin-top: 2.5rem; }
+      footer .inner { max-width: var(--container); margin: 0 auto; padding: 1.25rem; color: var(--muted); font-size: .9rem; text-align:center; }
+      .kbd { font: 600 .8rem ui-monospace,SFMono-Regular,Menlo,monospace; background:#0d1117; border:1px solid rgba(255,255,255,.06); padding:.15rem .4rem; border-radius:6px; color:#d1d5db }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="nav">
+        <div class="brand"><span class="dot"></span> <span>Nathan Bullock</span></div>
+        <div class="links">
+          <a href="#about">About</a>
+          <a href="#projects">Projects</a>
+          <a href="#status">Status</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <!-- HERO -->
+      <section class="hero">
+        <h1>Sysadmin • DevOps • Homelab</h1>
+        <p class="muted">Building resilient systems that just work. From district networks to Proxmox clusters, automation-first.</p>
+        <div class="badges">
+          <span class="badge">Proxmox</span>
+          <span class="badge">Docker</span>
+          <span class="badge">Cloudflare</span>
+          <span class="badge">Home&nbsp;Assistant</span>
+          <span class="badge">Grafana</span>
+        </div>
+        <div class="cta-row">
+          <a class="btn primary" href="#projects">View Projects</a>
+          <a class="btn" href="#status">System Status</a>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" class="section">
+        <h2>About</h2>
+        <div class="card">
+          <p>I manage infrastructure at scale — from school district networks to my own lab. I like clean architecture, observability, and automations that save future-me.</p>
+          <p class="muted">Currently experimenting with GPU passthrough for local AI (Ollama), HA-driven weather alerts, and Cloudflare Zero Trust.</p>
+        </div>
+      </section>
+
+      <!-- PROJECTS -->
+      <section id="projects" class="section">
+        <h2>Featured Projects</h2>
+        <div class="grid">
+          <a class="card" href="/projects#cryoai">
+            <h3>CryoAI VM</h3>
+            <p class="muted">Local AI with GPU passthrough, model hosting, and a tidy API surface.</p>
+          </a>
+          <a class="card" href="/projects#weather">
+            <h3>Weather Engine</h3>
+            <p class="muted">RTL_433 sensors → MQTT → Home Assistant with custom alerting.</p>
+          </a>
+          <a class="card" href="/projects#decoy">
+            <h3>DecoyBotPage</h3>
+            <p class="muted">Cloudflare honeypot with stealth logging via Workers + KV.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- STATUS PREVIEW -->
+      <section id="status" class="section">
+        <h2>System Status</h2>
+        <div class="card">
+          <p class="muted">Live metrics coming soon: Proxmox host, VM uptime, Ollama, HA bridge, and WAN health.</p>
+          <p>Planned: <span class="kbd">/status.json</span> feed → cards and tiny charts.</p>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" class="section">
+        <h2>Contact</h2>
+        <div class="card">
+          <p>Email: <strong>nbadmin@nbdevlab.com</strong></p>
+          <p>GitHub: <a href="https://github.com/nbull" rel="noreferrer">@nbull</a></p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="inner">© 2025 Nathan Bullock • Built with Astro • Deployed on Cloudflare</div>
+    </footer>
+  </body>
 </html>
