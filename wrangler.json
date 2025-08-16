@@ -10,7 +10,7 @@
   "observability": {
     "enabled": true
   },
-  "upload_source_maps": true
+  "upload_source_maps": true,
 
 
 
@@ -19,7 +19,7 @@
     {
       "pattern": "www.nbdevlab.com",
       "custom_domain": true
-    }
+    },
     ]
   
 }
