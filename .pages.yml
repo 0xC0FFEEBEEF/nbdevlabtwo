@@ -23,7 +23,7 @@ content:
   - name: about
     label: About page
     type: file
-    path: src/pages/about.md
+    path: src/pages/about.astro
     fields:
       - { name: layout, type: string, hidden: true, default: "../layouts/AboutLayout.astro" }
       - { name: title, label: Title, type: string }
