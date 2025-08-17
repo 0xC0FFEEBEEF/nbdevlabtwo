@@ -1,0 +1,22 @@
+media:
+  input: public/media
+  output: /media
+
+content:
+  - name: home
+    label: Home page
+    type: file
+    path: src/content/pages/home.md
+    format: yaml-frontmatter
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - name: hero
+        label: Hero
+        type: object
+        fields:
+          - { name: headline, label: Headline, type: string }
+          - { name: subheadline, label: Subheadline, type: text }
+          - { name: cover, label: Cover image, type: image }
+          - { name: ctaText, label: CTA Text, type: string }
+          - { name: ctaHref, label: CTA Link, type: string }
+      - { name: body, label: Body, type: rich-text }
