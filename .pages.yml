@@ -1,39 +1,22 @@
-# .pages.yml  — PagesCMS config
 media:
-  input: public/media        # where files live in the repo
-  output: /media             # how your site references them at runtime
+  input: public/media
+  output: /media
 
 content:
-  - name: posts
-    label: Blog Posts
-    type: collection
-    path: src/content/blog
-    format: yaml-frontmatter  # frontmatter + Markdown body
-    filename: "{year}-{month}-{day}-{primary}.md"
-    view:
-      primary: title
-      fields: [title, date, draft]
-      sort: [date, title]
-      default: { sort: date, order: desc }
-    fields:
-      - { name: title, label: Title, type: string, required: true }
-      - { name: description, label: Description, type: text }
-      - { name: date, label: Publish date, type: date, required: true }
-      - { name: draft, label: Draft, type: boolean, default: false }
-      - { name: hero, label: Hero image, type: image }
-      - { name: tags, label: Tags, type: string, list: true }
-      - { name: body, label: Body, type: rich-text }  # becomes Markdown body
-
-  - name: pages
-    label: Site Pages
-    type: collection
-    path: src/content/pages
+  - name: home
+    label: Home page
+    type: file
+    path: src/content/pages/home.md
     format: yaml-frontmatter
-    filename: "{primary}.md"
     fields:
       - { name: title, label: Title, type: string, required: true }
-      - { name: body,  label: Body,  type: rich-text }
-
-settings:
-  content:
-    merge: true   # keep unknown frontmatter keys that exist in files
+      - name: hero
+        label: Hero
+        type: object
+        fields:
+          - { name: headline, label: Headline, type: string }
+          - { name: subheadline, label: Subheadline, type: text }
+          - { name: cover, label: Cover image, type: image }
+          - { name: ctaText, label: CTA Text, type: string }
+          - { name: ctaHref, label: CTA Link, type: string }
+      - { name: body, label: Body, type: rich-text }
