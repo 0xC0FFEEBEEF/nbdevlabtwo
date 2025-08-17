@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\public",
+    "\\src",
+    "\\src\\pages"
   ],
-  "SelectedNode": "\\C:\\Users\\nbull\\source\\repos\\0xC0FFEEBEEF\\astro-blog-starter-template",
+  "SelectedNode": "\\src\\pages\\index.astro",
   "PreviewInSolutionExplorer": false
 }
