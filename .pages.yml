@@ -1,30 +1,39 @@
+# .pages.yml  — PagesCMS config
 media:
-  input: public
-  output: /
+  input: public/media        # where files live in the repo
+  output: /media             # how your site references them at runtime
+
 content:
   - name: posts
-    label: Posts
+    label: Blog Posts
     type: collection
     path: src/content/blog
+    format: yaml-frontmatter  # frontmatter + Markdown body
+    filename: "{year}-{month}-{day}-{primary}.md"
     view:
-      fields: [ title, draft, date ]
+      primary: title
+      fields: [title, date, draft]
+      sort: [date, title]
+      default: { sort: date, order: desc }
     fields:
-      - { name: author, label: Author, type: string }
-      - { name: pubDatetime, label: Date, type: date }
-      - { name: modDatetime, label: Date, type: date }
       - { name: title, label: Title, type: string, required: true }
-      - { name: ogImage, label: Title, type: string }
-      - { name: slug, label: Slug, type: string }
-      - { name: featured, label: Featured, type: boolean }
-      - { name: draft, label: Draft, type: boolean }
+      - { name: description, label: Description, type: text }
+      - { name: date, label: Publish date, type: date, required: true }
+      - { name: draft, label: Draft, type: boolean, default: false }
+      - { name: hero, label: Hero image, type: image }
       - { name: tags, label: Tags, type: string, list: true }
-      - { name: description, label: Description, type: string }
-      - { name: body, label: Body, type: rich-text }
-  - name: about
-    label: About page
-    type: file
-    path: src/pages/about.md
+      - { name: body, label: Body, type: rich-text }  # becomes Markdown body
+
+  - name: pages
+    label: Site Pages
+    type: collection
+    path: src/content/pages
+    format: yaml-frontmatter
+    filename: "{primary}.md"
     fields:
-      - { name: layout, type: string, hidden: true, default: "../layouts/AboutLayout.astro" }
-      - { name: title, label: Title, type: string }
-      - { name: body, label: Body, type: rich-text, options: { input: public/assets, output: /assets } }
+      - { name: title, label: Title, type: string, required: true }
+      - { name: body,  label: Body,  type: rich-text }
+
+settings:
+  content:
+    merge: true   # keep unknown frontmatter keys that exist in files
