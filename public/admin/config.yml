@@ -12,10 +12,12 @@ collections:
       - { label: "Body", name: "body", widget: "markdown" }
 media_folder: "src/assets/images" # Location where files will be stored in the repo
 public_folder: "src/assets/images" # The src attribute for uploaded media
-backend:
-  name: github
-  repo: 0xC0FFEEBEEF/astro-blog-starter-template # Path to your GitHub repository
-  # optional, defaults to master
-  branch: main # Branch to update (optional; defaults to master)
-  base_url: https://nbdevlab.com
-  auth_endpoint: /api/auth
+name: github
+  repo: 0xC0FFEEBEEF/astro-blog-starter-template 
+branch: main
+base_url: https://www.nbdevlab.com
+auth_endpoint: /auth # IMPORTANT: point to your /auth function
+
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
