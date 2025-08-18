@@ -12,3 +12,8 @@ collections:
       - { label: "Body", name: "body", widget: "markdown" }
 media_folder: "src/assets/images" # Location where files will be stored in the repo
 public_folder: "src/assets/images" # The src attribute for uploaded media
+backend:
+  name: github
+  repo: 0xC0FFEEBEEF/astro-blog-starter-template # Path to your GitHub repository
+  # optional, defaults to master
+  # branch: main
