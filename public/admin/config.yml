@@ -17,7 +17,3 @@ repo: 0xC0FFEEBEEF/astro-blog-starter-template
 branch: main
 base_url: https://www.nbdevlab.com
 auth_endpoint: /auth # IMPORTANT: point to your /auth function
-
-
-media_folder: "public/uploads"
-public_folder: "/uploads"
