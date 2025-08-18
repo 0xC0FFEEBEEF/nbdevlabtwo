@@ -13,7 +13,7 @@ collections:
 media_folder: "src/assets/images" # Location where files will be stored in the repo
 public_folder: "src/assets/images" # The src attribute for uploaded media
 name: github
-  repo: 0xC0FFEEBEEF/astro-blog-starter-template 
+repo: 0xC0FFEEBEEF/astro-blog-starter-template 
 branch: main
 base_url: https://www.nbdevlab.com
 auth_endpoint: /auth # IMPORTANT: point to your /auth function
