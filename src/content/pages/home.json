@@ -1,0 +1,16 @@
+{
+  "siteTitle": "Nathan Bullock — Sysadmin / DevOps",
+  "siteDescription": "Dark, modern, and fast portfolio. Homelab, sysadmin, and DevOps projects.",
+  "badges": ["Proxmox", "Docker", "Cloudflare", "Home Assistant", "Grafana"],
+  "projects": [
+    { "href": "/projects#cryoai",  "title": "CryoAI VM",      "blurb": "Local AI with GPU passthrough, model hosting, and a tidy API surface." },
+    { "href": "/projects#weather", "title": "Weather Engine", "blurb": "RTL_433 sensors → MQTT → Home Assistant with custom alerting." },
+    { "href": "/projects#decoy",   "title": "DecoyBotPage",   "blurb": "Cloudflare honeypot with stealth logging via Workers + KV." }
+  ],
+  "contact": {
+    "email": "nbadmin@nbdevlab.com",
+    "github": "https://github.com/nbull",
+    "githubHandle": "@nbull"
+  },
+  "footer": "© 2025 Nathan Bullock • Built with Astro • Deployed on Cloudflare"
+}

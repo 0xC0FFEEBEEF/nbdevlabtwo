@@ -1,10 +1,27 @@
 ---
-title: "Nathan Bullock"
+title: "Home"
 hero:
-  headline: "Systems • DevOps • Homelab wizardry"
-  subheadline: "Dark, modern, fast."
-  cover: /media/hero.png
-  ctaText: "See projects"
-  ctaHref: "/projects"
+  headline: "nbdevlab"
+  subheadline: "playground for ideas"
+  badges:
+    - "Astro"
+    - "Cloudflare"
+    - "Decap CMS"
+  ctas:
+    - text: "Read the blog"
+      href: "/blog/"
+      variant: "primary"
+    - text: "About"
+      href: "/about/"
+about:
+  paragraphs:
+    - "This site is built with Astro and deployed on Cloudflare Workers."
+    - "Content is editable through Decap CMS."
+status:
+  blurb: "Currently tinkering with Workers + OAuth."
+  note: "Last updated today."
+contact:
+  email: "you@example.com"
+  github: "https://github.com/yourhandle"
+  githubHandle: "yourhandle"
 ---
-Welcome to my site. This body is editable in PagesCMS.
