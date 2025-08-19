@@ -12,8 +12,9 @@ collections:
       - { label: "Body", name: "body", widget: "markdown" }
 media_folder: "src/assets/images" # Location where files will be stored in the repo
 public_folder: "src/assets/images" # The src attribute for uploaded media
-name: github
-repo: 0xC0FFEEBEEF/astro-blog-starter-template 
-branch: main
-base_url: https://www.nbdevlab.com
-auth_endpoint: /auth # IMPORTANT: point to your /auth function
+backend:
+  name: github
+  repo: 0xC0FFEEBEEF/astro-blog-starter-template 
+  branch: main
+  base_url: https://www.nbdevlab.com
+  auth_endpoint: /auth # IMPORTANT: point to your /auth function
