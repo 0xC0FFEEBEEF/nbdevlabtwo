@@ -11,6 +11,7 @@ const blog = defineCollection({
     heroImage: z.string().optional(),  // or use image() if you import assets
     tags: z.array(z.string()).optional(),
     draft: z.boolean().default(false),
+    featured: z.boolean().default(false), 
   }),
 });
 

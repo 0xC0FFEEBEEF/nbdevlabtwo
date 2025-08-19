@@ -1,16 +1,27 @@
 {
-  "siteTitle": "Nathan Bullock — Sysadmin / DevOps",
-  "siteDescription": "Dark, modern, and fast portfolio. Homelab, sysadmin, and DevOps projects.",
-  "badges": ["Proxmox", "Docker", "Cloudflare", "Home Assistant", "Grafana"],
-  "projects": [
-    { "href": "/projects#cryoai",  "title": "CryoAI VM",      "blurb": "Local AI with GPU passthrough, model hosting, and a tidy API surface." },
-    { "href": "/projects#weather", "title": "Weather Engine", "blurb": "RTL_433 sensors → MQTT → Home Assistant with custom alerting." },
-    { "href": "/projects#decoy",   "title": "DecoyBotPage",   "blurb": "Cloudflare honeypot with stealth logging via Workers + KV." }
-  ],
+  "title": "Home",
+  "hero": {
+    "headline": "Sysadmin &middot; DevOps &middot; Homelab",
+    "subheadline": "Building resilient systems that just work. From district networks to Proxmox clusters, automation-first.",
+    "badges": ["Proxmox", "Docker", "Cloudflare", "Home Assistant", "Grafana"],
+    "ctas": [
+      { "text": "View Projects", "href": "#projects", "variant": "primary" },
+      { "text": "System Status", "href": "#status", "variant": "default" }
+    ]
+  },
+  "about": {
+    "paragraphs": [
+      "I manage infrastructure at scale — from school district networks to my own lab. I like clean architecture, observability, and automations that save future-me.",
+      "Currently experimenting with GPU passthrough for local AI (Ollama), HA-driven weather alerts, and Cloudflare Zero Trust."
+    ]
+  },
+  "status": {
+    "blurb": "Live metrics coming soon: Proxmox host, VM uptime, Ollama, HA bridge, and WAN health.",
+    "note": "Planned: /status.json feed → cards and tiny charts."
+  },
   "contact": {
     "email": "nbadmin@nbdevlab.com",
     "github": "https://github.com/nbull",
     "githubHandle": "@nbull"
-  },
-  "footer": "© 2025 Nathan Bullock • Built with Astro • Deployed on Cloudflare"
+  }
 }
