@@ -66,7 +66,7 @@ const postsToShow = (featured.length ? featured : [...posts]
     <main class="container">
       <section class="hero">
         <!-- render headline so &middot; shows correctly -->
-        <h1 set:html={H.hero?.headline ?? "IT &middot; DevOps &middot; Homelab"}></h1>
+        <h1 set:html={H.hero?.headline ?? "Homelab"}></h1>
         <p class="muted">{H.hero?.subheadline ?? ""}</p>
         <div class="badges">{(H.hero?.badges ?? []).map(b => <span class="badge">{b}</span>)}</div>
         <div class="cta-row">
