@@ -1,3 +1,5 @@
+
+
 ---
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
@@ -9,7 +11,7 @@ type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 ---
-
+<!-- 
 <html lang="en">
 	<head>
 		<BaseHead title={title} description={description} />
@@ -81,5 +83,5 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			</article>
 		</main>
 		<Footer />
-	</body>
+	</body> -->
 </html>

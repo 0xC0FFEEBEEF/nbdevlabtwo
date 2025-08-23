@@ -5,13 +5,20 @@ import sitemap from "@astrojs/sitemap";
 
 import cloudflare from "@astrojs/cloudflare";
 
+import tailwindcss from "@tailwindcss/vite";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://www.nbdevlab.com",
   integrations: [mdx(), sitemap()],
+
   adapter: cloudflare({
     platformProxy: {
       enabled: true,
     },
   }),
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });
