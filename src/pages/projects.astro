@@ -1,47 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>UNDERCONSTRUCTION</title>
-    <meta name="description" content="" />
-    <style>
-      :root{--bg:#0b0f17;--card:#101826;--card-2:#0c1422;--fg:#eef2f8;--muted:#b3c0d1;--link:#93c5fd;--accent:#7dd3fc;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.35);--container:1100px}
-      *{box-sizing:border-box} html,body{height:100%}
-      body{margin:0;background:
-        radial-gradient(1200px 800px at 20% -10%, #1a2540 0%, transparent 60%),
-        radial-gradient(1000px 700px at 120% 20%, #0a2a34 0%, transparent 55%),var(--bg);
-        color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif}
-      .container{max-width:var(--container);margin:0 auto;padding:2rem 1.25rem 4rem}
-      header{position:sticky;top:0;backdrop-filter:blur(6px);background:linear-gradient(to bottom,rgba(11,13,18,.85),rgba(11,13,18,.35));border-bottom:1px solid rgba(255,255,255,.12)}
-      .nav{display:flex;align-items:center;justify-content:space-between;max-width:var(--container);margin:0 auto;padding:.9rem 1.25rem}
-      .brand{display:flex;gap:.6rem;align-items:center;font-weight:800}
-      .dot{width:.6rem;height:.6rem;border-radius:999px;background:linear-gradient(135deg,var(--accent),#60a5fa);box-shadow:0 0 16px var(--accent)}
-      .links a{color:var(--muted);text-decoration:none;margin-left:1rem;padding:.35rem .6rem;border-radius:8px;border:1px solid transparent}
-      .links a:hover{color:var(--fg);border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.05)}
-      a{color:var(--link)} h1{font-size:clamp(2rem,2.6vw + 1.2rem,3.4rem);line-height:1.1;margin:0 0 .4rem;font-weight:900}
-      h2{font-size:clamp(1.3rem,1.2vw + .9rem,1.8rem);margin:0 0 .75rem;font-weight:800} h3{font-size:1.05rem;margin:0 0 .25rem;font-weight:700}
-      p{margin:0 0 .75rem} .muted{color:var(--muted)}
-      .hero{padding-top:3.5rem;padding-bottom:1.5rem}
-      .badges{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
-      .badge{font-size:.8rem;color:#d7e0ec;border:1px solid rgba(255,255,255,.12);padding:.35rem .6rem;border-radius:999px;background:rgba(255,255,255,.04)}
-      .grid{display:grid;gap:1rem;grid-template-columns:1fr}@media(min-width:820px){.grid{grid-template-columns:repeat(3,1fr)}}
-      .card{background:linear-gradient(180deg,var(--card),var(--card-2));border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
-      .card:hover{transform:translateY(-2px);border-color:rgba(125,211,252,.45)} a.card{color:inherit;text-decoration:none;display:block}
-      .section{margin:2.2rem 0 1.2rem}
-      .cta-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1rem}
-      .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem .9rem;border-radius:12px;text-decoration:none;border:1px solid rgba(255,255,255,.14)}
-      .btn:hover{border-color:rgba(255,255,255,.24)} .btn.primary{background:linear-gradient(135deg,var(--accent),#60a5fa);color:#00131a;border-color:transparent}
-      footer{border-top:1px solid rgba(255,255,255,.12);margin-top:2.5rem} footer .inner{max-width:var(--container);margin:0 auto;padding:1.25rem;color:var(--muted);font-size:.9rem;text-align:center}
-      .kbd{font:600 .8rem ui-monospace,SFMono-Regular,Menlo,monospace;background:#0d1117;border:1px solid rgba(255,255,255,.12);padding:.15rem .4rem;border-radius:6px;color:#e5e7eb}
-    </style>
-  </head>
-  <body>
-    <header>
-      <nav class="nav">
-        <div class="brand"><span class="dot"></span> <span>Nathan Bullock</span></div>
-        <div class="links"><a href="/about/">About</a><a href="/projects/">Projects</a><a href="/status/">Status</a><a href="/admin/">Admin</a></div>
-      </nav>
-    </header>
-  </body>
-</html>
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+<SiteLayout title="Projects — Nathan Bullock">
+<section class="hero">
+<h1>Projects</h1>
+<p class="muted">Selected work and homelab builds.</p>
+</section>
 
+
+<div class="grid">
+<!-- add your project cards here -->
+<a class="card" href="#"><h3>Project A</h3><p class="muted">Description</p></a>
+<a class="card" href="#"><h3>Project B</h3><p class="muted">Description</p></a>
+<a class="card" href="#"><h3>Project C</h3><p class="muted">Description</p></a>
+</div>
+</SiteLayout>
