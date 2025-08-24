@@ -34,7 +34,8 @@ const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
     {projects.map((p: Project) => {
       const isExternal = !!p.data.link;
       return isExternal ? (
-        <a class="card" href={hrefFor(p)} target="_blank" rel="noreferrer">
+        <a class="card transition transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+           href={hrefFor(p)} target="_blank" rel="noreferrer">
           {p.data.image && <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />}
           <h3>{p.data.title}</h3>
           {p.data.description && <p class="muted">{p.data.description}</p>}
@@ -47,7 +48,7 @@ const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
       ) : (
         <button
           type="button"
-          class="card card-btn"
+          class="card card-btn transition transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400 text-left"
           data-slug={p.slug}
           aria-haspopup="dialog"
           aria-controls="project-modal"
@@ -73,12 +74,15 @@ const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
         const { Content } = await p.render();
         return (
           <template id={`tpl-${p.slug}`}>
-            <article class="prose">
-              <header style="margin-bottom:.75rem">
-                <h2 id="project-modal-title" style="margin:0">{p.data.title}</h2>
-                {p.data.description && <p class="muted" style="margin:.25rem 0 0">{p.data.description}</p>}
+            <article class="prose prose-invert max-w-none
+                            prose-headings:text-white prose-p:text-slate-300
+                            prose-a:text-sky-300 hover:prose-a:text-sky-200
+                            prose-strong:text-white prose-img:rounded-xl prose-img:my-4">
+              <header class="mb-3">
+                <h2 id="project-modal-title" class="m-0">{p.data.title}</h2>
+                {p.data.description && <p class="muted mt-1 mb-0">{p.data.description}</p>}
               </header>
-              {p.data.image && <img src={p.data.image} alt="" style="width:100%;border-radius:12px;margin:.5rem 0 1rem;" />}
+              {p.data.image && <img src={p.data.image} alt="" class="w-full rounded-xl my-2" />}
               <Content />
             </article>
           </template>
@@ -86,93 +90,30 @@ const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
       })
   )}
 
-  <!-- Modal root -->
-  <div id="project-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
-    <div class="modal__backdrop" data-close></div>
-    <div class="modal__panel" role="document">
-      <button class="modal__close" type="button" aria-label="Close" data-close>✕</button>
-      <div class="modal__body" id="project-modal-body" tabindex="0"></div>
+  <!-- Modal root (Tailwind) -->
+  <div id="project-modal"
+       class="hidden fixed inset-0 z-50"
+       role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close></div>
+
+    <!-- Panel -->
+    <div class="relative mx-auto my-6 sm:my-12 w-[92vw] max-w-3xl max-h-[88vh]
+                overflow-hidden rounded-2xl border border-white/10
+                bg-slate-900/90 shadow-2xl ring-1 ring-black/5">
+      <!-- Close -->
+      <button type="button" aria-label="Close" data-close
+              class="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center
+                     rounded-lg border border-white/10 bg-white/5 text-white
+                     hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-sky-400">
+        ✕
+      </button>
+
+      <!-- Body -->
+      <div id="project-modal-body" class="p-5 overflow-auto max-h-[88vh]" tabindex="0"></div>
     </div>
   </div>
 
-  <style>
-    .card.card-btn { text-align: left; background: transparent; border: none; padding: 0; cursor: pointer; }
-    /* Modal layout */
-    .modal.hidden { display: none; }
-    .modal { position: fixed; inset: 0; z-index: 60; }
-    .modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(2px); }
-    .modal__panel {
-      position: relative;
-      margin: 5vh auto;
-      max-width: 920px;
-      width: min(92vw, 920px);
-      max-height: 88vh;
-      background: var(--card, rgba(18,24,38,.9));
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,.4);
-      overflow: hidden;
-    }
-    .modal__close {
-      position: absolute; top: 10px; right: 10px;
-      width: 36px; height: 36px; border-radius: 10px;
-      background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.08);
-      font-size: 18px; line-height: 1;
-    }
-    .modal__body { padding: 20px; overflow: auto; max-height: 88vh; }
-    .prose :where(img){max-width:100%;height:auto}
-  </style>
-
-<script is:inline>
-  (() => {
-    const modal = document.getElementById('project-modal');
-    const body  = document.getElementById('project-modal-body');
-    if (!modal || !body) return;
-
-    let lastFocus = null;
-
-    const open = (slug) => {
-      const tpl = document.getElementById('tpl-' + slug);
-      if (!(tpl && 'content' in tpl)) return;
-      body.innerHTML = '';
-      body.append(tpl.content.cloneNode(true));
-      lastFocus = document.activeElement;
-      modal.classList.remove('hidden');
-      document.documentElement.style.overflow = 'hidden';
-      modal.querySelector('.modal__close')?.focus();
-    };
-
-    const close = () => {
-      modal.classList.add('hidden');
-      document.documentElement.style.overflow = '';
-      body.innerHTML = '';
-      if (lastFocus && lastFocus.focus) lastFocus.focus();
-    };
-
-    // One listener for everything (works even if cards are re-rendered)
-    document.addEventListener('click', (e) => {
-      const target = e.target;
-      const btn = target instanceof Element ? target.closest('.card-btn') : null;
-      if (btn) {
-        e.preventDefault();
-        const slug = btn.getAttribute('data-slug');
-        if (slug) open(slug);
-        return;
-      }
-      const closeEl = target instanceof Element ? target.closest('[data-close]') : null;
-      if (closeEl) {
-        e.preventDefault();
-        close();
-      }
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-        e.preventDefault();
-        close();
-      }
-    });
-  })();
-</script>
-
+  <!-- lightweight client script -->
+  <script src="/js/projects-modal.js" defer></script>
 </SiteLayout>
