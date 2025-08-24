@@ -6,12 +6,16 @@ import { cn } from "../lib/utils";
 
 <SiteLayout title="Home — Nathan Bullock" description="My Website!.">
   <section class="hero flex flex-col items-center justify-center min-h-[70vh] px-2">
-    <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-500 to-cyan-300 drop-shadow-lg mb-2">
-      Nathan Bullock
-    </h1>
-    <p class="muted text-lg md:text-xl mb-8 text-center max-w-2xl">
-      Homelab builder, cloud tinkerer, and full-stack explorer. Welcome to my digital playground—where ideas become projects and projects become learning adventures.
-    </p>
+    <div class="hero-inner relative flex flex-col items-center">
+      <div class="hero-pre text-[11px] tracking-[.25em] font-semibold text-[rgba(255,255,255,.55)] mb-4 uppercase">Building • Automating • Learning</div>
+      <h1 class="hero-title text-4xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f2f2f2] via-[#f2f2f2] to-[#ff9a24]/80 mb-4">
+        Nathan Bullock
+      </h1>
+      <div class="hero-divider" aria-hidden="true"></div>
+      <p class="hero-tagline muted text-lg md:text-xl mt-6 mb-10 text-center max-w-2xl">
+        Homelab builder, cloud tinkerer, and full‑stack explorer. This space documents experiments, infrastructure tinkering, and the lessons that ship with real projects.
+      </p>
+    </div>
 
     <div class="w-full max-w-2xl mb-8">
       <div id="terminal" class="terminal-wrapper group darker-terminal">
@@ -34,7 +38,7 @@ import { cn } from "../lib/utils";
       // Professional terminal animation with variable typing speed & subtle caret pulse
       const term = document.getElementById('terminal-body');
       const palette = {
-        user: '#34d399', path: '#38bdf8', branch: '#c084fc', symbol: '#fbbf24', accent: '#f472b6'
+        user: '#34d399', path: '#f5c78a', branch: '#ff9d32', symbol: '#e9b341', accent: '#ff7b1a'
       };
       const prompt = () => `<span style=\"color:${palette.user}\">nbullock@homelab</span> <span style=\"color:${palette.path}\">~/lab</span> <span style=\"color:${palette.branch}\">main</span> <span style=\"color:${palette.symbol}\">$\n</span>`;
       const scriptLines = [
@@ -44,7 +48,7 @@ import { cn } from "../lib/utils";
         `› Initializing git… <span style=\"color:#10b981\">ok</span>`,
         `deploy --target=cloudflare` ,
         `<span style=\"color:#f59e0b\">→</span> shipping artifacts`,
-        `<span style=\"color:#38bdf8\">✓</span> live at https://www.nbdevlab.com`,
+        `<span style=\"color:#ff9100">✓</span> live at https://www.nbdevlab.com`,
       ];
       let lineIndex = 0, charIndex = 0, buffer = '';
       const speeds = { base: 26, jitter: 28 };
@@ -69,8 +73,8 @@ import { cn } from "../lib/utils";
       tick();
     </script>
     <style is:global>
-  .terminal-wrapper{position:relative;border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#0d0d0d,#101622 55%,#0d131d);backdrop-filter:blur(10px)}
-      .terminal-wrapper:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 15% 15%,rgba(125,211,252,.15),transparent 60%),radial-gradient(circle at 85% 70%,rgba(96,165,250,.12),transparent 55%);pointer-events:none}
+  .terminal-wrapper{position:relative;border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden;background:#0d0d0d;backdrop-filter:blur(10px)}
+      .terminal-wrapper:before{content:none}
   .terminal-chrome{display:flex;align-items:center;gap:.75rem;padding:.55rem .9rem;font:500 .7rem/1.2 system-ui;background:linear-gradient(to right,#121212,#141414);border-bottom:1px solid rgba(255,255,255,.08)}
       .terminal-chrome .traffic{display:flex;gap:.4rem}
       .terminal-chrome .dot{width:.75rem;height:.75rem;border-radius:999px;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 6px 0 rgba(0,0,0,.4)}
@@ -79,14 +83,27 @@ import { cn } from "../lib/utils";
       .terminal-chrome .dot.green{background:#22c55e}
       .terminal-chrome .title{flex:1;opacity:.85;color:#e2e8f0;letter-spacing:.5px}
       .terminal-chrome .actions{display:flex;align-items:center;gap:.5rem}
-      .terminal-chrome .pill{font:600 .55rem/1 system-ui;padding:.3rem .55rem;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(255,255,255,.06);letter-spacing:.5px;color:#93c5fd}
-  .code-surface{position:relative;padding:1.15rem 1.2rem 1.3rem 1.2rem;font:500 .8rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;min-height:190px;color:#e2e8f0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.55));}
+  .terminal-chrome .pill{font:600 .55rem/1 system-ui;padding:.3rem .55rem;border:1px solid rgba(255,170,64,.35);border-radius:999px;background:rgba(255,170,64,.08);letter-spacing:.5px;color:#f6c385}
+  .code-surface{position:relative;padding:1.1rem 1.15rem 1.25rem 1.15rem;font:500 .8rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;min-height:190px;color:#f5e5d4;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.62));}
       #terminal-body{white-space:pre-wrap}
-      .caret{color:#38bdf8;animation:blink 1.05s steps(1) infinite}
+  .caret{color:#ff9d32;animation:blink 1.05s steps(1) infinite}
       @keyframes blink{0%,55%{opacity:1}56%,100%{opacity:0}}
       .code-surface:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(0,0,0,.35));pointer-events:none}
-      .code-surface .glow{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#38bdf8 35%,#818cf8 65%,transparent);opacity:.7;filter:blur(.5px)}
-      .terminal-wrapper:hover{box-shadow:0 0 0 1px rgba(125,211,252,.4),0 0 28px -6px rgba(56,189,248,.55)}
+      .code-surface .glow{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ffb457 40%,#ff8c24 60%,transparent);opacity:.55;filter:blur(.5px)}
+      .terminal-wrapper:hover{box-shadow:0 0 0 1px rgba(255,170,64,.42),0 0 22px -8px rgba(255,140,40,.4)}
+      .terminal-wrapper:focus-within{box-shadow:0 0 0 1px rgba(255,170,64,.55),0 0 0 4px rgba(255,170,64,.12)}
+    .hero{position:relative}
+  .hero:before,.hero-inner:after{content:none !important}
+  .hero-title{text-shadow:0 2px 4px rgba(0,0,0,.3);}
+      .hero-divider{position:relative;width:240px;max-width:60%;height:2px;background:linear-gradient(90deg,transparent,#ffb04a,#ff8c24,transparent);border-radius:2px;box-shadow:0 0 0 1px rgba(255,150,40,.35),0 6px 22px -8px rgba(0,0,0,.6)}
+      .hero-tagline{color:#cfcfcf}
+      .hero-tagline strong{color:#ffb04a}
+      @media (max-width:640px){
+        .hero-title{font-size:2.35rem}
+        .hero-divider{width:180px}
+        .hero-pre{letter-spacing:.18em}
+      }
+  /* (Removed ornament honeycomb / zigzag background) */
     </style>
 
     <div class="flex gap-3 mt-4 mb-8 flex-wrap">
