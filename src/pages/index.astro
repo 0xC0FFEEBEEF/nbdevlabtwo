@@ -23,7 +23,7 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       </div>
     </div>
     <script is:inline>
-      // Zsh-style prompt and one-time typing animation
+      // Zsh-style prompt and typing animation (plays every load, ends with prompt & blinking cursor)
       const lines = [
         `<span class="text-green-400">nbullock@homelab</span> <span class="text-blue-400">~/projects</span> <span class="text-purple-400">main</span> <span class="text-yellow-400">$</span> npx create-astro@latest`,
         `<span class="text-green-400">✔</span> Building something <span class="text-sky-400">awesome</span>...`,
@@ -31,6 +31,7 @@ import SiteLayout from "../layouts/SiteLayout.astro";
         `<span class="text-pink-400">★</span> Integrating <span class="text-cyan-300">Tailwind</span> & <span class="text-indigo-300">CMS</span>`,
         `<span class="text-emerald-400">✓</span> Learning. Building. Sharing.`,
       ];
+      const finalPrompt = `<span class="text-green-400">nbullock@homelab</span> <span class="text-blue-400">~/projects</span> <span class="text-purple-400">main</span> <span class="text-yellow-400">$</span> <span class="cursor">|</span>`;
       const term = document.getElementById('terminal-body');
       let i = 0, j = 0;
       let curr = '';
@@ -38,7 +39,8 @@ import SiteLayout from "../layouts/SiteLayout.astro";
 
       function typeChar() {
         if (i >= lines.length) {
-          term.innerHTML = lines.join('\n');
+          // Show all lines, then the prompt with blinking cursor
+          term.innerHTML = lines.join('\n') + '\n' + finalPrompt;
           return;
         }
         const line = lines[i];
@@ -56,13 +58,9 @@ import SiteLayout from "../layouts/SiteLayout.astro";
         }
       }
 
-      if (sessionStorage.getItem('typedTerm') !== '1') {
-        term.innerHTML = '';
-        typeChar();
-        sessionStorage.setItem('typedTerm', '1');
-      } else {
-        term.innerHTML = lines.join('\n');
-      }
+      // Always play animation on load
+      term.innerHTML = '';
+      typeChar();
     </script>
     <style is:global>
       #terminal pre span.cursor {
