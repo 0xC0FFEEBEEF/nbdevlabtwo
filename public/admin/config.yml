@@ -2,7 +2,7 @@ local_backend: true
 
 backend:
   name: github
-  repo: 0xC0FFEEBEEF/astro-blog-starter-template         
+  repo: 0xC0FFEEBEEF/nbdevlab        
   branch: main
 
 media_folder: "public/src/assets/uploads"       # files committed here
