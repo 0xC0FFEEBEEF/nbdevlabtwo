@@ -3,7 +3,6 @@ export default function initProjectsModal() {
   const modalNode = document.getElementById("project-modal");
   const bodyNode = document.getElementById("project-modal-body");
 
-  // Strong runtime type-narrowing so TS knows these are not null later.
   if (!(modalNode instanceof HTMLElement) || !(bodyNode instanceof HTMLDivElement)) return;
 
   const modal: HTMLElement = modalNode;
@@ -30,7 +29,7 @@ export default function initProjectsModal() {
   function close() {
     modal.classList.add("hidden");
     document.documentElement.style.overflow = "";
-    body.replaceChildren(); // clear
+    body.replaceChildren();
     window.removeEventListener("keydown", onKey);
     lastFocus?.focus?.();
   }

@@ -65,7 +65,7 @@ const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
     })}
   </div>
 
-  <!-- Pre-render modal content for each internal project -->
+  <!-- Pre-render modal content for internal (non-link) posts -->
   {await Promise.all(
     projects
       .filter((p) => !p.data.link)
@@ -124,7 +124,7 @@ const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
   </style>
 
   <script type="module">
-    import initProjectsModal from "../scripts/projects-modal.js";
-    initProjectsModal("project-modal", "project-modal-body");
+    import initProjectsModal from "../scripts/projects-modal.ts";
+    initProjectsModal(); // sets up click -> modal behavior
   </script>
 </SiteLayout>
