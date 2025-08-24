@@ -2,7 +2,7 @@ local_backend: true
 
 backend:
   name: github
-  repo: YOUR_GH_USER/YOUR_REPO          # ← CHANGE THIS
+  repo: 0xC0FFEEBEEF/astro-blog-starter-template         # ← CHANGE THIS
   branch: main
 
 media_folder: "src/assets/uploads"       # files committed here
