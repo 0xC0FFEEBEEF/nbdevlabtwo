@@ -5,8 +5,8 @@ backend:
   repo: 0xC0FFEEBEEF/astro-blog-starter-template         
   branch: main
 
-media_folder: "src/assets/uploads"       # files committed here
-public_folder: "/assets/uploads"         # how they’re referenced in pages
+media_folder: "public/src/assets/uploads"       # files committed here
+public_folder: "/src/assets/uploads"         # how they’re referenced in pages
 
 collections:
   - name: "projects"

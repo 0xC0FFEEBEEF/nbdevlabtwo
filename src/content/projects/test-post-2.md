@@ -4,7 +4,7 @@ description: Now that my content manager is working, I have decided to document
   my progress with this website!
 tags:
   - Website
-image: /assets/uploads/screenshot-2025-08-23-220521.png
+image: /src/assets/uploads/screenshot-2025-08-23-220521.png
 weight: 100
 pubDate: 2025-08-23T22:02:00.000-05:00
 draft: true
