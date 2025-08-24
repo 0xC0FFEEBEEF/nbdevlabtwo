@@ -123,8 +123,56 @@ const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
     .prose :where(img){max-width:100%;height:auto}
   </style>
 
-  <script type="module">
-    import initProjectsModal from "../scripts/projects-modal.ts";
-    initProjectsModal(); // sets up click -> modal behavior
-  </script>
+<script is:inline>
+  (() => {
+    const modal = document.getElementById('project-modal');
+    const body  = document.getElementById('project-modal-body');
+    if (!modal || !body) return;
+
+    let lastFocus = null;
+
+    const open = (slug) => {
+      const tpl = document.getElementById('tpl-' + slug);
+      if (!(tpl && 'content' in tpl)) return;
+      body.innerHTML = '';
+      body.append(tpl.content.cloneNode(true));
+      lastFocus = document.activeElement;
+      modal.classList.remove('hidden');
+      document.documentElement.style.overflow = 'hidden';
+      modal.querySelector('.modal__close')?.focus();
+    };
+
+    const close = () => {
+      modal.classList.add('hidden');
+      document.documentElement.style.overflow = '';
+      body.innerHTML = '';
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    };
+
+    // One listener for everything (works even if cards are re-rendered)
+    document.addEventListener('click', (e) => {
+      const target = e.target;
+      const btn = target instanceof Element ? target.closest('.card-btn') : null;
+      if (btn) {
+        e.preventDefault();
+        const slug = btn.getAttribute('data-slug');
+        if (slug) open(slug);
+        return;
+      }
+      const closeEl = target instanceof Element ? target.closest('[data-close]') : null;
+      if (closeEl) {
+        e.preventDefault();
+        close();
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        e.preventDefault();
+        close();
+      }
+    });
+  })();
+</script>
+
 </SiteLayout>
