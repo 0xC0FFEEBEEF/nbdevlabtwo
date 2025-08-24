@@ -2,180 +2,92 @@
 import SiteLayout from "../layouts/SiteLayout.astro";
 ---
 
-<SiteLayout title="Home — Nathan Bullock" description="nbdevlab — Sysadmin / DevOps">
-  <!-- View Transitions opt-in -->
-  <script is:inline>
-    if ("startViewTransition" in document && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      document.documentElement.dataset.vt = "1";
-    }
-  </script>
+<SiteLayout title="Home — Nathan Bullock" description="My Website!.">
+  <section class="hero flex flex-col items-center justify-center min-h-[70vh] px-2">
+    <h1 class="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-500 to-cyan-300 drop-shadow-lg mb-2">
+      Nathan Bullock
+    </h1>
+    <p class="muted text-lg md:text-xl mb-8 text-center max-w-2xl">
+      Homelab builder, cloud tinkerer, and full-stack explorer. Welcome to my digital playground—where ideas become projects and projects become learning adventures.
+    </p>
 
-  <main class="min-h-screen text-[var(--fg)] bg-[var(--bg)] selection:bg-sky-500/30">
-    <!-- Boot veil (first-load) -->
-    <div id="bootveil" class="fixed inset-0 pointer-events-none opacity-0"></div>
-
-    <!-- Hero -->
-    <section class="container mx-auto px-4 pt-24 pb-10 text-center space-y-4 will-reveal">
-      <h1 class="text-5xl md:text-6xl font-black tracking-tight text-white drop-shadow-[0_2px_24px_rgba(56,189,248,0.15)]">
-        Nathan Bullock
-      </h1>
-      <p class="mx-auto max-w-2xl text-[var(--muted)] text-lg md:text-xl">
-        Homelab builder, cloud tinkerer, and full-stack explorer. Welcome to my digital playground—where ideas become projects and projects become learning adventures.
-      </p>
-
-      <!-- Terminal -->
-      <div class="mx-auto w-full max-w-2xl">
-        <div class="bg-[#171a1f] border border-white/10 rounded-2xl shadow-[0_10px_40px_-10px_rgba(2,6,23,0.7)] overflow-hidden font-mono text-sm text-slate-200 backdrop-blur will-reveal">
-          <div class="flex items-center gap-2 px-4 py-2 bg-[#21252b] border-b border-white/10">
-            <span class="w-2.5 h-2.5 rounded-full bg-red-500/90"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/90"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-green-500/90"></span>
-            <span class="ml-4 text-sky-300/90 text-xs tracking-wide">zsh — nbullock@homelab</span>
-          </div>
-          <pre id="terminal-body" class="px-4 py-5 min-h-[180px] bg-transparent whitespace-pre-wrap"></pre>
+    <div class="w-full max-w-2xl mb-8">
+      <div id="terminal" class="bg-[#181c20] border border-slate-700 rounded-xl shadow-lg overflow-hidden font-mono text-sm text-slate-200">
+        <div class="flex items-center gap-2 px-4 py-2 bg-[#23272e] border-b border-slate-700">
+          <span class="w-3 h-3 rounded-full bg-red-500"></span>
+          <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+          <span class="w-3 h-3 rounded-full bg-green-500"></span>
+          <span class="ml-4 text-sky-300 font-mono text-xs tracking-wide">zsh — nbullock@homelab</span>
         </div>
+        <pre id="terminal-body" class="px-4 py-5 min-h-[180px] bg-transparent whitespace-pre-wrap"></pre>
       </div>
+    </div>
+    <script is:inline>
+      // Zsh-style prompt and typing animation (plays every load, ends with prompt & blinking cursor)
+      const lines = [
+        `<span class="text-green-400">nbullock@homelab</span> <span class="text-blue-400">~/projects</span> <span class="text-purple-400">main</span> <span class="text-yellow-400">$</span> npx create-astro@latest`,
+        `<span class="text-green-400">✔</span> Building something <span class="text-sky-400">awesome</span>...`,
+        `<span class="text-yellow-300">→</span> Deploying to <span class="text-blue-400">Cloudflare</span> Workers`,
+        `<span class="text-pink-400">★</span> Integrating <span class="text-cyan-300">Tailwind</span> & <span class="text-indigo-300">CMS</span>`,
+        `<span class="text-emerald-400">✓</span> Learning. Building. Sharing.`,
+      ];
+      const finalPrompt = `<span class="text-green-400">nbullock@homelab</span> <span class="text-blue-400">~/projects</span> <span class="text-purple-400">main</span> <span class="text-yellow-400">$</span> <span class="cursor">|</span>`;
+      const term = document.getElementById('terminal-body');
+      let i = 0, j = 0;
+      let curr = '';
+      let tag = false;
 
-      <!-- CTAs -->
-      <div class="flex gap-3 justify-center pt-2 will-reveal">
-        <a href="/projects" class="px-4 py-2 rounded-2xl bg-gradient-to-r from-sky-400 to-cyan-400 text-slate-900 font-semibold shadow hover:scale-[1.02] transition">
-          View Projects
-        </a>
-        <a href="/about" class="px-4 py-2 rounded-2xl border border-white/15 text-sky-300 hover:bg-white/5 transition">
-          About Me
-        </a>
-      </div>
-
-      <!-- Chips -->
-      <div class="flex flex-wrap gap-2.5 justify-center pt-4 will-reveal">
-        {["Cloudflare","Astro","Homelab","Tinkering","Proxmox"].map(t => (
-          <span class="px-3 py-1 rounded-xl bg-white/[0.04] border border-white/10 text-[13px] text-white/80">
-            #{t}
-          </span>
-        ))}
-      </div>
-    </section>
-
-    <!-- Three-panels (OpenWebUI vibe) -->
-    <section class="container mx-auto px-4 pb-24 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <a href="/status" class="panel">
-        <h3 class="panel-title">System Status</h3>
-        <p class="panel-sub">Grafana • Uptime • Services</p>
-        <div class="mt-3 flex gap-2 text-xs">
-          <span class="pill pill-up">Proxmox: up</span>
-          <span class="pill pill-up">OMV: up</span>
-          <span class="pill pill-busy">AI VM: busy</span>
-        </div>
-      </a>
-      <a href="/projects" class="panel">
-        <h3 class="panel-title">Projects</h3>
-        <p class="panel-sub">Cluster builds, VFIO, HA</p>
-      </a>
-      <a href="/blog" class="panel">
-        <h3 class="panel-title">Logs & Notes</h3>
-        <p class="panel-sub">Build logs, configs, lessons</p>
-      </a>
-    </section>
-  </main>
-
-  <!-- Terminal typing (kept from your file), plus boot veil + reveals -->
-  <script is:inline>
-    // Terminal typing (HTML-aware)
-    const lines = [
-      `<span class="text-green-400">nbullock@homelab</span> <span class="text-blue-400">~/projects</span> <span class="text-purple-400">main</span> <span class="text-yellow-400">$</span> npx create-astro@latest`,
-      `<span class="text-green-400">✔</span> Building something <span class="text-sky-400">awesome</span>...`,
-      `<span class="text-yellow-300">→</span> Deploying to <span class="text-blue-400">Cloudflare</span> Workers`,
-      `<span class="text-pink-400">★</span> Integrating <span class="text-cyan-300">Tailwind</span> & <span class="text-indigo-300">CMS</span>`,
-      `<span class="text-emerald-400">✓</span> Learning. Building. Sharing.`,
-    ];
-    const finalPrompt = `<span class="text-green-400">nbullock@homelab</span> <span class="text-blue-400">~/projects</span> <span class="text-purple-400">main</span> <span class="text-yellow-400">$</span> <span class="cursor">|</span>`;
-    const term = document.getElementById('terminal-body');
-    let i=0,j=0,curr='',tag=false;
-
-    function typeChar() {
-      if (i >= lines.length) { term.innerHTML = lines.join('\n') + '\n' + finalPrompt; unveil(); return; }
-      const line = lines[i];
-      if (j < line.length) {
-        curr += line[j]; if (line[j]==='<') tag=true; if (line[j]==='>') tag=false; j++;
-        term.innerHTML = lines.slice(0,i).join('\n') + (i>0?'\n':'') + curr + (tag?'':'<span class="cursor">|</span>');
-        setTimeout(typeChar, tag?0:18);
-      } else {
-        term.innerHTML = lines.slice(0,i).join('\n') + (i>0?'\n':'') + curr + '\n';
-        i++; j=0; curr=''; tag=false; setTimeout(typeChar, 260);
+      function typeChar() {
+        if (i >= lines.length) {
+          // Show all lines, then the prompt with blinking cursor
+          term.innerHTML = lines.join('\n') + '\n' + finalPrompt;
+          return;
+        }
+        const line = lines[i];
+        if (j < line.length) {
+          curr += line[j];
+          if (line[j] === '<') tag = true;
+          if (line[j] === '>') tag = false;
+          j++;
+          term.innerHTML = lines.slice(0, i).join('\n') + (i > 0 ? '\n' : '') + curr + (tag ? '' : '<span class="cursor">|</span>');
+          setTimeout(typeChar, tag ? 0 : 18);
+        } else {
+          term.innerHTML = lines.slice(0, i).join('\n') + (i > 0 ? '\n' : '') + curr + '\n';
+          i++; j = 0; curr = ''; tag = false;
+          setTimeout(typeChar, 350);
+        }
       }
-    }
 
-    // Veil + section reveal
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const veil = document.getElementById("bootveil");
-    function unveil() {
-      if (reduce) { document.querySelectorAll('.will-reveal').forEach(el=>el.classList.add('revealed')); return; }
-      veil.classList.add("bootveil-hide");
-      // IntersectionObserver for scroll reveals
-      const obs = new IntersectionObserver((entries, o)=>{
-        for (const e of entries) if (e.isIntersecting) { e.target.classList.add("revealed"); o.unobserve(e.target); }
-      }, { threshold: 0.08 });
-      document.querySelectorAll(".will-reveal").forEach(el=>obs.observe(el));
-    }
+      // Always play animation on load
+      term.innerHTML = '';
+      typeChar();
+    </script>
+    <style is:global>
+      #terminal pre span.cursor {
+        color: #38bdf8;
+        animation: blink 1s steps(1) infinite;
+      }
+      @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
+      }
+    </style>
 
-    // Init
-    term.innerHTML = ""; 
-    if (!reduce) veil.className = "bootveil-on";
-    typeChar();
+    <div class="flex gap-4 mt-4 mb-8">
+      <a href="/projects/" class="btn primary bg-gradient-to-r from-sky-400 to-cyan-400 text-slate-900 font-bold shadow hover:scale-105 transition-transform">
+        View Projects
+      </a>
+      <a href="/about/" class="btn border border-sky-400 text-sky-300 hover:bg-sky-900/30 transition">
+        About Me
+      </a>
+    </div>
 
-    // View transitions for same-site nav
-    if (document.documentElement.dataset.vt === "1") {
-      document.addEventListener("click", (e) => {
-        const a = e.target.closest("a"); if (!a || a.target || a.hasAttribute("download") || a.origin !== location.origin) return;
-        e.preventDefault();
-        document.startViewTransition(() => (location.href = a.href));
-      });
-    }
-  </script>
-
-  <style is:global>
-    :root{
-      --bg: #0f1419;           /* charcoal */
-      --fg: #e8edf2;           /* soft white */
-      --muted: #b5c3cf;        /* cool gray */
-      --card: rgba(255,255,255,0.04);
-      --card-border: rgba(255,255,255,0.10);
-      --glow: 0 10px 40px -10px rgba(56,189,248,.35);
-    }
-    /* Panels / OpenWebUI-ish cards */
-    .panel{
-      display:block; padding:20px; border-radius:16px;
-      background: var(--card);
-      border:1px solid var(--card-border);
-      box-shadow: var(--glow);
-      transition: transform .2s ease, background .2s ease, border-color .2s ease;
-    }
-    .panel:hover{ transform: translateY(-2px); background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); }
-    .panel-title{ font-weight:700; color:#fff; }
-    .panel-sub{ color: var(--muted); font-size: .95rem; margin-top:.25rem; }
-
-    /* Pills */
-    .pill{ padding:.25rem .5rem; border-radius:9999px; border:1px solid; }
-    .pill-up{ background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.35); }
-    .pill-busy{ background: rgba(234,179,8,.12); border-color: rgba(234,179,8,.35); }
-
-    /* Cursor blink */
-    #terminal pre span.cursor { color:#38bdf8; animation: blink 1s steps(1) infinite; }
-    @keyframes blink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
-
-    /* Boot veil */
-    .bootveil-on{ opacity:1; background:
-      radial-gradient(600px 300px at 80% 20%, rgba(56,189,248,.10), transparent 60%),
-      radial-gradient(800px 400px at 10% 40%, rgba(2,132,199,.10), transparent 60%),
-      #0b0f14; transition: opacity .6s ease .1s; z-index:50; }
-    .bootveil-hide{ opacity:0; transition: opacity .6s ease .1s; }
-
-    /* Reveal animation */
-    .will-reveal{ opacity:0; transform: translateY(6px); transition: opacity .5s ease, transform .5s ease; }
-    .will-reveal.revealed{ opacity:1; transform:none; }
-    @media (prefers-reduced-motion: reduce){
-      .will-reveal{ opacity:1 !important; transform:none !important; }
-      .bootveil-on,.bootveil-hide{ transition:none !important; }
-    }
-  </style>
+    <div class="mt-6 flex flex-wrap gap-3 justify-center">
+      <span class="badge bg-sky-800/80 text-sky-200">#Cloudflare</span>
+      <span class="badge bg-cyan-800/80 text-cyan-200">#Astro</span>
+      <span class="badge bg-blue-800/80 text-blue-200">#Homelab</span>
+      <span class="badge bg-indigo-800/80 text-indigo-200">#Tinkering</span>
+      <span class="badge bg-emerald-800/80 text-emerald-200">#Proxmox</span>
+    </div>
+  </section>
 </SiteLayout>
