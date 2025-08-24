@@ -15,8 +15,7 @@ projects.sort((a, b) => {
   if (bw !== aw) return bw - aw;                       // higher weight first
   const at = a.data.pubDate ? +a.data.pubDate : 0;
   const bt = b.data.pubDate ? +b.data.pubDate : 0;
-  return bt - at;                                      // newest first
-});
+  return bt - at;                                      // newest first 
 
 const hrefFor = (p: Project) => p.data.link ?? `/projects/${p.id}/`;
 ---
