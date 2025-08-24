@@ -33,30 +33,32 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       ];
       const term = document.getElementById('terminal-body');
       let i = 0, j = 0;
-      function typeLine() {
-        if (i >= lines.length) return;
-        let line = lines[i];
-        let curr = '';
-        let tag = false;
-        function typeChar() {
-          if (j >= line.length) {
-            term.innerHTML += curr + '\n';
-            i++; j = 0; curr = '';
-            setTimeout(typeLine, 350);
-            return;
-          }
+      let curr = '';
+      let tag = false;
+
+      function typeChar() {
+        if (i >= lines.length) {
+          term.innerHTML = lines.join('\n');
+          return;
+        }
+        const line = lines[i];
+        if (j < line.length) {
           curr += line[j];
           if (line[j] === '<') tag = true;
           if (line[j] === '>') tag = false;
           j++;
-          term.innerHTML = term.innerHTML.replace(/<span class="cursor">.\<\/span\>$/, '') + curr + (tag ? '' : '<span class="cursor">|</span>');
+          term.innerHTML = lines.slice(0, i).join('\n') + (i > 0 ? '\n' : '') + curr + (tag ? '' : '<span class="cursor">|</span>');
           setTimeout(typeChar, tag ? 0 : 18);
+        } else {
+          term.innerHTML = lines.slice(0, i).join('\n') + (i > 0 ? '\n' : '') + curr + '\n';
+          i++; j = 0; curr = ''; tag = false;
+          setTimeout(typeChar, 350);
         }
-        typeChar();
       }
+
       if (sessionStorage.getItem('typedTerm') !== '1') {
         term.innerHTML = '';
-        typeLine();
+        typeChar();
         sessionStorage.setItem('typedTerm', '1');
       } else {
         term.innerHTML = lines.join('\n');
