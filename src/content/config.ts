@@ -1,26 +1,32 @@
 import { defineCollection, z } from "astro:content";
 
-const pages = defineCollection({
-  type: "data",
+
+const blog = defineCollection({
+  type: "content",
   schema: z.object({
-    seoTitle: z.string().optional(),
-    seoDescription: z.string().optional(),
-    hero: z.object({
-      headline: z.string().optional(),
-      subheadline: z.string().optional(),
-      badges: z.array(z.string()).optional(),
-      ctas: z.array(
-        z.object({
-          href: z.string(),
-          text: z.string(),
-          variant: z.enum(["primary","default"]).default("default"),
-        })
-      ).optional(),
-    }).optional(),
-    status: z.object({ blurb: z.string().optional(), note: z.string().optional() }).optional(),
-    about: z.object({ paragraphs: z.array(z.string()).optional() }).optional(),
-    contact: z.object({ email: z.string().optional(), github: z.string().optional(), githubHandle: z.string().optional() }).optional(),
+    title: z.string(),
+    description: z.string().optional(),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    heroImage: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    draft: z.boolean().optional(),
   }),
 });
 
-export const collections = { pages };
+const projects = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    link: z.string().url().optional(),
+    tags: z.array(z.string()).optional(),
+    image: z.string().optional(),
+    featured: z.boolean().optional(),
+    weight: z.number().int().optional(),
+    pubDate: z.coerce.date().optional(),
+    draft: z.boolean().optional(),
+  }),
+});
+
+export const collections = { blog, projects };

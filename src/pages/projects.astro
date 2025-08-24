@@ -1,17 +1,45 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+
+type Project = CollectionEntry<"projects">;
+
+const allProjects = (await getCollection("projects")) as Project[];
+const projects = allProjects.filter((p) => !p.data.draft);
+
+projects.sort((a, b) => {
+  const af = a.data.featured ? 1 : 0;
+  const bf = b.data.featured ? 1 : 0;
+  if (bf !== af) return bf - af;                       // featured first
+  const aw = a.data.weight ?? 0, bw = b.data.weight ?? 0;
+  if (bw !== aw) return bw - aw;                       // higher weight first
+  const at = a.data.pubDate ? +a.data.pubDate : 0;
+  const bt = b.data.pubDate ? +b.data.pubDate : 0;
+  return bt - at;                                      // newest first
+});
+
+const hrefFor = (p: Project) => p.data.link ?? `/projects/${p.id}/`;
 ---
 <SiteLayout title="Projects — Nathan Bullock">
-<section class="hero">
-<h1>Projects</h1>
-<p class="muted">Selected work and homelab builds.</p>
-</section>
+  <section class="hero">
+    <h1>Projects</h1>
+    <p class="muted">Selected work & homelab builds.</p>
+  </section>
 
-
-<div class="grid">
-<!-- add your project cards here -->
-<a class="card" href="#"><h3>Project A</h3><p class="muted">Description</p></a>
-<a class="card" href="#"><h3>Project B</h3><p class="muted">Description</p></a>
-<a class="card" href="#"><h3>Project C</h3><p class="muted">Description</p></a>
-</div>
+  <div class="grid">
+    {projects.map((p) => (
+      <a class="card" href={hrefFor(p)} target={p.data.link ? "_blank" : undefined} rel={p.data.link ? "noreferrer" : undefined}>
+        {p.data.image && (
+          <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />
+        )}
+        <h3>{p.data.title}</h3>
+        {p.data.description && <p class="muted">{p.data.description}</p>}
+        {p.data.tags && (
+          <div class="badges">
+            {p.data.tags.map((t: string) => <span class="badge">{t}</span>)}
+          </div>
+        )}
+      </a>
+    ))}
+  </div>
 </SiteLayout>
