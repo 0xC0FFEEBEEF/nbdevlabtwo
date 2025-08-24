@@ -2,7 +2,6 @@
 title: This Website!
 description: Now that my content manager is working, I have decided to document
   my progress with this website!
-link: nbdevlab.com
 tags:
   - Website
 image: /assets/uploads/screenshot-2025-08-23-220521.png
