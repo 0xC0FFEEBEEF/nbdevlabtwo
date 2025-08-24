@@ -1,6 +1,4 @@
 ---
-//export const prerender = true;
-
 import SiteLayout from "../layouts/SiteLayout.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 
@@ -25,40 +23,108 @@ const idToPath = (id: string) =>
 
 const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
 ---
+
 <SiteLayout title="Projects — Nathan Bullock">
   <section class="hero">
     <h1>Projects</h1>
-    <p class="muted">Selected work & homelab builds.</p>
+    <p class="muted">Selected work &amp; homelab builds.</p>
   </section>
 
   <div class="grid">
-    {projects.map((p) => (
-      <a class="card" href={hrefFor(p)} target={p.data.link ? "_blank" : undefined} rel={p.data.link ? "noreferrer" : undefined}>
-        {p.data.image && (
-          <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />
-        )}
-        <h3>{p.data.title}</h3>
-        {p.data.description && <p class="muted">{p.data.description}</p>}
-        {p.data.tags && (
-          <div class="badges">
-            {p.data.tags.map((t: string) => <span class="badge">{t}</span>)}
-          </div>
-        )}
-      </a>
-    ))}
+    {projects.map((p: Project) => {
+      const isExternal = !!p.data.link;
+      return isExternal ? (
+        <a class="card" href={hrefFor(p)} target="_blank" rel="noreferrer">
+          {p.data.image && <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />}
+          <h3>{p.data.title}</h3>
+          {p.data.description && <p class="muted">{p.data.description}</p>}
+          {p.data.tags && (
+            <div class="badges">
+              {p.data.tags.map((t: string) => <span class="badge">{t}</span>)}
+            </div>
+          )}
+        </a>
+      ) : (
+        <button
+          type="button"
+          class="card card-btn"
+          data-slug={p.slug}
+          aria-haspopup="dialog"
+          aria-controls="project-modal"
+        >
+          {p.data.image && <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />}
+          <h3>{p.data.title}</h3>
+          {p.data.description && <p class="muted">{p.data.description}</p>}
+          {p.data.tags && (
+            <div class="badges">
+              {p.data.tags.map((t: string) => <span class="badge">{t}</span>)}
+            </div>
+          )}
+        </button>
+      );
+    })}
   </div>
-</SiteLayout>
-</SiteLayout>
 
-<style>
-  /* only affects titles in this component */
-  a.card h3 {
-    color: #e6edf3; /* pick your color */
-    margin: 0 0 .25rem 0;
-  }
-  a.card:hover h3,
-  a.card:focus-visible h3 {
-    color: #e6edf3;
-  }
-</style>
+  <!-- Pre-render modal content for each internal project -->
+  {await Promise.all(
+    projects
+      .filter((p) => !p.data.link)
+      .map(async (p: Project) => {
+        const { Content } = await p.render();
+        return (
+          <template id={`tpl-${p.slug}`}>
+            <article class="prose">
+              <header style="margin-bottom:.75rem">
+                <h2 id="project-modal-title" style="margin:0">{p.data.title}</h2>
+                {p.data.description && <p class="muted" style="margin:.25rem 0 0">{p.data.description}</p>}
+              </header>
+              {p.data.image && <img src={p.data.image} alt="" style="width:100%;border-radius:12px;margin:.5rem 0 1rem;" />}
+              <Content />
+            </article>
+          </template>
+        );
+      })
+  )}
 
+  <!-- Modal root -->
+  <div id="project-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel" role="document">
+      <button class="modal__close" type="button" aria-label="Close" data-close>✕</button>
+      <div class="modal__body" id="project-modal-body" tabindex="0"></div>
+    </div>
+  </div>
+
+  <style>
+    .card.card-btn { text-align: left; background: transparent; border: none; padding: 0; cursor: pointer; }
+    /* Modal layout */
+    .modal.hidden { display: none; }
+    .modal { position: fixed; inset: 0; z-index: 60; }
+    .modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(2px); }
+    .modal__panel {
+      position: relative;
+      margin: 5vh auto;
+      max-width: 920px;
+      width: min(92vw, 920px);
+      max-height: 88vh;
+      background: var(--card, rgba(18,24,38,.9));
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.4);
+      overflow: hidden;
+    }
+    .modal__close {
+      position: absolute; top: 10px; right: 10px;
+      width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(255,255,255,.06); color: #fff; border: 1px solid rgba(255,255,255,.08);
+      font-size: 18px; line-height: 1;
+    }
+    .modal__body { padding: 20px; overflow: auto; max-height: 88vh; }
+    .prose :where(img){max-width:100%;height:auto}
+  </style>
+
+  <script type="module">
+    import initProjectsModal from "../scripts/projects-modal.js";
+    initProjectsModal("project-modal", "project-modal-body");
+  </script>
+</SiteLayout>
