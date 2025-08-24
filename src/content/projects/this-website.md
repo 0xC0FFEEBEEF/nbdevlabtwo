@@ -18,3 +18,9 @@ Update: Ive fooled and fooled with trying to get tailwinds float right to work, 
 1:30am same day
 
 Update: I added a lil something to my main page, I couldnt go to bed knowing that was bare, ok NOW im going to bed!
+
+
+
+8/24/2025 6:35PM
+
+Update: I have focused MUCH on making the page pretty, I attempted another CMS but turns out that was a waist of time, I am implementing some shadcn, quite happy with it so far! I made my repo private, I felt as if that would be a good course of action considering Im still learning this and security could quite possibly be a concern here. Though, I highly doubt it.
