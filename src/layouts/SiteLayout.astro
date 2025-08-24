@@ -1,6 +1,10 @@
 ---
+
 import BaseHead from "../components/BaseHead.astro";
 import "../styles/global.css";
+import { buttonVariants } from "../components/ui/button";
+import { cn } from "../lib/utils";
+import { Badge } from "../components/ui/badge";
 
 interface Props {
   title?: string;
@@ -31,34 +35,36 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
     <BaseHead title={title} description={description} />
     <style is:global>
      :root{
-       --bg:#0b0f17;
-       --card:#101826;
-       --card-2:#0c1422;
-       --fg:#eef2f8;
-       --muted:#b3c0d1;
-       --link:#93c5fd;
-       --accent:#7dd3fc;
-       --radius:16px;
-       --shadow:0 12px 30px rgba(0,0,0,.35);
-       --container:1100px
+       --bg: #0a0a0a;
+       --card: #181818;
+       --card-2: #111111;
+       --fg: #f5f5f5;
+       --muted: #b3b3b3;
+       --link: #ff9100;
+       --accent: #ff9100;
+       --radius: 16px;
+       --shadow: 0 12px 30px rgba(0,0,0,.55);
+       --container: 1100px;
+       --border: #ff9100;
+       --outline: #ff9100;
      }
      *{box-sizing:border-box}
      html,body{height:100%}
      body{
        margin:0;
-       background: radial-gradient(1200px 800px at 20% -10%, #1a2540 0%, transparent 60%),
-                   radial-gradient(1000px 700px at 120% 20%, #0a2a34 0%, transparent 55%),
-                   var(--bg);
+       background: var(--bg);
        color:var(--fg);
-       font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif
+       font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
      }
      .container{max-width:var(--container);margin:0 auto;padding:2rem 1.25rem 4rem}
      header{
        position:sticky;
        top:0;
+       z-index:50;
        backdrop-filter:blur(6px);
-       background:linear-gradient(to bottom,rgba(11,13,18,.85),rgba(11,13,18,.35));
-       border-bottom:1px solid rgba(255,255,255,.12)
+       background:linear-gradient(to bottom,rgba(10,10,10,.9),rgba(10,10,10,.55));
+       border-bottom:1px solid rgba(255,255,255,.12);
+       box-shadow:0 2px 8px -2px rgba(0,0,0,.55);
      }
      .nav{
        display:flex;
@@ -79,29 +85,18 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
        width:.6rem;
        height:.6rem;
        border-radius:999px;
-       background:linear-gradient(135deg,var(--accent),#60a5fa);
+       background:var(--accent);
        box-shadow:0 0 16px var(--accent)
      }
-     .links a{
-       color:var(--muted);
-       text-decoration:none;
-       margin-left:1rem;
-       padding:.35rem .6rem;
-       border-radius:8px;
-       border:1px solid transparent
-     }
-     .links a:hover{
-       color:var(--fg);
-       border-color:rgba(255,255,255,.24);
-       background:rgba(255,255,255,.05)
-     }
-     a{color:var(--link)}
+  /* Remove legacy nav link/button styles, use shadcn/ui */
+  a{color:var(--link)}
      h1{
        font-size:clamp(2rem,2.6vw + 1.2rem,3.4rem);
        line-height:1.1;
        margin:0 0 .4rem;
        font-weight:900;
-       color: var(--fg); /* <-- Add this line */
+       color: var(--fg);
+       letter-spacing: -1px;
      }
      h2{
        font-size:clamp(1.3rem,1.2vw + .9rem,1.8rem);
@@ -117,6 +112,44 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
      }
      p{margin:0 0 .75rem}
      .muted{color:var(--muted)}
+
+     /* Button and outline accent styles */
+     .btn, .button, .shadcn-btn, .shadcn-outline, .shadcn-ui-outline {
+       --_accent: var(--accent);
+       --_btn-bg: linear-gradient(135deg,#141414,#1c1c1c);
+       --_btn-border: var(--outline);
+       --_btn-shadow: 0 0 0 1px rgba(255,145,0,.45), 0 0 18px -6px rgba(255,145,0,.55);
+       position:relative;
+       border:1px solid var(--_btn-border)!important;
+       background:var(--_btn-bg)!important;
+       color:#f7f7f5!important;
+       box-shadow:var(--_btn-shadow);
+       transition:background .25s,box-shadow .25s,border-color .25s,color .25s;
+     }
+     .btn:hover, .button:hover, .shadcn-btn:hover, .shadcn-outline:hover, .shadcn-ui-outline:hover {
+       background:linear-gradient(135deg,#1f1f1f,#292929)!important;
+       box-shadow:0 0 0 1px rgba(255,145,0,.65),0 0 26px -4px rgba(255,145,0,.65);
+       color:#ffe7cc!important;
+     }
+     .btn[data-variant="ghost"], .shadcn-ghost {
+       background:rgba(255,145,0,.05)!important;
+       box-shadow:none;
+       color:var(--accent)!important;
+     }
+     .btn[data-variant="ghost"]:hover, .shadcn-ghost:hover {
+       background:rgba(255,145,0,.12)!important;
+       color:#ffd199!important;
+     }
+     /* For shadcn/ui ghost variant */
+     .shadcn-ghost {
+       border: 1.5px solid var(--outline) !important;
+       color: var(--accent) !important;
+       background: transparent !important;
+     }
+     .shadcn-ghost:hover {
+       background: var(--accent) !important;
+       color: #181818 !important;
+     }
      .hero{padding-top:3.5rem;padding-bottom:1.5rem}
      .badges{
        display:flex;
@@ -124,14 +157,7 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
        gap:.5rem;
        margin-top:.75rem
      }
-     .badge{
-       font-size:.8rem;
-       color:#d7e0ec;
-       border:1px solid rgba(255,255,255,.12);
-       padding:.35rem .6rem;
-       border-radius:999px;
-       background:rgba(255,255,255,.04)
-     }
+  /* Remove legacy badge style, use shadcn/ui */
      .grid{
        display:grid;
        gap:1rem;
@@ -142,7 +168,7 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
      }
      .card{
        background:linear-gradient(180deg,var(--card),var(--card-2));
-       border:1px solid rgba(255,255,255,.12);
+       border:1.5px solid var(--border);
        border-radius:var(--radius);
        padding:1rem;
        box-shadow:var(--shadow);
@@ -150,7 +176,7 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
      }
      .card:hover{
        transform:translateY(-2px);
-       border-color:rgba(125,211,252,.45)
+       border-color:var(--accent);
      }
      a.card{
        color:inherit;
@@ -164,21 +190,7 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
        flex-wrap:wrap;
        margin-top:1rem
      }
-     .btn{
-       display:inline-flex;
-       align-items:center;
-       gap:.5rem;
-       padding:.65rem .9rem;
-       border-radius:12px;
-       text-decoration:none;
-       border:1px solid rgba(255,255,255,.14)
-     }
-     .btn:hover{border-color:rgba(255,255,255,.24)}
-     .btn.primary{
-       background:linear-gradient(135deg,var(--accent),#60a5fa);
-       color:#00131a;
-       border-color:transparent
-     }
+  /* Remove legacy .btn styles, use shadcn/ui */
      footer{
        border-top:1px solid rgba(255,255,255,.12);
        margin-top:2.5rem
@@ -205,11 +217,16 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
     <header>
       <nav class="nav">
         <div class="brand"><span class="dot"></span> <span>Nathan Bullock</span></div>
-        <div class="links">
+        <div class="flex gap-2">
           {NAV_LINKS.map(({ href, label }) => (
-            <a href={href}
-               class={isActive(href) ? "active" : undefined}
-               aria-current={isActive(href) ? "page" : undefined}>
+            <a
+              href={href}
+              aria-current={isActive(href) ? "page" : undefined}
+              class={cn(
+                buttonVariants({ variant: isActive(href) ? "default" : "ghost" }),
+                isActive(href) ? "font-bold" : ""
+              )}
+            >
               {label}
             </a>
           ))}

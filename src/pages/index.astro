@@ -1,5 +1,7 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
+import { buttonVariants } from "../components/ui/button";
+import { cn } from "../lib/utils";
 ---
 
 <SiteLayout title="Home — Nathan Bullock" description="My Website!.">
@@ -12,82 +14,115 @@ import SiteLayout from "../layouts/SiteLayout.astro";
     </p>
 
     <div class="w-full max-w-2xl mb-8">
-      <div id="terminal" class="bg-[#181c20] border border-slate-700 rounded-xl shadow-lg overflow-hidden font-mono text-sm text-slate-200">
-        <div class="flex items-center gap-2 px-4 py-2 bg-[#23272e] border-b border-slate-700">
-          <span class="w-3 h-3 rounded-full bg-red-500"></span>
-          <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
-          <span class="w-3 h-3 rounded-full bg-green-500"></span>
-          <span class="ml-4 text-sky-300 font-mono text-xs tracking-wide">zsh — nbullock@homelab</span>
+      <div id="terminal" class="terminal-wrapper group darker-terminal">
+        <div class="terminal-chrome">
+          <div class="traffic">
+            <span class="dot red" aria-hidden="true"></span>
+            <span class="dot yellow" aria-hidden="true"></span>
+            <span class="dot green" aria-hidden="true"></span>
+          </div>
+          <div class="title">nbullock@homelab — zsh</div>
+          <div class="actions"><span class="pill">REMOTE • CF</span></div>
         </div>
-        <pre id="terminal-body" class="px-4 py-5 min-h-[180px] bg-transparent whitespace-pre-wrap"></pre>
+        <div class="code-surface">
+          <pre id="terminal-body" class="code"></pre>
+          <div class="glow" aria-hidden="true"></div>
+        </div>
       </div>
     </div>
     <script is:inline>
-      // Zsh-style prompt and typing animation (plays every load, ends with prompt & blinking cursor)
-      const lines = [
-        `<span class="text-green-400">nbullock@homelab</span> <span class="text-blue-400">~/projects</span> <span class="text-purple-400">main</span> <span class="text-yellow-400">$</span> npx create-astro@latest`,
-        `<span class="text-green-400">✔</span> Building something <span class="text-sky-400">awesome</span>...`,
-        `<span class="text-yellow-300">→</span> Deploying to <span class="text-blue-400">Cloudflare</span> Workers`,
-        `<span class="text-pink-400">★</span> Integrating <span class="text-cyan-300">Tailwind</span> & <span class="text-indigo-300">CMS</span>`,
-        `<span class="text-emerald-400">✓</span> Learning. Building. Sharing.`,
-      ];
-      const finalPrompt = `<span class="text-green-400">nbullock@homelab</span> <span class="text-blue-400">~/projects</span> <span class="text-purple-400">main</span> <span class="text-yellow-400">$</span> <span class="cursor">|</span>`;
+      // Professional terminal animation with variable typing speed & subtle caret pulse
       const term = document.getElementById('terminal-body');
-      let i = 0, j = 0;
-      let curr = '';
-      let tag = false;
-
-      function typeChar() {
-        if (i >= lines.length) {
-          // Show all lines, then the prompt with blinking cursor
-          term.innerHTML = lines.join('\n') + '\n' + finalPrompt;
+      const palette = {
+        user: '#34d399', path: '#38bdf8', branch: '#c084fc', symbol: '#fbbf24', accent: '#f472b6'
+      };
+      const prompt = () => `<span style=\"color:${palette.user}\">nbullock@homelab</span> <span style=\"color:${palette.path}\">~/lab</span> <span style=\"color:${palette.branch}\">main</span> <span style=\"color:${palette.symbol}\">$\n</span>`;
+      const scriptLines = [
+        `${prompt()}npx create-astro@latest`,
+        `› Selecting features: <span style=\"color:${palette.accent}\">tailwind, react, mdx</span>`,
+        `› Installing packages… <span style=\"color:#10b981\">done</span>`,
+        `› Initializing git… <span style=\"color:#10b981\">ok</span>`,
+        `deploy --target=cloudflare` ,
+        `<span style=\"color:#f59e0b\">→</span> shipping artifacts`,
+        `<span style=\"color:#38bdf8\">✓</span> live at https://www.nbdevlab.com`,
+      ];
+      let lineIndex = 0, charIndex = 0, buffer = '';
+      const speeds = { base: 26, jitter: 28 };
+      function tick(){
+        if(lineIndex >= scriptLines.length){
+          term.innerHTML = buffer + prompt().trimEnd() + ' <span class="caret">|</span>';
           return;
         }
-        const line = lines[i];
-        if (j < line.length) {
-          curr += line[j];
-          if (line[j] === '<') tag = true;
-          if (line[j] === '>') tag = false;
-          j++;
-          term.innerHTML = lines.slice(0, i).join('\n') + (i > 0 ? '\n' : '') + curr + (tag ? '' : '<span class="cursor">|</span>');
-          setTimeout(typeChar, tag ? 0 : 18);
+        const line = scriptLines[lineIndex];
+        if(charIndex <= line.length){
+          const slice = line.slice(0,charIndex);
+            term.innerHTML = buffer + slice + '<span class="caret">|</span>';
+            charIndex++;
+            const delay = speeds.base + Math.random()*speeds.jitter * (Math.random()>0.92?4:1);
+            setTimeout(tick, delay);
         } else {
-          term.innerHTML = lines.slice(0, i).join('\n') + (i > 0 ? '\n' : '') + curr + '\n';
-          i++; j = 0; curr = ''; tag = false;
-          setTimeout(typeChar, 350);
+          buffer += line + '\n';
+          lineIndex++; charIndex = 0;
+          setTimeout(tick, 380);
         }
       }
-
-      // Always play animation on load
-      term.innerHTML = '';
-      typeChar();
+      tick();
     </script>
     <style is:global>
-      #terminal pre span.cursor {
-        color: #38bdf8;
-        animation: blink 1s steps(1) infinite;
-      }
-      @keyframes blink {
-        0%, 50% { opacity: 1; }
-        51%, 100% { opacity: 0; }
-      }
+  .terminal-wrapper{position:relative;border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#0d0d0d,#101622 55%,#0d131d);backdrop-filter:blur(10px)}
+      .terminal-wrapper:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 15% 15%,rgba(125,211,252,.15),transparent 60%),radial-gradient(circle at 85% 70%,rgba(96,165,250,.12),transparent 55%);pointer-events:none}
+  .terminal-chrome{display:flex;align-items:center;gap:.75rem;padding:.55rem .9rem;font:500 .7rem/1.2 system-ui;background:linear-gradient(to right,#121212,#141414);border-bottom:1px solid rgba(255,255,255,.08)}
+      .terminal-chrome .traffic{display:flex;gap:.4rem}
+      .terminal-chrome .dot{width:.75rem;height:.75rem;border-radius:999px;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 6px 0 rgba(0,0,0,.4)}
+      .terminal-chrome .dot.red{background:#ef4444}
+      .terminal-chrome .dot.yellow{background:#f59e0b}
+      .terminal-chrome .dot.green{background:#22c55e}
+      .terminal-chrome .title{flex:1;opacity:.85;color:#e2e8f0;letter-spacing:.5px}
+      .terminal-chrome .actions{display:flex;align-items:center;gap:.5rem}
+      .terminal-chrome .pill{font:600 .55rem/1 system-ui;padding:.3rem .55rem;border:1px solid rgba(255,255,255,.15);border-radius:999px;background:rgba(255,255,255,.06);letter-spacing:.5px;color:#93c5fd}
+  .code-surface{position:relative;padding:1.15rem 1.2rem 1.3rem 1.2rem;font:500 .8rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;min-height:190px;color:#e2e8f0;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.55));}
+      #terminal-body{white-space:pre-wrap}
+      .caret{color:#38bdf8;animation:blink 1.05s steps(1) infinite}
+      @keyframes blink{0%,55%{opacity:1}56%,100%{opacity:0}}
+      .code-surface:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(0,0,0,.35));pointer-events:none}
+      .code-surface .glow{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#38bdf8 35%,#818cf8 65%,transparent);opacity:.7;filter:blur(.5px)}
+      .terminal-wrapper:hover{box-shadow:0 0 0 1px rgba(125,211,252,.4),0 0 28px -6px rgba(56,189,248,.55)}
     </style>
 
-    <div class="flex gap-4 mt-4 mb-8">
-      <a href="/projects/" class="btn primary bg-gradient-to-r from-sky-400 to-cyan-400 text-slate-900 font-bold shadow hover:scale-105 transition-transform">
-        View Projects
-      </a>
-      <a href="/about/" class="btn border border-sky-400 text-sky-300 hover:bg-sky-900/30 transition">
-        About Me
-      </a>
+    <div class="flex gap-3 mt-4 mb-8 flex-wrap">
+      <a
+        href="/projects/"
+        class={cn(
+          buttonVariants({ variant: "default" }),
+          "rounded-xl px-6 h-12 text-base font-medium tracking-wide data-[variant=default]:text-[var(--fg)] data-[variant=default]:bg-[#141414] data-[variant=default]:border data-[variant=default]:border-[var(--outline)] data-[variant=default]:hover:bg-[#1d1d1d] data-[variant=default]:shadow-[0_0_0_1px_rgba(255,145,0,.45),0_0_18px_-6px_rgba(255,145,0,.55)] hover:shadow-[0_0_0_1px_rgba(255,145,0,.75),0_0_26px_-4px_rgba(255,145,0,.7)] transition-all"
+        )}
+        data-variant="default"
+      >View Projects</a>
+      <a
+        href="/about/"
+        class={cn(
+          buttonVariants({ variant: "ghost" }),
+          "rounded-xl px-6 h-12 text-base font-medium tracking-wide border border-[var(--outline)] text-[var(--accent)] hover:text-[#ffd199] hover:border-[rgba(255,145,0,.65)] hover:bg-[rgba(255,145,0,.08)] transition-all"
+        )}
+        data-variant="ghost"
+      >About Me</a>
     </div>
 
-    <div class="mt-6 flex flex-wrap gap-3 justify-center">
-      <span class="badge bg-sky-800/80 text-sky-200">#Cloudflare</span>
-      <span class="badge bg-cyan-800/80 text-cyan-200">#Astro</span>
-      <span class="badge bg-blue-800/80 text-blue-200">#Homelab</span>
-      <span class="badge bg-indigo-800/80 text-indigo-200">#Tinkering</span>
-      <span class="badge bg-emerald-800/80 text-emerald-200">#Proxmox</span>
+    <div class="mt-8 flex flex-wrap gap-2 justify-center">
+      {[
+        ["Cloudflare","#0ea5e9"],
+        ["Astro","#ff5d01"],
+        ["Homelab","#2563eb"],
+        ["Tinkering","#6366f1"],
+        ["Proxmox","#10b981"],
+      ].map(([label,color]) => (
+        <span class="tag-bubble" style={`--tag:${color}`}>#{label}</span>
+      ))}
     </div>
+    <style is:global>
+      .tag-bubble{--tag:var(--accent);position:relative;font:500 .75rem/1 system-ui;padding:.5rem .75rem;border:1px solid color-mix(in srgb,var(--tag),#ffffff 30%);border-radius:999px;background:linear-gradient(145deg,color-mix(in srgb,var(--tag),#000 70%),color-mix(in srgb,var(--tag),#000 82%));color:color-mix(in srgb,var(--tag),#ffffff 75%);letter-spacing:.5px;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 2px 6px -2px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);backdrop-filter:blur(4px)}
+      .tag-bubble:before{content:"";width:.35rem;height:.35rem;border-radius:999px;background:var(--tag);box-shadow:0 0 0 3px color-mix(in srgb,var(--tag),transparent 60%);}
+      .tag-bubble:hover{border-color:color-mix(in srgb,var(--tag),#ffffff 10%);box-shadow:0 0 0 1px color-mix(in srgb,var(--tag),#ffffff 20%),0 4px 14px -4px color-mix(in srgb,var(--tag),transparent 30%)}
+    </style>
   </section>
 </SiteLayout>
