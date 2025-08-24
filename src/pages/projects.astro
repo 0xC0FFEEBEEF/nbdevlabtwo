@@ -84,29 +84,26 @@ const safeSlug = (s: string) => s.replace(/[^a-z0-9_-]/gi, "_");
         const sslug = safeSlug(p.slug);
         return (
           <template id={`tpl-${p.slug}`}>
-            <article class="prose prose-invert max-w-none after:content-[''] after:block after:clear-both">
+            <article class="prose prose-invert max-w-none after:content-[''] after:block after:clear-both modal-prose">
               <header class="mb-3 not-prose">
-                 <h2 id="project-modal-title" class="m-0 text-xl md:text-2xl font-semibold tracking-tight">
-                    {p.data.title}
+                <h2 id="project-modal-title" class="m-0 text-xl md:text-2xl font-semibold tracking-tight text-white">
+                  {p.data.title}
                 </h2>
                 {p.data.description && (
-                    <p class="muted mt-1">{p.data.description}</p>
+                  <p class="muted mt-1">{p.data.description}</p>
                 )}
-            </header>
-
-    {p.data.image && (
-      <img
-        src={p.data.image}
-        alt=""
-        loading="lazy"
-        class="w-full md:w-80 md:float-right md:ml-6 md:mb-2 rounded-xl ring-1 ring-black/10 dark:ring-white/10"
-      />
-    )}
-
-    <Content />
-  </article>
-</template>
-
+              </header>
+              {p.data.image && (
+                <img
+                  src={p.data.image}
+                  alt=""
+                  loading="lazy"
+                  class="w-full md:w-80 md:float-right md:ml-6 md:mb-2 rounded-xl ring-1 ring-black/10 dark:ring-white/10"
+                />
+              )}
+              <Content />
+            </article>
+          </template>
         );
       })
   )}
@@ -194,4 +191,26 @@ const safeSlug = (s: string) => s.replace(/[^a-z0-9_-]/gi, "_");
       });
     })();
   </script>
+
+  <style is:global>
+    /* Modal content improvements */
+    .modal-prose {
+      background: rgba(17, 24, 39, 0.98);
+      border-radius: 16px;
+      padding: 1.5rem 1.5rem 1.25rem 1.5rem;
+      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);
+      color: #e5e7eb;
+    }
+    .modal-prose h2, .modal-prose h3, .modal-prose h1 {
+      color: #fff !important;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+    }
+    .modal-prose p {
+      color: #cbd5e1;
+    }
+    .modal-prose hr {
+      border-color: #334155;
+      margin: 1.2em 0;
+    }
+  </style>
 </SiteLayout>
