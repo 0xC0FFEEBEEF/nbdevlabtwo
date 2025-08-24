@@ -48,3 +48,17 @@ const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
     ))}
   </div>
 </SiteLayout>
+</SiteLayout>
+
+<style>
+  /* only affects titles in this component */
+  a.card h3 {
+    color: #e6edf3; /* pick your color */
+    margin: 0 0 .25rem 0;
+  }
+  a.card:hover h3,
+  a.card:focus-visible h3 {
+    color: #e6edf3;
+  }
+</style>
+
