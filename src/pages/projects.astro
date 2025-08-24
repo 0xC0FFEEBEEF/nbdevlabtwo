@@ -1,4 +1,7 @@
 ---
+/* optional, but if you keep it, it must be inside the front-matter */
+export const prerender = true;
+
 import SiteLayout from "../layouts/SiteLayout.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 
@@ -10,14 +13,18 @@ const projects = allProjects.filter((p) => !p.data.draft);
 projects.sort((a, b) => {
   const af = a.data.featured ? 1 : 0;
   const bf = b.data.featured ? 1 : 0;
-  if (bf !== af) return bf - af;                       // featured first
+  if (bf !== af) return bf - af;
   const aw = a.data.weight ?? 0, bw = b.data.weight ?? 0;
-  if (bw !== aw) return bw - aw;                       // higher weight first
+  if (bw !== aw) return bw - aw;
   const at = a.data.pubDate ? +a.data.pubDate : 0;
   const bt = b.data.pubDate ? +b.data.pubDate : 0;
-  return bt - at;                                      // newest first 
+  return bt - at;
+});
 
-const hrefFor = (p: Project) => p.data.link ?? `/projects/${p.id}/`;
+const idToPath = (id: string) =>
+  id.replace(/\/index\.mdx?$/i, "/").replace(/\.mdx?$/i, "").replace(/\.md$/i, "");
+
+const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
 ---
 <SiteLayout title="Projects — Nathan Bullock">
   <section class="hero">
