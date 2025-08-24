@@ -7,6 +7,7 @@ type Project = CollectionEntry<"projects">;
 const allProjects = (await getCollection("projects")) as Project[];
 const projects = allProjects.filter((p) => !p.data.draft);
 
+// sort: featured → weight → pubDate (desc)
 projects.sort((a, b) => {
   const af = a.data.featured ? 1 : 0;
   const bf = b.data.featured ? 1 : 0;
@@ -22,6 +23,9 @@ const idToPath = (id: string) =>
   id.replace(/\/index\.mdx?$/i, "/").replace(/\.mdx?$/i, "").replace(/\.md$/i, "");
 
 const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
+
+// stay safe: use only [a-z0-9_-] in element IDs
+const safeSlug = (s: string) => s.replace(/[^a-z0-9_-]/gi, "_");
 ---
 
 <SiteLayout title="Projects — Nathan Bullock">
@@ -33,51 +37,59 @@ const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
   <div class="grid">
     {projects.map((p: Project) => {
       const isExternal = !!p.data.link;
+      const sslug = safeSlug(p.slug);
       return isExternal ? (
-        <a class="card transition transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
-           href={hrefFor(p)} target="_blank" rel="noreferrer">
-          {p.data.image && <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />}
-          <h3>{p.data.title}</h3>
+        <a
+          class="card transition transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+          href={hrefFor(p)}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {p.data.image && (
+            <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />
+          )}
+          <h3 class="text-slate-100 font-semibold text-lg leading-tight mb-1">{p.data.title}</h3>
           {p.data.description && <p class="muted">{p.data.description}</p>}
           {p.data.tags && (
-            <div class="badges">
-              {p.data.tags.map((t: string) => <span class="badge">{t}</span>)}
-            </div>
+            <div class="badges">{p.data.tags.map((t: string) => <span class="badge">{t}</span>)}</div>
           )}
         </a>
       ) : (
         <button
           type="button"
           class="card card-btn transition transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400 text-left"
-          data-slug={p.slug}
+          data-slug={sslug}
           aria-haspopup="dialog"
           aria-controls="project-modal"
         >
-          {p.data.image && <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />}
-          <h3>{p.data.title}</h3>
+          {p.data.image && (
+            <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />
+          )}
+          <h3 class="text-slate-100 font-semibold text-lg leading-tight mb-1">{p.data.title}</h3>
           {p.data.description && <p class="muted">{p.data.description}</p>}
           {p.data.tags && (
-            <div class="badges">
-              {p.data.tags.map((t: string) => <span class="badge">{t}</span>)}
-            </div>
+            <div class="badges">{p.data.tags.map((t: string) => <span class="badge">{t}</span>)}</div>
           )}
         </button>
       );
     })}
   </div>
 
-  <!-- Pre-render modal content for internal (non-link) posts -->
+  {/* Pre-render modal content for internal (non-link) posts */}
   {await Promise.all(
     projects
       .filter((p) => !p.data.link)
       .map(async (p: Project) => {
         const { Content } = await p.render();
+        const sslug = safeSlug(p.slug);
         return (
-          <template id={`tpl-${p.slug}`}>
-            <article class="prose prose-invert max-w-none
-                            prose-headings:text-white prose-p:text-slate-300
-                            prose-a:text-sky-300 hover:prose-a:text-sky-200
-                            prose-strong:text-white prose-img:rounded-xl prose-img:my-4">
+          <template id={`tpl-${sslug}`}>
+            <article
+              class="prose prose-invert max-w-none
+                     prose-headings:text-white prose-p:text-slate-300
+                     prose-a:text-sky-300 hover:prose-a:text-sky-200
+                     prose-strong:text-white prose-img:rounded-xl prose-img:my-4"
+            >
               <header class="mb-3">
                 <h2 id="project-modal-title" class="m-0">{p.data.title}</h2>
                 {p.data.description && <p class="muted mt-1 mb-0">{p.data.description}</p>}
@@ -90,30 +102,87 @@ const hrefFor = (p: Project) => p.data.link ?? `/projects/${idToPath(p.id)}`;
       })
   )}
 
-  <!-- Modal root (Tailwind) -->
-  <div id="project-modal"
-       class="hidden fixed inset-0 z-50"
-       role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
-    <!-- Backdrop -->
+  {/* Tailwind modal */}
+  <div
+    id="project-modal"
+    class="hidden fixed inset-0 z-50"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="project-modal-title"
+  >
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-close></div>
 
-    <!-- Panel -->
-    <div class="relative mx-auto my-6 sm:my-12 w-[92vw] max-w-3xl max-h-[88vh]
-                overflow-hidden rounded-2xl border border-white/10
-                bg-slate-900/90 shadow-2xl ring-1 ring-black/5">
-      <!-- Close -->
-      <button type="button" aria-label="Close" data-close
-              class="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center
-                     rounded-lg border border-white/10 bg-white/5 text-white
-                     hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-sky-400">
-        ✕
-      </button>
+    <div
+      class="relative mx-auto my-6 sm:my-12 w-[92vw] max-w-3xl max-h-[88vh]
+             overflow-hidden rounded-2xl border border-white/10
+             bg-slate-900/90 shadow-2xl ring-1 ring-black/5"
+      role="document"
+    >
+      <button
+        class="absolute right-3 top-3 inline-flex h-9 w-9 items-center justify-center
+               rounded-lg border border-white/10 bg-white/5 text-white
+               hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-sky-400"
+        type="button"
+        aria-label="Close"
+        data-close
+      >✕</button>
 
-      <!-- Body -->
       <div id="project-modal-body" class="p-5 overflow-auto max-h-[88vh]" tabindex="0"></div>
     </div>
   </div>
 
-  <!-- lightweight client script -->
-  <script src="/js/projects-modal.js" defer></script>
+  <!-- Inline script so it always runs -->
+  <script is:inline>
+    // @ts-nocheck
+    (() => {
+      const modal = document.getElementById('project-modal');
+      const body  = document.getElementById('project-modal-body');
+      if (!modal || !body) return;
+
+      let lastFocus;
+
+      const open = (slug) => {
+        const tpl = document.getElementById('tpl-' + slug);
+        if (!(tpl && 'content' in tpl)) return;
+        body.innerHTML = '';
+        body.append(tpl.content.cloneNode(true));
+        lastFocus = document.activeElement;
+        modal.classList.remove('hidden');
+        document.documentElement.classList.add('overflow-hidden');
+        modal.querySelector('[data-close]')?.focus();
+      };
+
+      const close = () => {
+        modal.classList.add('hidden');
+        document.documentElement.classList.remove('overflow-hidden');
+        body.innerHTML = '';
+        lastFocus?.focus?.();
+      };
+
+      document.addEventListener('click', (e) => {
+        const el = e.target instanceof Element ? e.target : null;
+        if (!el) return;
+
+        const btn = el.closest('.card-btn');
+        if (btn) {
+          e.preventDefault();
+          const slug = btn.getAttribute('data-slug');
+          if (slug) open(slug);
+          return;
+        }
+
+        if (el.closest('[data-close]')) {
+          e.preventDefault();
+          close();
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+          e.preventDefault();
+          close();
+        }
+      });
+    })();
+  </script>
 </SiteLayout>
