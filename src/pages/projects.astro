@@ -40,18 +40,20 @@ const safeSlug = (s: string) => s.replace(/[^a-z0-9_-]/gi, "_");
       const sslug = safeSlug(p.slug);
       return isExternal ? (
         <a
-          class="card transition transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+          class="card transition transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400 text-left"
           href={hrefFor(p)}
           target="_blank"
           rel="noreferrer"
         >
-          {p.data.image && (
-            <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />
-          )}
-          <h3 class="text-slate-100 font-semibold text-lg leading-tight mb-1">{p.data.title}</h3>
-          {p.data.description && <p class="muted">{p.data.description}</p>}
+          <div class="card-head">
+            <h3 class="project-card-title text-slate-100 font-semibold text-lg leading-tight">{p.data.title || p.slug}</h3>
+            {p.data.image && (
+              <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin:.4rem 0 .55rem;" />
+            )}
+          </div>
+          {p.data.description && <p class="muted card-desc">{p.data.description}</p>}
           {p.data.tags && (
-            <div class="badges">{p.data.tags.map((t: string) => <span class="badge">{t}</span>)}</div>
+            <div class="badges tags-bottom">{p.data.tags.map((t: string) => <span class="badge">{t}</span>)}</div>
           )}
         </a>
       ) : (
@@ -62,13 +64,15 @@ const safeSlug = (s: string) => s.replace(/[^a-z0-9_-]/gi, "_");
           aria-haspopup="dialog"
           aria-controls="project-modal"
         >
-          {p.data.image && (
-            <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin-bottom:.5rem;" />
-          )}
-          <h3 class="text-slate-100 font-semibold text-lg leading-tight mb-1">{p.data.title}</h3>
-          {p.data.description && <p class="muted">{p.data.description}</p>}
+          <div class="card-head">
+            <h3 class="project-card-title text-slate-100 font-semibold text-lg leading-tight">{p.data.title || p.slug}</h3>
+            {p.data.image && (
+              <img src={p.data.image} alt="" loading="lazy" style="width:100%;border-radius:12px;margin:.4rem 0 .55rem;" />
+            )}
+          </div>
+          {p.data.description && <p class="muted card-desc">{p.data.description}</p>}
           {p.data.tags && (
-            <div class="badges">{p.data.tags.map((t: string) => <span class="badge">{t}</span>)}</div>
+            <div class="badges tags-bottom">{p.data.tags.map((t: string) => <span class="badge">{t}</span>)}</div>
           )}
         </button>
       );
@@ -225,6 +229,14 @@ const safeSlug = (s: string) => s.replace(/[^a-z0-9_-]/gi, "_");
   </script>
 
   <style is:global>
+  .project-card-title{position:relative;z-index:1;color:#f5f5f5 !important;letter-spacing:.25px;margin:0;}
+  .project-card-title:after{content:"";display:block;width:44px;height:2px;margin:.35rem 0 .55rem;border-radius:2px;background:linear-gradient(90deg,#ffb347,#ff8a1f);box-shadow:0 0 0 1px rgba(255,145,0,.25),0 0 10px -4px rgba(255,145,0,.6);opacity:.9;transition:width .35s cubic-bezier(.4,.8,.3,1),opacity .3s}
+  /* Force top-left anchored layout for project cards */
+  #projects-grid .card{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;padding:.65rem .95rem .9rem;min-height:320px;position:relative;}
+  #projects-grid .card-head{width:100%;}
+  #projects-grid .card-desc{margin-top:auto;margin-bottom:auto;max-width:100%;}
+  #projects-grid .card .tags-bottom{margin-top:auto;}
+  .card:hover .project-card-title:after{width:58px;opacity:1}
     /* Expander animation layer */
     #expander-root{position:relative;z-index:60}
     .expander-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.70);backdrop-filter:blur(10px);animation:expanderFade .3s ease both}
