@@ -1,6 +1,6 @@
 # nbdevlab
 
-nbdevlab is Nathan Bullock's living lab notebook for experiments across Astro, Cloudflare Workers, and a growing catalogue of homelab projects. The site documents active builds, publishes deep-dive write ups, and tracks the infrastructure that powers nbdevlab.com.
+nbdevlab is Nathan Bullock's living lab notebook for experiments across Astro, Cloudflare Pages, and a growing catalogue of homelab projects. The site documents active builds, publishes deep-dive write ups, and tracks the infrastructure that powers nbdevlab.com.
 
 ## Highlights
 - **Living lab notebook** – project logs and field notes captured as Markdown content collections.
@@ -9,7 +9,7 @@ nbdevlab is Nathan Bullock's living lab notebook for experiments across Astro, C
 
 ## Tech Stack
 - [Astro](https://astro.build/) for static-first site generation with islands of interactivity.
-- [Cloudflare Workers](https://workers.cloudflare.com/) + [Wrangler](https://developers.cloudflare.com/workers/wrangler/) for edge deployment.
+- [Cloudflare Pages](https://pages.cloudflare.com/) for globally distributed static hosting.
 - [Tailwind CSS](https://tailwindcss.com/) and [shadcn/ui](https://ui.shadcn.com/) for component styling.
 - [Decap CMS](https://decapcms.org/) for authenticated content editing via GitHub OAuth.
 
@@ -30,16 +30,13 @@ nbdevlab is Nathan Bullock's living lab notebook for experiments across Astro, C
    Syncs content collections defined in `src/content/config.ts`.
 
 ## Deployment
-Deployments target Cloudflare Workers via `wrangler`. Build locally and publish with:
-```bash
-npm run build
-npm run deploy
-```
+Cloudflare Pages handles all deployments. Configure the project with:
 
-Preview environments deploy to Workers Dev with:
-```bash
-npm run deploy:preview
-```
+- **Build command**: `npm run build`
+- **Build output directory**: `dist`
+- **Deploy command (production & preview)**: leave blank so Pages automatically uploads `dist/`
+
+Every non-`main` branch build produces a Preview URL. The `main` branch is the only branch mapped to `https://www.nbdevlab.com` and `https://nbdevlab.com`.
 
 ## License
 This repository represents personal work. Please reach out before reusing significant portions of the design or content.
