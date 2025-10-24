@@ -1,0 +1,8 @@
+name = "nbdevlab"
+compatibility_date = "2025-10-24"
+
+[env.preview]
+workers_dev = true
+
+[env.production]
+routes = ["https://www.nbdevlab.com/*", "https://nbdevlab.com/*"]
