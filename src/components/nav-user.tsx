@@ -37,12 +37,15 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
-  const initials = user.name
-    .split(/\s+/)
-    .map((part) => part[0] ?? "")
-    .join("")
-    .slice(0, 2)
-    .toUpperCase()
+  const initials =
+    typeof user.name === "string" && user.name.trim().length > 0
+      ? user.name
+          .split(/\s+/)
+          .map((part) => part[0] ?? "")
+          .join("")
+          .slice(0, 2)
+          .toUpperCase()
+      : "NA";
 
   return (
     <SidebarMenu>
