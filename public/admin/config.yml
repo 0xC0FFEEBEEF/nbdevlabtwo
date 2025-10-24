@@ -1,9 +1,14 @@
-local_backend: true
+local_backend: false
 
 backend:
   name: github
   repo: 0xC0FFEEBEEF/nbdevlab        
   branch: main
+    base_url: https://www.nbdevlab.com
+
+  
+    auth_endpoint: api/auth
+    site_domain: www.nbdevlab.com
 
 media_folder: "public/src/assets/uploads"       # files committed here
 public_folder: "/src/assets/uploads"         # how they’re referenced in pages
