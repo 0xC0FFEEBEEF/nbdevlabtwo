@@ -1,3 +1,52 @@
+if (typeof globalThis.MessageChannel === "undefined") {
+  const scheduleMicrotask =
+    typeof queueMicrotask === "function"
+      ? queueMicrotask
+      : (cb) => Promise.resolve().then(cb).catch(() => setTimeout(cb, 0));
+
+  class MessagePortPolyfill {
+    constructor() {
+      this.onmessage = null;
+      this._partner = null;
+    }
+
+    _setPartner(port) {
+      this._partner = port;
+    }
+
+    postMessage(value) {
+      if (!this._partner) return;
+      const partner = this._partner;
+      scheduleMicrotask(() => {
+        const handler = partner.onmessage;
+        if (typeof handler === "function") {
+          handler({ data: value });
+        }
+      });
+    }
+
+    start() {}
+
+    close() {
+      this._partner = null;
+      this.onmessage = null;
+    }
+  }
+
+  class MessageChannelPolyfill {
+    constructor() {
+      const port1 = new MessagePortPolyfill();
+      const port2 = new MessagePortPolyfill();
+      port1._setPartner(port2);
+      port2._setPartner(port1);
+      this.port1 = port1;
+      this.port2 = port2;
+    }
+  }
+
+  globalThis.MessageChannel = MessageChannelPolyfill;
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
