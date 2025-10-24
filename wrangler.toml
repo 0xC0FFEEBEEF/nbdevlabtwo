@@ -1,23 +1,16 @@
 name = "nbdevlab"
-main = "_worker.js"
-compatibility_date = "2025-04-01"
-compatibility_flags = ["nodejs_compat"]
-upload_source_maps = true
+main = "dist/worker.js"
+compatibility_date = "2024-10-01"
 
-[assets]
-directory = "./dist"
-binding = "ASSETS"
-
-[observability]
-enabled = true
-
-[[routes]]
-pattern = "www.nbdevlab.com"
-custom_domain = true
-
-[env.preview]
-name = "nbdevlab-preview"
+# Default build = safe preview, no custom routes
 workers_dev = true
+routes = []  # nothing bound
+preview_urls = true
 
 [env.production]
-# inherits configuration from the top-level settings
+workers_dev = false
+routes = ["https://www.nbdevlab.com/*", "https://nbdevlab.com/*"]
+
+[env.preview]
+workers_dev = true
+routes = []  # no domains
