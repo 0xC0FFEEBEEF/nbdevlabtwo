@@ -5,4 +5,5 @@ compatibility_date = "2025-10-24"
 workers_dev = true
 
 [env.production]
+name = "nbdevlab"
 routes = ["https://www.nbdevlab.com/*", "https://nbdevlab.com/*"]
