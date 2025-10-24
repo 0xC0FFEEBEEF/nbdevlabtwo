@@ -1,19 +1,8 @@
 name = "nbdevlab"
-compatibility_date = "2024-10-01"
-
-# Do NOT bind routes at top-level; keep previews safe
-workers_dev = true
-routes = []
-
-# Tell Wrangler where the static build lives
-[assets]
-directory = "./dist"
-
-[env.production]
-workers_dev = false
-routes = ["https://www.nbdevlab.com/*", "https://nbdevlab.com/*"]
+compatibility_date = "2025-10-24"
 
 [env.preview]
-name = "nbdevlab-preview"
 workers_dev = true
-# no routes here
+
+[env.production]
+routes = ["https://www.nbdevlab.com/*", "https://nbdevlab.com/*"]
