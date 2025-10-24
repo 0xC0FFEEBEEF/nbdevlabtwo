@@ -1,0 +1,23 @@
+name = "nbdevlab"
+main = "_worker.js"
+compatibility_date = "2025-04-01"
+compatibility_flags = ["nodejs_compat"]
+upload_source_maps = true
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+[observability]
+enabled = true
+
+[[routes]]
+pattern = "www.nbdevlab.com"
+custom_domain = true
+
+[env.preview]
+name = "nbdevlab-preview"
+workers_dev = true
+
+[env.production]
+# inherits configuration from the top-level settings

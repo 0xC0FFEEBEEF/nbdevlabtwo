@@ -42,12 +42,12 @@ import { cn } from "../lib/utils";
       };
       const prompt = () => `<span style=\"color:${palette.user}\">nbullock@homelab</span> <span style=\"color:${palette.path}\">~/lab</span> <span style=\"color:${palette.branch}\">main</span> <span style=\"color:${palette.symbol}\">$\n</span>`;
       const scriptLines = [
-        `${prompt()}npx create-astro@latest`,
-        `› Selecting features: <span style=\"color:${palette.accent}\">tailwind, react, mdx</span>`,
-        `› Installing packages… <span style=\"color:#10b981\">done</span>`,
-        `› Initializing git… <span style=\"color:#10b981\">ok</span>`,
-        `deploy --target=cloudflare` ,
-        `<span style=\"color:#f59e0b\">→</span> shipping artifacts`,
+        `${prompt()}git status`,
+        `<span style=\"color:${palette.accent}\">→</span> workspace clean`,
+        `${prompt()}npm run sync`,
+        `<span style=\"color:${palette.accent}\">→</span> content collections refreshed`,
+        `${prompt()}npm run build`,
+        `<span style=\"color:${palette.accent}\">→</span> wrangler deploy --env production`,
         `<span style=\"color:#ff9100">✓</span> live at https://www.nbdevlab.com`,
       ];
       let lineIndex = 0, charIndex = 0, buffer = '';
