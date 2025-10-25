@@ -50,7 +50,7 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       margin-bottom: 0.75rem;
     }
     p {
-      color: rgba(255, 255, 255, 0.75);
+      color: var(--muted);
       max-width: 65ch;
     }
     .now-list {
@@ -62,9 +62,11 @@ import SiteLayout from "../layouts/SiteLayout.astro";
     }
     .now-list h3 {
       margin-bottom: 0.35rem;
+      color: var(--fg);
     }
     .now-list p {
       margin: 0;
+      color: var(--muted);
     }
   </style>
 </SiteLayout>
