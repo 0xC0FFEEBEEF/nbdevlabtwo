@@ -1,0 +1,33 @@
+{
+  "updated": "2025-10-24T09:30:00Z",
+  "services": [
+    {
+      "name": "nbdevlab.com",
+      "status": "operational",
+      "uptime": "99.98% (30d)",
+      "description": "Primary site served from Cloudflare Pages with edge caching."
+    },
+    {
+      "name": "API workers",
+      "status": "operational",
+      "uptime": "99.92% (30d)",
+      "description": "Workers powering GitHub activity, content sync, and status feed."
+    },
+    {
+      "name": "Homelab services",
+      "status": "degraded",
+      "uptime": "99.30% (30d)",
+      "description": "Maintenance window for storage pool resilvering; minor latency expected."
+    }
+  ],
+  "incidents": [
+    {
+      "id": "2025-10-12",
+      "title": "KV replication delay",
+      "impact": "degraded",
+      "resolved": true,
+      "timestamp": "2025-10-12T04:10:00Z",
+      "notes": "Workers queue backlog slowed GitHub activity refresh. Rebalanced queue weights and cleared backlog."
+    }
+  ]
+}

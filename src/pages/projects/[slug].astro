@@ -1,5 +1,4 @@
 ---
-// Add a new case study by creating a Markdown file inside src/content/projects.
 import SiteLayout from "../../layouts/SiteLayout.astro";
 import { getCollection } from "astro:content";
 import type { ProjectCollectionEntry } from "../../content/config";
@@ -45,98 +44,117 @@ const jsonLd = {
   },
 };
 ---
-<SiteLayout title={`${entry.data.title} — Project`} description={entry.data.problem}>
+<SiteLayout
+  title={`${entry.data.title} — nbdevlab project`}
+  description={entry.data.problem}
+  structuredData={jsonLd}
+>
   <script type="application/ld+json" is:inline>{JSON.stringify(jsonLd)}</script>
   <article class="project-detail" aria-labelledby="project-title">
     <header>
+      <p class="timestamp">{formatDate(entry.data.date)}</p>
       <h1 id="project-title">{entry.data.title}</h1>
-      <div class="project-meta">
-        <span class="status-chip">{entry.data.status}</span>
-        <span>{formatDate(entry.data.date)}</span>
-      </div>
-      <ul class="tags" aria-label="Tags">
+      <div class="chip-row">
+        <span class="status-chip" data-status={entry.data.status}>
+          <span aria-hidden="true">●</span>
+          {entry.data.status}
+        </span>
         {entry.data.tags.map((tag) => (
-          <li>
-            <span class="tag-chip" role="presentation" aria-hidden="true">#{tag}</span>
-          </li>
+          <span class="tag-chip">
+            <span aria-hidden="true"></span>
+            {tag}
+          </span>
         ))}
-      </ul>
+      </div>
     </header>
-    <table class="projects-facts">
-      <tbody>
-        <tr>
-          <th scope="row">Status</th>
-          <td>{entry.data.status}</td>
-        </tr>
-        <tr>
-          <th scope="row">Published</th>
-          <td>{formatDate(entry.data.date)}</td>
-        </tr>
-        <tr>
-          <th scope="row">Stack</th>
-          <td>{entry.data.stack.join(", ")}</td>
-        </tr>
-        <tr>
-          <th scope="row">Constraints</th>
-          <td>
-            <ul>
-              {entry.data.constraints.map((constraint) => (
-                <li>{constraint}</li>
-              ))}
-            </ul>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">Lessons</th>
-          <td>
-            <ul>
-              {entry.data.lessons.map((lesson) => (
-                <li>{lesson}</li>
-              ))}
-            </ul>
-          </td>
-        </tr>
-        {entry.data.links && (
+
+    <section class="project-facts" aria-labelledby="project-facts-heading">
+      <h2 id="project-facts-heading" class="sr-only">Project facts</h2>
+      <div class="table-scroll">
+        <table class="fact-table">
+          <tbody>
           <tr>
-            <th scope="row">Links</th>
-            <td>
-              <ul>
-                {entry.data.links.repo && (
-                  <li>
-                    <a href={entry.data.links.repo} target="_blank" rel="noopener noreferrer" aria-label="View repository">
-                      Repository ↗
-                    </a>
-                  </li>
-                )}
-                {entry.data.links.demo && (
-                  <li>
-                    <a href={entry.data.links.demo} target="_blank" rel="noopener noreferrer" aria-label="View demo">
-                      Demo ↗
-                    </a>
-                  </li>
-                )}
-              </ul>
-            </td>
+            <th scope="row">Status</th>
+            <td>{entry.data.status}</td>
           </tr>
-        )}
-      </tbody>
-    </table>
-    <section class="projects-markdown">
-      <h2 class="sr-only">Project details</h2>
-      <Content />
+          <tr>
+            <th scope="row">Published</th>
+            <td>{formatDate(entry.data.date)}</td>
+          </tr>
+          <tr>
+            <th scope="row">Stack</th>
+            <td>{entry.data.stack.join(", ")}</td>
+          </tr>
+          {entry.data.constraints.length > 0 && (
+            <tr>
+              <th scope="row">Constraints</th>
+              <td>
+                <ul>
+                  {entry.data.constraints.map((constraint) => (
+                    <li>{constraint}</li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+          )}
+          {entry.data.lessons.length > 0 && (
+            <tr>
+              <th scope="row">Lessons</th>
+              <td>
+                <ul>
+                  {entry.data.lessons.map((lesson) => (
+                    <li>{lesson}</li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+          )}
+          {entry.data.links && (
+            <tr>
+              <th scope="row">Links</th>
+              <td>
+                <ul>
+                  {entry.data.links.repo && (
+                    <li>
+                      <a href={entry.data.links.repo} target="_blank" rel="noopener noreferrer">
+                        Repository ↗
+                      </a>
+                    </li>
+                  )}
+                  {entry.data.links.demo && (
+                    <li>
+                      <a href={entry.data.links.demo} target="_blank" rel="noopener noreferrer">
+                        Demo ↗
+                      </a>
+                    </li>
+                  )}
+                </ul>
+              </td>
+            </tr>
+          )}
+        </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="project-body card" aria-label="Project details">
+      <div class="stack-md">
+        <Content />
+      </div>
     </section>
   </article>
-  <nav class="projects-navigation" aria-label="Project navigation">
+
+  <nav class="prev-next" aria-label="Project navigation">
     {previous && previousSlug ? (
       <a href={`/projects/${previousSlug}/`} aria-label={`Previous project: ${previous.data.title}`}>
-        ← {previous.data.title}
+        ← Prev: {previous.data.title}
       </a>
     ) : (
       <span aria-hidden="true"></span>
     )}
     {next && nextSlug ? (
       <a href={`/projects/${nextSlug}/`} aria-label={`Next project: ${next.data.title}`}>
-        {next.data.title} →
+        Next: {next.data.title} →
       </a>
     ) : (
       <span aria-hidden="true"></span>

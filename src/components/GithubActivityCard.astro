@@ -4,7 +4,7 @@ interface Props {
 }
 
 const { limit = 5 } = Astro.props as Props;
-const requestUrl = Astro.request?.url ?? "https://nbdevlab.pages.dev";
+const requestUrl = Astro.request?.url ?? "https://www.nbdevlab.com";
 const canFetchServer = typeof Astro.request !== "undefined";
 let items: Array<{
   type: string;
@@ -21,11 +21,7 @@ function formatRelativeTime(iso: string): string {
     if (Number.isNaN(date.getTime())) return "just now";
     const diffSeconds = Math.round((Date.now() - date.getTime()) / 1000);
     const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-    const intervals: Array<{
-      limit: number;
-      divisor: number;
-      unit: Intl.RelativeTimeFormatUnit;
-    }> = [
+    const intervals: Array<{ limit: number; divisor: number; unit: Intl.RelativeTimeFormatUnit }> = [
       { limit: 60, divisor: 1, unit: "seconds" },
       { limit: 3600, divisor: 60, unit: "minutes" },
       { limit: 86400, divisor: 3600, unit: "hours" },
@@ -50,6 +46,7 @@ function formatRelativeTime(iso: string): string {
 if (canFetchServer) {
   try {
     const apiUrl = new URL("/api/github", requestUrl);
+    apiUrl.searchParams.set("limit", String(limit));
     const response = await fetch(apiUrl.toString(), {
       headers: { Accept: "application/json" },
     });
@@ -63,17 +60,19 @@ if (canFetchServer) {
     }
   } catch (error) {
     if (import.meta.env.DEV) {
-      console.error("github-activity-card", error);
+      console.error("github-card", error);
     }
     errored = true;
   }
 }
 
 const hasItems = items.length > 0;
+const shouldHydrate = !canFetchServer || errored || !hasItems;
+const initialState = hasItems ? "ready" : shouldHydrate ? "loading" : "empty";
+const emptyMessage = errored
+  ? "Unable to load GitHub activity right now."
+  : "No recent public commits or merges yet.";
 const cardId = `github-card-${Math.random().toString(36).slice(2, 10)}`;
-const shouldHydrateClient = !canFetchServer || errored;
-const initialState = hasItems ? "ready" : shouldHydrateClient ? "loading" : "empty";
-const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "No recent public activity yet.";
 ---
 <section
   class="github-card"
@@ -82,209 +81,60 @@ const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "N
   id={cardId}
   data-github-card
   data-state={initialState}
+  data-limit={String(limit)}
+  data-fetch={shouldHydrate ? "true" : "false"}
+  data-empty-message={emptyMessage}
 >
-  <div class="github-card__header">
-    <h2 id="github-activity-heading">Last GitHub activity</h2>
-    <p>Edge-cached in Cloudflare KV for fast, respectful polling.</p>
+  <div class="card__header">
+    <h2 id="github-activity-heading">Latest GitHub activity</h2>
+    <p class="muted">Edge-cached events refreshed regularly without over-polling the API.</p>
   </div>
-  <div
-    class="github-card__loading"
-    role="status"
-    aria-live="polite"
-    data-loading
-    hidden={initialState !== "loading"}
-  >
-    <span class="skeleton skeleton--title"></span>
-    <span class="skeleton skeleton--line"></span>
-    <span class="skeleton skeleton--line"></span>
+  <div class="github-card__loading" data-loading hidden={initialState !== "loading"} role="status" aria-live="polite">
+    <span class="skeleton" style="width: 72%"></span>
+    <span class="skeleton" style="width: 58%"></span>
+    <span class="skeleton" style="width: 64%"></span>
   </div>
-  <ol
-    class="github-card__list"
-    data-items
-    hidden={initialState !== "ready"}
-  >
+  <ol class="github-card__list" data-items hidden={initialState !== "ready"}>
     {items.map((item) => (
       <li class="github-card__item" data-type={item.type}>
         <div class="github-card__meta">
-          <span class="github-card__repo" aria-label={`Repository ${item.repo}`}>
-            {item.repo}
-          </span>
-          <span class="github-card__type">{item.type.replace("Event", "")}</span>
-          <span class="github-card__time">{formatRelativeTime(item.timestamp)}</span>
+          <span class="github-card__repo" aria-label={`Repository ${item.repo}`}>{item.repo}</span>
+          <span>{item.type.replace("Event", "")}</span>
+          <span>{formatRelativeTime(item.timestamp)}</span>
         </div>
-        <a class="github-card__link" href={item.url} target="_blank" rel="noopener noreferrer">
+        <a class="github-card__link" href={item.url} target="_blank" rel="noopener noreferrer" title={item.title}>
           <span>{item.title}</span>
-          <span class="github-card__icon" aria-hidden="true">↗</span>
+          <span aria-hidden="true">↗</span>
         </a>
       </li>
     ))}
   </ol>
-  <div
-    class="github-card__empty"
-    role="status"
-    aria-live="polite"
-    data-empty
-    hidden={initialState !== "empty"}
-  >
-    {emptyMessage}
+  <div class="github-card__empty" data-empty hidden={initialState !== "empty"}>
+    <p data-empty-text>{emptyMessage}</p>
+    <button type="button" class="button button--ghost" data-retry hidden={!shouldHydrate}>
+      Retry
+    </button>
   </div>
 </section>
 
-<style>
-.github-card {
-  background: linear-gradient(160deg, rgba(18, 26, 43, 0.94), rgba(9, 14, 26, 0.92));
-  border: 1px solid rgba(255, 209, 157, 0.28);
-  border-radius: 1.25rem;
-  padding: clamp(1.5rem, 4vw, 2rem);
-  display: grid;
-  gap: 1.5rem;
-  color: rgba(247, 250, 255, 0.95);
-  box-shadow: 0 24px 60px -38px rgba(12, 40, 90, 0.65);
-}
-
-.github-card__header h2 {
-  margin: 0;
-  font-size: clamp(1.1rem, 2.4vw, 1.4rem);
-}
-
-.github-card__header p {
-  margin: 0.35rem 0 0;
-  color: rgba(232, 237, 255, 0.82);
-  font-size: 0.95rem;
-}
-
-.github-card__list {
-  list-style: none;
-  display: grid;
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-}
-
-.github-card__item {
-  display: grid;
-  gap: 0.4rem;
-  padding: 0.25rem 0;
-}
-
-.github-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  font-size: 0.8rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: rgba(217, 225, 255, 0.78);
-}
-
-.github-card__repo {
-  font-weight: 600;
-}
-
-.github-card__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: rgba(247, 250, 255, 0.96);
-  text-decoration: none;
-  font-size: 1.02rem;
-  border-radius: 0.6rem;
-  padding: 0.25rem 0.4rem;
-  transition: background 120ms ease, transform 120ms ease;
-}
-
-.github-card__link:hover,
-.github-card__link:focus-visible {
-  background: rgba(123, 162, 255, 0.16);
-  outline: 2px solid rgba(255, 209, 157, 0.45);
-  outline-offset: 2px;
-  transform: translateY(-1px);
-}
-
-.github-card__icon {
-  font-size: 1.1rem;
-}
-
-.github-card__time {
-  color: rgba(200, 212, 255, 0.82);
-}
-
-.github-card__loading,
-.github-card__empty {
-  display: grid;
-  gap: 0.65rem;
-  font-size: 0.95rem;
-  color: rgba(226, 232, 255, 0.78);
-}
-
-.skeleton {
-  display: block;
-  height: 0.75rem;
-  border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    rgba(120, 140, 185, 0.18) 0%,
-    rgba(120, 140, 185, 0.32) 50%,
-    rgba(120, 140, 185, 0.18) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.4s ease infinite;
-}
-
-.skeleton--title {
-  width: 70%;
-  height: 1.1rem;
-}
-
-.skeleton--line {
-  width: 55%;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-</style>
-
 <script is:inline>
   (() => {
-    if (typeof window === "undefined") return;
-    const root = document.getElementById("${cardId}");
-    if (!root || root.dataset.state !== "loading") return;
-    const loading = root.querySelector("[data-loading]");
-    const list = root.querySelector("[data-items]");
-    const empty = root.querySelector("[data-empty]");
-    const limit = ${limit};
-
-    function showLoading(show) {
-      if (!loading) return;
-      loading.hidden = !show;
-    }
-
-    function showEmpty(message) {
-      if (!empty) return;
-      empty.textContent = message;
-      empty.hidden = false;
-    }
-
-    function relativeTime(iso) {
+    const card = document.getElementById({JSON.stringify(cardId)});
+    if (!card) return;
+    const formatRelativeTime = (value: string) => {
       try {
-        const date = new Date(iso);
+        const date = new Date(value);
         if (Number.isNaN(date.getTime())) return "just now";
         const diffSeconds = Math.round((Date.now() - date.getTime()) / 1000);
         const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-        const intervals = [
+        const intervals: Array<{ limit: number; divisor: number; unit: Intl.RelativeTimeFormatUnit }> = [
           { limit: 60, divisor: 1, unit: "seconds" },
           { limit: 3600, divisor: 60, unit: "minutes" },
           { limit: 86400, divisor: 3600, unit: "hours" },
           { limit: 604800, divisor: 86400, unit: "days" },
           { limit: 2419200, divisor: 604800, unit: "weeks" },
           { limit: 29030400, divisor: 2419200, unit: "months" },
-          { limit: Infinity, divisor: 29030400, unit: "years" },
+          { limit: Number.POSITIVE_INFINITY, divisor: 29030400, unit: "years" },
         ];
         const absSeconds = Math.abs(diffSeconds);
         for (const { limit, divisor, unit } of intervals) {
@@ -297,76 +147,98 @@ const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "N
       } catch {
         return "just now";
       }
-    }
+    };
+    const list = card.querySelector<HTMLOListElement>("[data-items]");
+    const loading = card.querySelector<HTMLElement>("[data-loading]");
+    const empty = card.querySelector<HTMLElement>("[data-empty]");
+    const emptyText = card.querySelector<HTMLElement>("[data-empty-text]");
+    const retry = card.querySelector<HTMLButtonElement>("[data-retry]");
+    const limit = Number(card.dataset.limit ?? "5") || 5;
 
-    function renderItems(entries) {
+    const setState = (state: "loading" | "ready" | "empty") => {
+      card.dataset.state = state;
+      loading?.toggleAttribute("hidden", state !== "loading");
+      list?.toggleAttribute("hidden", state !== "ready");
+      empty?.toggleAttribute("hidden", state !== "empty");
+    };
+
+    const escapeHTML = (value: string) =>
+      value.replace(/[&\"'<>]/g, (char) => ({
+        '&': '&amp;',
+        '"': '&quot;',
+        "'": '&#39;',
+        '<': '&lt;',
+        '>': '&gt;',
+      }[char as '&' | '"' | "'" | '<' | '>']!);
+    const renderItems = (items: Array<{ type: string; repo: string; url: string; title: string; timestamp: string }>) => {
       if (!list) return;
-      list.innerHTML = "";
-      const fragment = document.createDocumentFragment();
-      for (const item of entries.slice(0, limit)) {
-        const li = document.createElement("li");
-        li.className = "github-card__item";
-        li.dataset.type = item.type;
+      list.innerHTML = items
+        .map((item) => {
+          const repo = escapeHTML(item.repo);
+          const type = escapeHTML(item.type.replace('Event', ''));
+          const typeAttr = escapeHTML(item.type);
+          const time = escapeHTML(formatRelativeTime(item.timestamp));
+          const title = escapeHTML(item.title);
+          const href = escapeHTML(item.url);
+          return `
+            <li class="github-card__item" data-type="${typeAttr}">
+              <div class="github-card__meta">
+                <span class="github-card__repo" aria-label="Repository ${repo}">${repo}</span>
+                <span>${type}</span>
+                <span>${time}</span>
+              </div>
+              <a class="github-card__link" href="${href}" target="_blank" rel="noopener noreferrer" title="${title}">
+                <span>${title}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+          `;
+        })
+        .join('');
+    };
 
-        const meta = document.createElement("div");
-        meta.className = "github-card__meta";
+    const fetchActivity = () => {
+      const controller = new AbortController();
+      const timeoutId = window.setTimeout(() => controller.abort(), 3500);
+      setState("loading");
+      const fallbackTimer = window.setTimeout(() => {
+        if (card.dataset.state === "loading") {
+          emptyText && (emptyText.textContent = card.dataset.emptyMessage ?? "No recent activity");
+          setState("empty");
+        }
+      }, 2000);
 
-        const repo = document.createElement("span");
-        repo.className = "github-card__repo";
-        repo.setAttribute("aria-label", `Repository ${item.repo}`);
-        repo.textContent = item.repo;
+      fetch(`/api/github?limit=${limit}`, { signal: controller.signal, headers: { Accept: "application/json" } })
+        .then((response) => (response.ok ? response.json() : Promise.reject(new Error("Request failed"))))
+        .then((data) => {
+          window.clearTimeout(timeoutId);
+          window.clearTimeout(fallbackTimer);
+          if (!Array.isArray(data?.items) || data.items.length === 0) {
+            emptyText && (emptyText.textContent = "No recent public commits or merges yet.");
+            setState("empty");
+            return;
+          }
+          renderItems(data.items.slice(0, limit));
+          setState("ready");
+        })
+        .catch((error) => {
+          if (error?.name === "AbortError") {
+            emptyText && (emptyText.textContent = "Timed out fetching GitHub activity.");
+          } else {
+            emptyText && (emptyText.textContent = "Unable to load GitHub activity right now.");
+          }
+          window.clearTimeout(timeoutId);
+          window.clearTimeout(fallbackTimer);
+          setState("empty");
+        });
+    };
 
-        const type = document.createElement("span");
-        type.className = "github-card__type";
-        type.textContent = item.type.replace("Event", "");
-
-        const time = document.createElement("span");
-        time.className = "github-card__time";
-        time.textContent = relativeTime(item.timestamp);
-
-        meta.append(repo, type, time);
-
-        const link = document.createElement("a");
-        link.className = "github-card__link";
-        link.href = item.url;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.innerHTML = `<span>${item.title}</span><span class="github-card__icon" aria-hidden="true">↗</span>`;
-
-        li.append(meta, link);
-        fragment.append(li);
-      }
-      list.append(fragment);
-      list.hidden = false;
+    if (card.dataset.fetch === "true") {
+      fetchActivity();
     }
 
-    async function hydrate() {
-      try {
-        showLoading(true);
-        const response = await fetch("/api/github", { headers: { Accept: "application/json" } });
-        if (!response.ok) {
-          throw new Error(`Request failed: ${response.status}`);
-        }
-        const data = await response.json();
-        const entries = Array.isArray(data.items) ? data.items : [];
-        if (entries.length === 0) {
-          showLoading(false);
-          showEmpty("No recent public activity yet.");
-          root.dataset.state = "empty";
-          return;
-        }
-        showLoading(false);
-        renderItems(entries);
-        if (empty) empty.hidden = true;
-        root.dataset.state = "ready";
-      } catch (error) {
-        console.error("github-activity-card-client", error);
-        showLoading(false);
-        showEmpty("GitHub is quiet right now. Try again soon.");
-        root.dataset.state = "empty";
-      }
-    }
-
-    hydrate();
+    retry?.addEventListener("click", () => {
+      fetchActivity();
+    });
   })();
 </script>

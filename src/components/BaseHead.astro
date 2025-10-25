@@ -1,13 +1,14 @@
 ---
-// Import the global.css file here so that it is included on
-// all pages through the use of the <BaseHead /> component.
-import '../styles/global.css';
+import "../styles/global.css";
 
 interface Props {
   title: string;
   description: string;
   image?: string;
+  structuredData?: Array<Record<string, unknown>> | Record<string, unknown>;
 }
+
+const { title, description, image, structuredData } = Astro.props as Props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
@@ -17,14 +18,14 @@ const createOgImage = (text: string) => {
   <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#101320" />
-        <stop offset="50%" stop-color="#1a2235" />
-        <stop offset="100%" stop-color="#0b1728" />
+        <stop offset="0%" stop-color="#0f172a" />
+        <stop offset="50%" stop-color="#1e293b" />
+        <stop offset="100%" stop-color="#0b1120" />
       </linearGradient>
       <radialGradient id="blob" cx="50%" cy="50%" r="65%">
-        <stop offset="0%" stop-color="#ff9b47" stop-opacity="0.95" />
-        <stop offset="55%" stop-color="#ff6f40" stop-opacity="0.6" />
-        <stop offset="100%" stop-color="#1b1f2a" stop-opacity="0.05" />
+        <stop offset="0%" stop-color="#fb923c" stop-opacity="0.95" />
+        <stop offset="55%" stop-color="#f97316" stop-opacity="0.6" />
+        <stop offset="100%" stop-color="#111827" stop-opacity="0.05" />
       </radialGradient>
     </defs>
     <rect width="1200" height="630" fill="url(#grad)" />
@@ -32,70 +33,85 @@ const createOgImage = (text: string) => {
       <ellipse cx="360" cy="220" rx="360" ry="280" fill="url(#blob)" />
       <ellipse cx="900" cy="380" rx="420" ry="300" fill="url(#blob)" transform="rotate(12 900 380)" />
     </g>
-    <text x="80" y="340" font-family="'Atkinson', 'Inter', sans-serif" font-weight="700" font-size="72" fill="#f6f8fb">
+    <text x="80" y="340" font-family="'Atkinson', 'Inter', sans-serif" font-weight="700" font-size="72" fill="#f8fafc">
       ${safeText}
     </text>
-    <text x="80" y="420" font-family="'Atkinson', 'Inter', sans-serif" font-size="32" fill="#ffe3c2" letter-spacing="4">
+    <text x="80" y="420" font-family="'Atkinson', 'Inter', sans-serif" font-size="32" fill="#fcd5b5" letter-spacing="4">
       NBDEVLAB
     </text>
   </svg>`;
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 };
 
-const { title, description, image } = Astro.props;
 const ogImageSource = image ?? createOgImage(title);
 const ogImage = ogImageSource.startsWith("data:")
   ? ogImageSource
   : new URL(ogImageSource, Astro.url).toString();
----
 
-<!-- Global Metadata -->
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://www.nbdevlab.com/#person",
+  name: "Nathan Bullock",
+  url: "https://www.nbdevlab.com/",
+  sameAs: [
+    "https://github.com/0xC0FFEEBEEF",
+    "https://www.linkedin.com/in/nathan-bullock"
+  ],
+  jobTitle: "Founder, nbdevlab",
+  worksFor: {
+    "@type": "Organization",
+    name: "nbdevlab"
+  }
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://www.nbdevlab.com/#website",
+  url: "https://www.nbdevlab.com/",
+  name: "nbdevlab",
+  description,
+  publisher: { "@id": "https://www.nbdevlab.com/#person" },
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://www.nbdevlab.com/search?q={query}",
+    "query-input": "required name=query"
+  }
+};
+
+const extraStructuredData = Array.isArray(structuredData) ? structuredData : structuredData ? [structuredData] : [];
+const allStructuredData = [personSchema, websiteSchema, ...extraStructuredData];
+---
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="generator" content={Astro.generator} />
 
-<!-- Font preloads -->
-<link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
-<link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin />
+<link rel="preload" href="/fonts/atkinson-regular.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/atkinson-bold.woff2" as="font" type="font/woff2" crossorigin />
 
-<!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
 
-<!-- Primary Meta Tags -->
 <title>{title}</title>
 <meta name="title" content={title} />
 <meta name="description" content={description} />
 
-<!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
+<meta property="og:site_name" content="nbdevlab" />
 <meta property="og:url" content={Astro.url} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImage} />
 <meta property="og:image:alt" content={title} />
 
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@nbdevlab" />
 <meta property="twitter:url" content={Astro.url} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={ogImage} />
 
-<script type="application/ld+json">
-  {JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: "Nathan Bullock",
-    url: "https://www.nbdevlab.com/",
-    sameAs: [
-      "https://github.com/0xC0FFEEBEEF",
-      "https://www.linkedin.com/in/nathan-bullock"
-    ],
-    jobTitle: "Builder",
-    worksFor: {
-      "@type": "Organization",
-      name: "nbdevlab"
-    }
-  })}
-</script>
+{allStructuredData.length > 0 && (
+  <script type="application/ld+json">{JSON.stringify(allStructuredData)}</script>
+)}
