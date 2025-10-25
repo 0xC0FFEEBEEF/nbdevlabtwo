@@ -14,10 +14,6 @@ const timeline = homepageEntry.data.timeline;
 
 <SiteLayout title="Home — Nathan Bullock" description="My Website!.">
   <section class="hero relative flex flex-col items-center justify-center min-h-[70vh] px-2">
-    <div class="hero-rails" aria-hidden="true">
-      <span class="hero-rail hero-rail--warm"></span>
-      <span class="hero-rail hero-rail--cool"></span>
-    </div>
     <div class="hero-shell">
       <div class="hero-grid">
         <div class="hero-main">
@@ -28,7 +24,7 @@ const timeline = homepageEntry.data.timeline;
             </h1>
             <div class="hero-divider my-4 h-[1px] opacity-70 mx-auto md:ml-0" aria-hidden="true"></div>
             <p class="hero-tagline muted text-lg md:text-xl mt-6 mb-10 text-center md:text-left max-w-2xl">
-              This space documents and shares my personal experiments, tinkering, and the lessons I've learned.
+              This space documents and shares my personal experiments, tinkering, and the lessons I've learned while exploring OpenAI's Codex to co-create new tools and automations.
             </p>
           </div>
 
@@ -311,49 +307,6 @@ const timeline = homepageEntry.data.timeline;
       @media (min-width: 1100px){
         .hero-aside{display:flex;}
       }
-      .hero-rails{
-        position:fixed;
-        inset:0;
-        display:none;
-        justify-content:space-between;
-        align-items:stretch;
-        pointer-events:none;
-        z-index:0;
-      }
-      @media (min-width: 900px){
-        .hero-rails{display:flex;}
-      }
-      .hero-rail{
-        display:block;
-        height:100%;
-        width:clamp(78px,10vw,132px);
-        border-radius:120px;
-        filter:blur(46px);
-        opacity:var(--rail-opacity,.34);
-        transform:scaleX(var(--rail-scale,1));
-        transition:opacity .35s ease, transform .35s ease, box-shadow .35s ease;
-        will-change:opacity,transform,box-shadow;
-        background-repeat:no-repeat;
-        background-size:100% 100%;
-        background-position:center;
-        --rail-glow:0px;
-      }
-      .hero-rail--warm{
-        margin-left:max(-4rem,-5vw);
-        background-image:linear-gradient(180deg,rgba(255,120,40,0) 0%,rgba(255,138,70,.08) 12%,rgba(255,158,95,.35) 30%,rgba(255,168,118,.58) 47%,rgba(255,142,70,.42) 68%,rgba(255,120,40,0) 100%),
-          radial-gradient(ellipse at center,rgba(255,180,120,.75) 0%,rgba(255,150,70,.55) 40%,rgba(255,110,25,.22) 72%,rgba(255,110,25,0) 100%);
-        --rail-shadow-size:120px;
-        --rail-shadow-spread:36px;
-        box-shadow:0 0 calc(var(--rail-shadow-size) + var(--rail-glow)) var(--rail-shadow-spread) rgba(255,150,70,.32);
-      }
-      .hero-rail--cool{
-        margin-right:max(-4rem,-5vw);
-        background-image:linear-gradient(180deg,rgba(30,160,255,0) 0%,rgba(56,170,255,.08) 14%,rgba(92,190,255,.34) 32%,rgba(130,210,255,.56) 50%,rgba(82,185,255,.4) 68%,rgba(30,160,255,0) 100%),
-          radial-gradient(ellipse at center,rgba(150,210,255,.72) 0%,rgba(110,190,255,.52) 42%,rgba(70,160,240,.2) 74%,rgba(70,160,240,0) 100%);
-        --rail-shadow-size:118px;
-        --rail-shadow-spread:34px;
-        box-shadow:0 0 calc(var(--rail-shadow-size) + var(--rail-glow)) var(--rail-shadow-spread) rgba(90,180,255,.3);
-      }
       .hero-aside__frame{
         position:relative;
         width:100%;
@@ -617,57 +570,5 @@ const timeline = homepageEntry.data.timeline;
       .timeline__title{font-weight:600;color:#f6f5f3;letter-spacing:-.01em}
       .timeline__detail{color:rgba(223,223,223,.78);font-size:.92rem;line-height:1.55}
     </style>
-    <script>
-      const initRailProximity = () => {
-        const warm = document.querySelector('.hero-rail--warm');
-        const cool = document.querySelector('.hero-rail--cool');
-        if (!warm || !cool) return;
-
-        const baseOpacity = 0.34;
-        const boost = 0.28;
-        const baseScale = 1;
-        const scaleBoost = 0.08;
-        const glowBoost = 90; // px added to the existing glow radius
-
-        const proximityFactor = (value) => Math.max(0, (value - baseOpacity) / boost);
-
-        const applyState = (rail, intensity) => {
-          const clamped = Math.min(baseOpacity + boost, Math.max(baseOpacity, intensity));
-          const factor = proximityFactor(clamped);
-          rail.style.setProperty('--rail-opacity', clamped.toFixed(3));
-          rail.style.setProperty('--rail-scale', (baseScale + factor * scaleBoost).toFixed(3));
-          rail.style.setProperty('--rail-glow', `${(factor * glowBoost).toFixed(2)}px`);
-        };
-
-        const reset = () => {
-          applyState(warm, baseOpacity);
-          applyState(cool, baseOpacity);
-        };
-
-        const handlePointerMove = (event) => {
-          const width = window.innerWidth || 1;
-          const range = Math.min(width * 0.35, 360);
-          const leftDistance = Math.max(0, event.clientX);
-          const rightDistance = Math.max(0, width - event.clientX);
-          const warmProximity = Math.max(0, 1 - leftDistance / range);
-          const coolProximity = Math.max(0, 1 - rightDistance / range);
-          applyState(warm, baseOpacity + boost * warmProximity);
-          applyState(cool, baseOpacity + boost * coolProximity);
-        };
-
-        reset();
-        window.addEventListener('pointermove', handlePointerMove, { passive: true });
-        window.addEventListener('pointerout', (event) => {
-          if (!event.relatedTarget) {
-            reset();
-          }
-        });
-        window.addEventListener('blur', reset);
-      };
-
-      if (typeof window !== 'undefined') {
-        window.requestAnimationFrame(initRailProximity);
-      }
-    </script>
   </section>
 </SiteLayout>
