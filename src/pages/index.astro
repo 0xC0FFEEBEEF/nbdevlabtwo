@@ -15,35 +15,37 @@ const timeline = homepageEntry.data.timeline;
 <SiteLayout title="Home — Nathan Bullock" description="My Website!.">
   <section class="hero relative flex flex-col items-center justify-center min-h-[70vh] px-2">
     <div class="hero-shell">
-    <div class="hero-inner relative flex flex-col items-center md:items-start text-center md:text-left mx-auto">
-      <div class="hero-pre text-[11px] tracking-[.25em] font-semibold text-[rgba(255,255,255,.55)] mb-4 uppercase text-center md:text-left">Building • Automating • Learning</div>
-      <h1 class="hero-title text-4xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f2f2f2] via-[#f2f2f2] to-[#ff9a24]/80 mb-6">
-        Nathan Bullock
-      </h1>
-      <div class="hero-divider my-4 h-[1px] opacity-70 mx-auto md:ml-0" aria-hidden="true"></div>
-      <p class="hero-tagline muted text-lg md:text-xl mt-6 mb-10 text-center md:text-left max-w-2xl">
-        This space documents and shares my personal experiments, tinkering, and the lessons I've learned.
-      </p>
-        </div>
-
-    <div class="hero-terminal w-full mb-10">
-      <div id="terminal" class="terminal-wrapper group darker-terminal">
-        <div class="terminal-chrome">
-          <div class="traffic">
-            <span class="dot red" aria-hidden="true"></span>
-            <span class="dot yellow" aria-hidden="true"></span>
-            <span class="dot green" aria-hidden="true"></span>
+      <div class="hero-grid">
+        <div class="hero-main">
+          <div class="hero-inner relative flex flex-col items-center md:items-start text-center md:text-left mx-auto">
+            <div class="hero-pre text-[11px] tracking-[.25em] font-semibold text-[rgba(255,255,255,.55)] mb-4 uppercase text-center md:text-left">Building • Automating • Learning</div>
+            <h1 class="hero-title text-4xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f2f2f2] via-[#f2f2f2] to-[#ff9a24]/80 mb-6">
+              Nathan Bullock
+            </h1>
+            <div class="hero-divider my-4 h-[1px] opacity-70 mx-auto md:ml-0" aria-hidden="true"></div>
+            <p class="hero-tagline muted text-lg md:text-xl mt-6 mb-10 text-center md:text-left max-w-2xl">
+              This space documents and shares my personal experiments, tinkering, and the lessons I've learned.
+            </p>
           </div>
-          <div class="title">nbullock@homelab — zsh</div>
-          <div class="actions"><span class="pill">REMOTE • Pages</span></div>
-        </div>
-        <div class="code-surface">
-          <pre id="terminal-body" class="code"></pre>
-          <div class="glow" aria-hidden="true"></div>
-        </div>
-      </div>
-    </div>
-    <script is:inline>
+
+          <div class="hero-terminal w-full mb-10">
+            <div id="terminal" class="terminal-wrapper group darker-terminal">
+              <div class="terminal-chrome">
+                <div class="traffic">
+                  <span class="dot red" aria-hidden="true"></span>
+                  <span class="dot yellow" aria-hidden="true"></span>
+                  <span class="dot green" aria-hidden="true"></span>
+                </div>
+                <div class="title">nbullock@homelab — zsh</div>
+                <div class="actions"><span class="pill">REMOTE • Pages</span></div>
+              </div>
+              <div class="code-surface">
+                <pre id="terminal-body" class="code"></pre>
+                <div class="glow" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+          <script is:inline>
       // Professional terminal animation with variable typing speed & subtle caret pulse
       const term = document.getElementById('terminal-body');
       const palette = {
@@ -80,8 +82,8 @@ const timeline = homepageEntry.data.timeline;
         }
       }
       tick();
-    </script>
-    <style is:global>
+          </script>
+          <style is:global>
   .terminal-wrapper{position:relative;border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden;background:#0d0d0d;backdrop-filter:blur(10px)}
       .terminal-wrapper:before{content:none}
   .terminal-chrome{display:flex;align-items:center;gap:.75rem;padding:.55rem .9rem;font:500 .7rem/1.2 system-ui;background:linear-gradient(to right,#121212,#141414);border-bottom:1px solid rgba(255,255,255,.08)}
@@ -113,9 +115,9 @@ const timeline = homepageEntry.data.timeline;
         .hero-pre{letter-spacing:.18em}
       }
   /* (Removed ornament honeycomb / zigzag background) */
-    </style>
+          </style>
 
-    <div class="hero-cta flex gap-3 mt-6 mb-10 flex-wrap justify-center md:justify-start">
+          <div class="hero-cta flex gap-3 mt-6 mb-10 flex-wrap justify-center md:justify-start">
       <a
         href="/projects/"
         class={cn(
@@ -132,9 +134,9 @@ const timeline = homepageEntry.data.timeline;
         )}
         data-variant="ghost"
       >About Me</a>
-    </div>
+          </div>
 
-    <div class="hero-tags mt-6 flex flex-wrap gap-2 justify-center md:justify-start">
+          <div class="hero-tags mt-6 flex flex-wrap gap-2 justify-center md:justify-start">
       {[
         ["Cloudflare","#0ea5e9"],
         ["Astro","#ff5d01"],
@@ -144,12 +146,26 @@ const timeline = homepageEntry.data.timeline;
       ].map(([label,color]) => (
         <span class="tag-bubble" style={`--tag:${color}`}>#{label}</span>
       ))}
-    </div>
-    <style is:global>
+          </div>
+          <style is:global>
       .tag-bubble{--tag:var(--accent);position:relative;font:500 .75rem/1 system-ui;padding:.5rem .75rem;border:1px solid color-mix(in srgb,var(--tag),#ffffff 30%);border-radius:999px;background:linear-gradient(145deg,color-mix(in srgb,var(--tag),#000 70%),color-mix(in srgb,var(--tag),#000 82%));color:color-mix(in srgb,var(--tag),#ffffff 75%);letter-spacing:.5px;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 2px 6px -2px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);backdrop-filter:blur(4px)}
       .tag-bubble:before{content:"";width:.35rem;height:.35rem;border-radius:999px;background:var(--tag);box-shadow:0 0 0 3px color-mix(in srgb,var(--tag),transparent 60%);}
       .tag-bubble:hover{border-color:color-mix(in srgb,var(--tag),#ffffff 10%);box-shadow:0 0 0 1px color-mix(in srgb,var(--tag),#ffffff 20%),0 4px 14px -4px color-mix(in srgb,var(--tag),transparent 30%)}
-    </style>
+          </style>
+        </div>
+        <div class="hero-aside" aria-hidden="true">
+          <div class="hero-aside__frame">
+            <span class="hero-aside__halo"></span>
+            <span class="hero-aside__mesh"></span>
+            <span class="hero-aside__mesh hero-aside__mesh--offset"></span>
+            <span class="hero-aside__blob hero-aside__blob--one"></span>
+            <span class="hero-aside__blob hero-aside__blob--two"></span>
+            <span class="hero-aside__blob hero-aside__blob--three"></span>
+            <div class="hero-aside__flare"></div>
+            <div class="hero-aside__caption">Currently pulsing ideas</div>
+          </div>
+        </div>
+      </div>
 
     <div class="feature-wrap mt-16 w-full space-y-8">
       <div class="feature-grid">
@@ -241,6 +257,30 @@ const timeline = homepageEntry.data.timeline;
         gap:1.75rem;
         align-items:center;
       }
+      .hero-grid{
+        display:flex;
+        flex-direction:column;
+        gap:2.5rem;
+        width:100%;
+      }
+      @media (min-width: 1100px){
+        .hero-grid{
+          display:grid;
+          grid-template-columns:minmax(0, 1fr) minmax(260px, 32%);
+          align-items:stretch;
+          gap:2.5rem;
+        }
+      }
+      @media (min-width: 1400px){
+        .hero-grid{grid-template-columns:minmax(0, 1fr) minmax(320px, 28%);gap:3rem;}
+      }
+      .hero-main{
+        display:flex;
+        flex-direction:column;
+        gap:0;
+        position:relative;
+        z-index:1;
+      }
       @media (min-width: 1100px){
         .hero-shell{align-items:flex-start;}
       }
@@ -256,6 +296,126 @@ const timeline = homepageEntry.data.timeline;
       .hero-tags{max-width:min(100%, 840px);margin:0 auto;}
       @media (min-width: 1100px){
         .hero-tags{margin-left:0;}
+      }
+      .hero-aside{
+        display:none;
+        position:relative;
+        justify-content:center;
+        align-items:center;
+        pointer-events:none;
+      }
+      @media (min-width: 1100px){
+        .hero-aside{display:flex;}
+      }
+      .hero-aside__frame{
+        position:relative;
+        width:100%;
+        aspect-ratio:3/4;
+        min-height:420px;
+        border-radius:34px;
+        border:1px solid rgba(255,255,255,.08);
+        background:linear-gradient(160deg,rgba(18,18,18,.92),rgba(10,10,10,.7));
+        overflow:hidden;
+        box-shadow:0 22px 48px -28px rgba(0,0,0,.85);
+        isolation:isolate;
+        display:flex;
+        align-items:flex-end;
+        justify-content:center;
+        padding:2.1rem 1.9rem;
+      }
+      .hero-aside__halo{
+        content:"";
+        position:absolute;
+        inset:-25% -25% auto;
+        height:65%;
+        background:radial-gradient(circle at top,rgba(255,145,0,.35),rgba(255,145,0,0));
+        filter:blur(45px);
+        opacity:.85;
+      }
+      .hero-aside__mesh{
+        position:absolute;
+        inset:12%;
+        border-radius:26px;
+        background-image:linear-gradient(0deg,rgba(255,255,255,.08) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);
+        background-size:24px 24px;
+        opacity:.16;
+        mix-blend-mode:screen;
+        animation:mesh-pan 18s linear infinite;
+      }
+      .hero-aside__mesh--offset{
+        inset:18%;
+        border-radius:34px;
+        opacity:.12;
+        animation-duration:22s;
+        animation-direction:reverse;
+      }
+      .hero-aside__blob{
+        position:absolute;
+        width:220px;
+        height:220px;
+        border-radius:50%;
+        filter:blur(0px);
+        opacity:.75;
+        mix-blend-mode:screen;
+      }
+      .hero-aside__blob--one{
+        top:8%;
+        left:6%;
+        background:radial-gradient(circle at 30% 30%,rgba(255,166,82,.8),rgba(255,140,40,.25) 55%,transparent 72%);
+        animation:blobFloatOne 16s ease-in-out infinite;
+      }
+      .hero-aside__blob--two{
+        top:28%;
+        right:4%;
+        width:240px;
+        height:240px;
+        background:radial-gradient(circle at 70% 40%,rgba(78,156,255,.78),rgba(32,114,255,.28) 58%,transparent 75%);
+        animation:blobFloatTwo 18s ease-in-out infinite;
+      }
+      .hero-aside__blob--three{
+        bottom:-6%;
+        left:22%;
+        width:280px;
+        height:280px;
+        background:radial-gradient(circle at 40% 60%,rgba(255,85,135,.75),rgba(255,85,135,.18) 60%,transparent 78%);
+        animation:blobFloatThree 20s ease-in-out infinite;
+      }
+      .hero-aside__flare{
+        position:absolute;
+        inset:auto -20% -35% -20%;
+        height:60%;
+        background:radial-gradient(circle at 50% 0%,rgba(255,196,120,.18),transparent 70%);
+        filter:blur(32px);
+        opacity:.9;
+      }
+      .hero-aside__caption{
+        position:relative;
+        z-index:2;
+        font-size:.72rem;
+        letter-spacing:.24em;
+        text-transform:uppercase;
+        color:rgba(245,232,210,.7);
+        text-align:center;
+      }
+      @keyframes mesh-pan{
+        0%{background-position:0 0,0 0;}
+        50%{background-position:0 12px,12px 0;}
+        100%{background-position:0 24px,24px 0;}
+      }
+      @keyframes blobFloatOne{
+        0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.75;}
+        40%{transform:translate3d(18px,24px,0) scale(1.08);opacity:.85;}
+        70%{transform:translate3d(-12px,18px,0) scale(.95);opacity:.7;}
+      }
+      @keyframes blobFloatTwo{
+        0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.8;}
+        45%{transform:translate3d(-26px,18px,0) scale(1.05);opacity:.9;}
+        80%{transform:translate3d(18px,-12px,0) scale(.96);opacity:.72;}
+      }
+      @keyframes blobFloatThree{
+        0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.78;}
+        35%{transform:translate3d(16px,-20px,0) scale(1.06);opacity:.88;}
+        65%{transform:translate3d(-22px,12px,0) scale(.94);opacity:.72;}
       }
       .hero::before,
       .hero::after{
