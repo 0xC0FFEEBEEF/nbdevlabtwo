@@ -814,10 +814,19 @@
   justify-content: space-between;
   gap: var(--space-3);
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .accordion summary::-webkit-details-marker {
   display: none;
+}
+
+.accordion summary span:first-child {
+  color: inherit;
+}
+
+.accordion summary span[aria-hidden="true"] {
+  color: var(--color-text-muted);
 }
 
 .accordion__body {
@@ -838,17 +847,17 @@
 
 .status-indicator[data-state="operational"],
 .status-indicator[data-state="ok"] {
-  color: #28c178;
+  color: var(--color-good);
 }
 
 .status-indicator[data-state="degraded"],
 .status-indicator[data-state="warn"] {
-  color: #f4b63f;
+  color: var(--color-warn);
 }
 
 .status-indicator[data-state="outage"],
 .status-indicator[data-state="bad"] {
-  color: #f8746b;
+  color: var(--color-bad);
 }
 
 .status-legend {
