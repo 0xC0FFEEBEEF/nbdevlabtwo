@@ -1,586 +1,135 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
-import { buttonVariants } from "../components/ui/button";
-import { cn } from "../lib/utils";
 import { getEntry } from "astro:content";
 import GithubActivityCard from "../components/GithubActivityCard.astro";
 
 const homepageEntry = await getEntry("homepage", "dashboard");
 const heroCards = homepageEntry.data.highlightCards;
-const activityCard = homepageEntry.data.activityCard;
-const featureCards = heroCards;
-// Example usage:
-// <GithubActivityCard limit={5} />
-// Remember to keep this page dynamic when using the activity card.
 const nowItems = homepageEntry.data.nowItems;
 const timeline = homepageEntry.data.timeline;
+
+const homepageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://www.nbdevlab.com/#home",
+  name: "nbdevlab — Home",
+  description:
+    "Builder notes, experiments, and shipped tools from Nathan Bullock. Track projects, lab milestones, and GitHub activity in one view.",
+  url: "https://www.nbdevlab.com/",
+  isPartOf: { "@id": "https://www.nbdevlab.com/#website" },
+};
 ---
-
-<SiteLayout title="Home — Nathan Bullock" description="My Website!.">
-  <section class="hero relative flex flex-col items-center justify-center min-h-[70vh] px-2">
-    <div class="hero-shell">
-      <div class="hero-grid">
-        <div class="hero-main">
-          <div class="hero-inner relative flex flex-col items-center md:items-start text-center md:text-left mx-auto">
-            <div class="hero-pre text-[11px] tracking-[.25em] font-semibold text-[rgba(255,255,255,.55)] mb-4 uppercase text-center md:text-left">Building • Automating • Learning</div>
-            <h1 class="hero-title text-4xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f2f2f2] via-[#f2f2f2] to-[#ff9a24]/80 mb-6">
-              Nathan Bullock
-            </h1>
-            <div class="hero-divider my-4 h-[1px] opacity-70 mx-auto md:ml-0" aria-hidden="true"></div>
-            <p class="hero-tagline muted text-lg md:text-xl mt-6 mb-10 text-center md:text-left max-w-2xl">
-              This space documents and shares my personal experiments, tinkering, and the lessons I've learned while exploring OpenAI's Codex to co-create new tools and automations.
-            </p>
-          </div>
-
-          <div class="hero-terminal w-full mb-10">
-            <div id="terminal" class="terminal-wrapper group darker-terminal">
-              <div class="terminal-chrome">
-                <div class="traffic">
-                  <span class="dot red" aria-hidden="true"></span>
-                  <span class="dot yellow" aria-hidden="true"></span>
-                  <span class="dot green" aria-hidden="true"></span>
-                </div>
-                <div class="title">nbullock@homelab — zsh</div>
-                <div class="actions"><span class="pill">REMOTE • Pages</span></div>
-              </div>
-              <div class="code-surface">
-                <pre id="terminal-body" class="code"></pre>
-                <div class="glow" aria-hidden="true"></div>
-              </div>
-            </div>
-          </div>
-          <script is:inline>
-      // Professional terminal animation with variable typing speed & subtle caret pulse
-      const term = document.getElementById('terminal-body');
-      const palette = {
-        user: '#34d399', path: '#f5c78a', branch: '#ff9d32', symbol: '#e9b341', accent: '#ff7b1a'
-      };
-      const prompt = () => `<span style=\"color:${palette.user}\">nbullock@homelab</span> <span style=\"color:${palette.path}\">~/lab</span> <span style=\"color:${palette.branch}\">main</span> <span style=\"color:${palette.symbol}\">$\n</span>`;
-      const scriptLines = [
-        `${prompt()}git status`,
-        `<span style=\"color:${palette.accent}\">→</span> workspace clean`,
-        `${prompt()}npm run sync`,
-        `<span style=\"color:${palette.accent}\">→</span> content collections refreshed`,
-        `${prompt()}npm run build`,
-        `<span style=\"color:${palette.accent}\">→</span> git push origin main`,
-        `<span style=\"color:#ff9100">✓</span> live at https://www.nbdevlab.com`,
-      ];
-      let lineIndex = 0, charIndex = 0, buffer = '';
-      const speeds = { base: 26, jitter: 28 };
-      function tick(){
-        if(lineIndex >= scriptLines.length){
-          term.innerHTML = buffer + prompt().trimEnd() + ' <span class="caret">|</span>';
-          return;
-        }
-        const line = scriptLines[lineIndex];
-        if(charIndex <= line.length){
-          const slice = line.slice(0,charIndex);
-            term.innerHTML = buffer + slice + '<span class="caret">|</span>';
-            charIndex++;
-            const delay = speeds.base + Math.random()*speeds.jitter * (Math.random()>0.92?4:1);
-            setTimeout(tick, delay);
-        } else {
-          buffer += line + '\n';
-          lineIndex++; charIndex = 0;
-          setTimeout(tick, 380);
-        }
-      }
-      tick();
-          </script>
-          <style is:global>
-  .terminal-wrapper{position:relative;border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden;background:#0d0d0d;backdrop-filter:blur(10px)}
-      .terminal-wrapper:before{content:none}
-  .terminal-chrome{display:flex;align-items:center;gap:.75rem;padding:.55rem .9rem;font:500 .7rem/1.2 system-ui;background:linear-gradient(to right,#121212,#141414);border-bottom:1px solid rgba(255,255,255,.08)}
-      .terminal-chrome .traffic{display:flex;gap:.4rem}
-      .terminal-chrome .dot{width:.75rem;height:.75rem;border-radius:999px;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 6px 0 rgba(0,0,0,.4)}
-      .terminal-chrome .dot.red{background:#ef4444}
-      .terminal-chrome .dot.yellow{background:#f59e0b}
-      .terminal-chrome .dot.green{background:#22c55e}
-      .terminal-chrome .title{flex:1;opacity:.85;color:#e2e8f0;letter-spacing:.5px}
-      .terminal-chrome .actions{display:flex;align-items:center;gap:.5rem}
-  .terminal-chrome .pill{font:600 .55rem/1 system-ui;padding:.3rem .55rem;border:1px solid rgba(255,170,64,.35);border-radius:999px;background:rgba(255,170,64,.08);letter-spacing:.5px;color:#f6c385}
-  .code-surface{position:relative;padding:1.1rem 1.15rem 1.25rem 1.15rem;font:500 .8rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;min-height:190px;color:#f5e5d4;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.62));}
-      #terminal-body{white-space:pre-wrap}
-  .caret{color:#ff9d32;animation:blink 1.05s steps(1) infinite}
-      @keyframes blink{0%,55%{opacity:1}56%,100%{opacity:0}}
-      .code-surface:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(0,0,0,.35));pointer-events:none}
-      .code-surface .glow{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#ffb457 40%,#ff8c24 60%,transparent);opacity:.55;filter:blur(.5px)}
-      .terminal-wrapper:hover{box-shadow:0 0 0 1px rgba(255,170,64,.42),0 0 22px -8px rgba(255,140,40,.4)}
-      .terminal-wrapper:focus-within{box-shadow:0 0 0 1px rgba(255,170,64,.55),0 0 0 4px rgba(255,170,64,.12)}
-    .hero{position:relative;z-index:1}
-  .hero-inner:after{content:none !important}
-  .hero-title{text-shadow:0 2px 4px rgba(0,0,0,.3);}
-      .hero-divider{position:relative;width:240px;max-width:60%;height:2px;background:linear-gradient(90deg,transparent,#ffb04a,#ff8c24,transparent);border-radius:2px;box-shadow:0 0 0 1px rgba(255,150,40,.35),0 6px 22px -8px rgba(0,0,0,.6)}
-      .hero-tagline{color:#cfcfcf}
-      .hero-tagline strong{color:#ffb04a}
-      @media (max-width:640px){
-        .hero-title{font-size:2.35rem}
-        .hero-divider{width:180px}
-        .hero-pre{letter-spacing:.18em}
-      }
-  /* (Removed ornament honeycomb / zigzag background) */
-          </style>
-
-          <div class="hero-cta flex gap-3 mt-6 mb-10 flex-wrap justify-center md:justify-start">
-      <a
-        href="/projects/"
-        class={cn(
-          buttonVariants({ variant: "default" }),
-          "rounded-xl px-6 h-12 text-base font-medium tracking-wide data-[variant=default]:text-[var(--fg)] data-[variant=default]:bg-[#141414] data-[variant=default]:border data-[variant=default]:border-[var(--outline)] data-[variant=default]:hover:bg-[#1d1d1d] data-[variant=default]:shadow-[0_0_0_1px_rgba(255,145,0,.45),0_0_18px_-6px_rgba(255,145,0,.55)] hover:shadow-[0_0_0_1px_rgba(255,145,0,.75),0_0_26px_-4px_rgba(255,145,0,.7)] transition-all"
-        )}
-        data-variant="default"
-      >View Projects</a>
-      <a
-        href="/about/"
-        class={cn(
-          buttonVariants({ variant: "ghost" }),
-          "rounded-xl px-6 h-12 text-base font-medium tracking-wide border border-[var(--outline)] text-[var(--accent)] hover:text-[#ffd199] hover:border-[rgba(255,145,0,.65)] hover:bg-[rgba(255,145,0,.08)] transition-all"
-        )}
-        data-variant="ghost"
-      >About Me</a>
-          </div>
-
-          <div class="hero-tags mt-6 flex flex-wrap gap-2 justify-center md:justify-start">
-      {[
-        ["Cloudflare","#0ea5e9"],
-        ["Astro","#ff5d01"],
-        ["Homelab","#2563eb"],
-        ["Tinkering","#6366f1"],
-        ["Proxmox","#10b981"],
-      ].map(([label,color]) => (
-        <span class="tag-bubble" style={`--tag:${color}`}>#{label}</span>
-      ))}
-          </div>
-          <style is:global>
-      .tag-bubble{--tag:var(--accent);position:relative;font:500 .75rem/1 system-ui;padding:.5rem .75rem;border:1px solid color-mix(in srgb,var(--tag),#ffffff 30%);border-radius:999px;background:linear-gradient(145deg,color-mix(in srgb,var(--tag),#000 70%),color-mix(in srgb,var(--tag),#000 82%));color:color-mix(in srgb,var(--tag),#ffffff 75%);letter-spacing:.5px;display:inline-flex;align-items:center;gap:.35rem;box-shadow:0 2px 6px -2px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);backdrop-filter:blur(4px)}
-      .tag-bubble:before{content:"";width:.35rem;height:.35rem;border-radius:999px;background:var(--tag);box-shadow:0 0 0 3px color-mix(in srgb,var(--tag),transparent 60%);}
-      .tag-bubble:hover{border-color:color-mix(in srgb,var(--tag),#ffffff 10%);box-shadow:0 0 0 1px color-mix(in srgb,var(--tag),#ffffff 20%),0 4px 14px -4px color-mix(in srgb,var(--tag),transparent 30%)}
-          </style>
-        </div>
-        <div class="hero-aside" aria-hidden="true">
-          <div class="hero-aside__frame">
-            <span class="hero-aside__halo"></span>
-            <span class="hero-aside__mesh"></span>
-            <span class="hero-aside__mesh hero-aside__mesh--offset"></span>
-            <span class="hero-aside__blob hero-aside__blob--one"></span>
-            <span class="hero-aside__blob hero-aside__blob--two"></span>
-            <span class="hero-aside__blob hero-aside__blob--three"></span>
-            <div class="hero-aside__flare"></div>
-            <div class="hero-aside__caption">Currently pulsing ideas</div>
-          </div>
-        </div>
+<SiteLayout
+  title="nbdevlab — Builder notes and experiments"
+  description="Builder notes, project milestones, and GitHub activity from Nathan Bullock's nbdevlab."
+  structuredData={homepageSchema}
+>
+  <section class="hero" aria-labelledby="home-hero-heading">
+    <div class="hero__title-group">
+      <span class="badge" aria-hidden="true">Edge-native lab</span>
+      <h1 id="home-hero-heading">Automation, homelab, and UI co-designed with AI</h1>
+      <p class="lede">
+        I’m Nathan Bullock — building nbdevlab as an always-on workshop for OpenAI-powered tooling, Cloudflare automations, and homelab
+        resilience. This is the control panel: highlights, milestones, and the signals that keep the lab humming.
+      </p>
+      <div class="hero__ctas">
+        <a class="button button--primary" href="/projects/">Explore projects</a>
+        <a class="button button--ghost" href="/about/">Meet Nathan</a>
       </div>
-
-    <div class="feature-wrap mt-16 w-full space-y-8">
-      <div class="feature-grid">
-        {featureCards.map((card) => (
-          <a
-            class="feature-card"
-            href={card.href}
-            style={`--card-accent:${card.accent ?? "255 145 0"}`}
-          >
-            <span class="feature-card__badge">{card.badge}</span>
-            <span class="feature-card__title">{card.title}</span>
-            <span class="feature-card__description">{card.description}</span>
-            <span class="feature-card__cta">
-              Explore
-              <span aria-hidden="true">↗</span>
-            </span>
-          </a>
+      <div class="chip-row" role="list">
+        {[
+          "Cloudflare Pages",
+          "Astro",
+          "OpenAI Codex",
+          "Homelab",
+          "Automation",
+        ].map((item) => (
+          <span class="tag-chip" role="listitem">
+            <span aria-hidden="true"></span>
+            {item}
+          </span>
         ))}
-        <section class="feature-grid__github">
-          <GithubActivityCard limit={5} />
-          <div class="feature-grid__github-meta">
-            <span class="feature-grid__github-badge">{activityCard.badge}</span>
-            {activityCard.description && <p>{activityCard.description}</p>}
-            <a
-              class="feature-grid__github-link"
-              href={activityCard.href}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {activityCard.title} ↗
-            </a>
+      </div>
+    </div>
+    <aside aria-label="Recent terminal activity" class="card" style="background: var(--color-surface-alt);">
+      <h2 class="card__title">Latest deployment trace</h2>
+      <pre aria-label="Recent commands" role="log">
+nbullock@homelab:~/lab main
+➜ git pull --rebase origin main
+Already up to date.
+➜ npm run sync
+content collections refreshed
+➜ npm run build
+✓ deployed to Cloudflare Pages
+      </pre>
+    </aside>
+  </section>
+
+  <section aria-labelledby="dash-heading" style="margin-top: clamp(2.5rem, 6vw, 4rem);">
+    <header>
+      <h2 id="dash-heading">Lab dashboard</h2>
+      <p class="lede">Pinned workstreams, roadmap beats, and the GitHub feed that powers nbdevlab’s daily cadence.</p>
+    </header>
+    <div class="card-grid" role="list">
+      {heroCards.map((card) => (
+        <a
+          role="listitem"
+          class="card"
+          href={card.href}
+          style={`--card-accent: ${card.accent ?? "194 65 12"};`}
+        >
+          <span class="card__meta">{card.badge}</span>
+          <h3 class="card__title">{card.title}</h3>
+          <p>{card.description}</p>
+          <div class="card__footer">
+            <span>Open</span>
+            <span aria-hidden="true">↗</span>
           </div>
-        </section>
-      </div>
-
-      <div class="now-grid">
-        <article class="now-card">
-          <header class="now-card__header">
-            <span class="now-card__badge">Now</span>
-            <h2>What I&apos;m tuning this week</h2>
-            <p>
-              A living list of focus areas that shape how I spend my late-night sessions tinkering with nbdevlab.
-            </p>
-          </header>
-          <ul class="now-list">
-            {nowItems.map((item) => (
-              <li>
-                <span class="now-list__label">{item.label}</span>
-                <span class="now-list__detail">{item.detail}</span>
-              </li>
-            ))}
-          </ul>
-        </article>
-
-        <article class="now-card now-card--timeline" id="milestones">
-          <header class="now-card__header">
-            <span class="now-card__badge">Milestones</span>
-            <h2>Lab notes &amp; changelog</h2>
-            <p>
-              The latest beats moving nbdevlab forward, from shipping notes to roadmap checkpoints.
-            </p>
-          </header>
-          <ol class="timeline">
-            {timeline.map((entry) => (
-              <li>
-                <span class="timeline__date">{entry.date}</span>
-                <div class="timeline__content">
-                  <span class="timeline__title">{entry.title}</span>
-                  <span class="timeline__detail">{entry.detail}</span>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </article>
-      </div>
+        </a>
+      ))}
+      <article class="github-card" role="listitem">
+        <GithubActivityCard limit={5} />
+      </article>
     </div>
-    </div>
-    <style is:global>
-      .hero-shell,
-      .feature-wrap{
-        width:min(100%, 1260px);
-        margin:0 auto;
-        padding:0 clamp(1.5rem, 4vw, 3.25rem);
-      }
-      @media (min-width: 1280px){
-        .hero-shell,
-        .feature-wrap{padding-inline:0;}
-      }
-      .hero-shell{
-        display:flex;
-        flex-direction:column;
-        gap:1.75rem;
-        align-items:center;
-      }
-      .hero-grid{
-        display:flex;
-        flex-direction:column;
-        gap:2.5rem;
-        width:100%;
-      }
-      @media (min-width: 1100px){
-        .hero-grid{
-          display:grid;
-          grid-template-columns:minmax(0, 1fr) minmax(260px, 32%);
-          align-items:stretch;
-          gap:2.5rem;
-        }
-      }
-      @media (min-width: 1400px){
-        .hero-grid{grid-template-columns:minmax(0, 1fr) minmax(320px, 28%);gap:3rem;}
-      }
-      .hero-main{
-        display:flex;
-        flex-direction:column;
-        gap:0;
-        position:relative;
-        z-index:1;
-      }
-      @media (min-width: 1100px){
-        .hero-shell{align-items:flex-start;}
-      }
-      .hero-inner{max-width:min(100%, 640px);}
-      @media (min-width: 1100px){
-        .hero-inner{margin-left:0;}
-      }
-      .hero-terminal{max-width:min(100%, 840px);margin:0 auto;}
-      @media (min-width: 1100px){
-        .hero-terminal{margin-left:0;}
-      }
-      .hero-cta{row-gap:.75rem;}
-      .hero-tags{max-width:min(100%, 840px);margin:0 auto;}
-      @media (min-width: 1100px){
-        .hero-tags{margin-left:0;}
-      }
-      .hero-aside{
-        display:none;
-        position:relative;
-        justify-content:center;
-        align-items:center;
-        pointer-events:none;
-      }
-      @media (min-width: 1100px){
-        .hero-aside{display:flex;}
-      }
-      .hero-aside__frame{
-        position:relative;
-        width:100%;
-        aspect-ratio:3/4;
-        min-height:420px;
-        border-radius:34px;
-        border:1px solid rgba(255,255,255,.08);
-        background:linear-gradient(160deg,rgba(18,18,18,.92),rgba(10,10,10,.7));
-        overflow:hidden;
-        box-shadow:0 22px 48px -28px rgba(0,0,0,.85);
-        isolation:isolate;
-        display:flex;
-        align-items:flex-end;
-        justify-content:center;
-        padding:2.1rem 1.9rem;
-      }
-      .hero-aside__halo{
-        content:"";
-        position:absolute;
-        inset:-25% -25% auto;
-        height:65%;
-        background:radial-gradient(circle at top,rgba(255,145,0,.35),rgba(255,145,0,0));
-        filter:blur(45px);
-        opacity:.85;
-      }
-      .hero-aside__mesh{
-        position:absolute;
-        inset:12%;
-        border-radius:26px;
-        background-image:linear-gradient(0deg,rgba(255,255,255,.08) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);
-        background-size:24px 24px;
-        opacity:.16;
-        mix-blend-mode:screen;
-        animation:mesh-pan 18s linear infinite;
-      }
-      .hero-aside__mesh--offset{
-        inset:18%;
-        border-radius:34px;
-        opacity:.12;
-        animation-duration:22s;
-        animation-direction:reverse;
-      }
-      .hero-aside__blob{
-        position:absolute;
-        width:220px;
-        height:220px;
-        border-radius:50%;
-        filter:blur(0px);
-        opacity:.75;
-        mix-blend-mode:screen;
-      }
-      .hero-aside__blob--one{
-        top:8%;
-        left:6%;
-        background:radial-gradient(circle at 30% 30%,rgba(255,166,82,.8),rgba(255,140,40,.25) 55%,transparent 72%);
-        animation:blobFloatOne 16s ease-in-out infinite;
-      }
-      .hero-aside__blob--two{
-        top:28%;
-        right:4%;
-        width:240px;
-        height:240px;
-        background:radial-gradient(circle at 70% 40%,rgba(78,156,255,.78),rgba(32,114,255,.28) 58%,transparent 75%);
-        animation:blobFloatTwo 18s ease-in-out infinite;
-      }
-      .hero-aside__blob--three{
-        bottom:-6%;
-        left:22%;
-        width:280px;
-        height:280px;
-        background:radial-gradient(circle at 40% 60%,rgba(255,85,135,.75),rgba(255,85,135,.18) 60%,transparent 78%);
-        animation:blobFloatThree 20s ease-in-out infinite;
-      }
-      .hero-aside__flare{
-        position:absolute;
-        inset:auto -20% -35% -20%;
-        height:60%;
-        background:radial-gradient(circle at 50% 0%,rgba(255,196,120,.18),transparent 70%);
-        filter:blur(32px);
-        opacity:.9;
-      }
-      .hero-aside__caption{
-        position:relative;
-        z-index:2;
-        font-size:.72rem;
-        letter-spacing:.24em;
-        text-transform:uppercase;
-        color:rgba(245,232,210,.7);
-        text-align:center;
-      }
-      @keyframes mesh-pan{
-        0%{background-position:0 0,0 0;}
-        50%{background-position:0 12px,12px 0;}
-        100%{background-position:0 24px,24px 0;}
-      }
-      @keyframes blobFloatOne{
-        0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.75;}
-        40%{transform:translate3d(18px,24px,0) scale(1.08);opacity:.85;}
-        70%{transform:translate3d(-12px,18px,0) scale(.95);opacity:.7;}
-      }
-      @keyframes blobFloatTwo{
-        0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.8;}
-        45%{transform:translate3d(-26px,18px,0) scale(1.05);opacity:.9;}
-        80%{transform:translate3d(18px,-12px,0) scale(.96);opacity:.72;}
-      }
-      @keyframes blobFloatThree{
-        0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.78;}
-        35%{transform:translate3d(16px,-20px,0) scale(1.06);opacity:.88;}
-        65%{transform:translate3d(-22px,12px,0) scale(.94);opacity:.72;}
-      }
-      
-      .feature-grid{display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-      .feature-grid__github{display:flex;flex-direction:column;gap:1rem}
-      .feature-grid__github-meta{display:flex;flex-direction:column;gap:0.35rem;color:rgba(220,230,255,.72);font-size:.9rem}
-      .feature-grid__github-badge{font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,199,125,.88)}
-      .feature-grid__github-link{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none;color:rgba(255,208,165,.95);font-weight:600}
-      .feature-grid__github-link:hover,.feature-grid__github-link:focus-visible{text-decoration:underline;color:rgba(255,230,200,1);outline:none}
-      .feature-card{
-        --card-accent:255 145 0;
-        position:relative;
-        display:flex;
-        flex-direction:column;
-        gap:.8rem;
-        padding:1.5rem 1.6rem;
-        border-radius:20px;
-        border:1px solid rgba(255,255,255,.06);
-        background:linear-gradient(165deg,rgba(12,12,12,.92),rgba(12,12,12,.78));
-        color:var(--fg);
-        text-decoration:none;
-        overflow:hidden;
-        transition:border-color .25s, box-shadow .25s, transform .25s;
-        box-shadow:0 12px 22px -18px rgba(0,0,0,.85);
-      }
-      .feature-card:before{
-        content:"";
-        position:absolute;
-        inset:-40% -40% auto;
-        height:60%;
-        background:radial-gradient(circle at top, rgb(var(--card-accent)/.28), transparent 70%);
-        opacity:.85;
-        transform:translateY(-20%);
-        transition:opacity .35s, transform .35s;
-      }
-      .feature-card:after{
-        content:"";
-        position:absolute;
-        inset:1px;
-        border-radius:inherit;
-        background:linear-gradient(150deg,rgba(255,255,255,.04),rgba(255,255,255,0));
-        pointer-events:none;
-      }
-      .feature-card:hover{
-        border-color:rgb(var(--card-accent)/.55);
-        box-shadow:0 0 0 1px rgb(var(--card-accent)/.65),0 18px 32px -20px rgb(var(--card-accent)/.7);
-        transform:translateY(-4px);
-      }
-      .feature-card:hover:before{opacity:1;transform:translateY(-12%);}
-      .feature-card__badge{
-        align-self:flex-start;
-        font:600 .7rem/1.1 system-ui;
-        letter-spacing:.12em;
-        text-transform:uppercase;
-        padding:.35rem .65rem;
-        border-radius:999px;
-        border:1px solid rgb(var(--card-accent)/.6);
-        background:rgb(var(--card-accent)/.08);
-        color:rgb(var(--card-accent));
-      }
-      .feature-card__title{font:700 1.25rem/1.3 "Satoshi",system-ui, sans-serif;letter-spacing:-.01em;z-index:1}
-      .feature-card__description{z-index:1;color:rgba(229,229,229,.78);font-size:.92rem;line-height:1.5}
-      .feature-card__meta{
-        z-index:1;
-        display:flex;
-        flex-wrap:wrap;
-        align-items:center;
-        gap:.35rem;
-        margin-top:.35rem;
-        font-size:.78rem;
-        letter-spacing:.08em;
-        text-transform:uppercase;
-        color:rgba(223,223,223,.62);
-      }
-      .feature-card__meta-detail{font-weight:600;color:rgba(255,255,255,.72)}
-      .feature-card__cta{
-        z-index:1;
-        display:inline-flex;
-        align-items:center;
-        gap:.45rem;
-        margin-top:auto;
-        font-weight:600;
-        color:rgb(var(--card-accent));
-        font-size:.9rem;
-      }
-      .feature-card__cta span{transition:transform .25s;display:inline-block}
-      .feature-card:hover .feature-card__cta span{transform:translate(2px,-2px)}
-      .feature-card--activity{border-color:rgb(var(--card-accent)/.42);background:linear-gradient(160deg,rgba(12,12,12,.92),rgba(5,16,32,.78));}
-      .feature-card--activity:hover{box-shadow:0 0 0 1px rgb(var(--card-accent)/.75),0 20px 34px -22px rgb(var(--card-accent)/.8);}
-      .feature-card--activity .feature-card__badge{border-color:rgb(var(--card-accent)/.65);background:rgb(var(--card-accent)/.12);color:rgb(var(--card-accent));}
-      .feature-card--activity .feature-card__meta{color:rgba(199,211,255,.75)}
-      .now-grid{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-      .now-card{
-        position:relative;
-        padding:1.9rem 1.75rem;
-        border-radius:22px;
-        border:1px solid rgba(255,255,255,.08);
-        background:linear-gradient(150deg,rgba(15,15,15,.92),rgba(10,10,10,.82));
-        box-shadow:0 10px 26px -18px rgba(0,0,0,.8);
-        display:flex;
-        flex-direction:column;
-        gap:1.25rem;
-        overflow:hidden;
-      }
-      .now-card:before{
-        content:"";
-        position:absolute;
-        inset:0;
-        background:radial-gradient(circle at top right,rgba(255,145,0,.09),transparent 65%);
-        opacity:.7;
-        pointer-events:none;
-      }
-      .now-card--timeline:before{background:radial-gradient(circle at top left,rgba(80,170,255,.1),transparent 65%);}
-      .now-card__badge{
-        display:inline-flex;
-        align-items:center;
-        gap:.4rem;
-        padding:.3rem .75rem;
-        border-radius:999px;
-        background:rgba(255,255,255,.06);
-        border:1px solid rgba(255,255,255,.12);
-        font-size:.72rem;
-        letter-spacing:.14em;
-        text-transform:uppercase;
-        font-weight:600;
-      }
-      .now-card__header h2{margin:0;font-size:1.35rem;letter-spacing:-.01em;font-weight:700;color:#f4f3f1}
-      .now-card__header p{margin:.45rem 0 0;color:rgba(214,214,214,.78);font-size:.92rem;line-height:1.6}
-      .now-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1rem}
-      .now-list li{display:grid;gap:.4rem}
-      .now-list__label{text-transform:uppercase;font-size:.72rem;letter-spacing:.2em;color:rgba(255,255,255,.6)}
-      .now-list__detail{font-size:.98rem;line-height:1.6;color:rgba(239,239,239,.9)}
-      .timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1.1rem;position:relative}
-      .timeline:before{
-        content:"";
-        position:absolute;
-        left:.55rem;
-        top:.25rem;
-        bottom:.25rem;
-        width:1px;
-        background:linear-gradient(to bottom,rgba(255,255,255,.25),transparent);
-      }
-      .timeline li{display:grid;grid-template-columns:auto 1fr;gap:.9rem;padding-left:1.8rem;position:relative}
-      .timeline li:before{
-        content:"";
-        position:absolute;
-        left:.2rem;
-        top:.35rem;
-        width:.7rem;
-        height:.7rem;
-        border-radius:999px;
-        background:rgba(56,189,248,.35);
-        border:1px solid rgba(56,189,248,.65);
-        box-shadow:0 0 0 4px rgba(56,189,248,.12);
-      }
-      .timeline__date{font-size:.8rem;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,255,255,.55)}
-      .timeline__content{display:flex;flex-direction:column;gap:.25rem}
-      .timeline__title{font-weight:600;color:#f6f5f3;letter-spacing:-.01em}
-      .timeline__detail{color:rgba(223,223,223,.78);font-size:.92rem;line-height:1.55}
-    </style>
+  </section>
+
+  <section aria-labelledby="timeline-heading" style="margin-top: clamp(3rem, 6vw, 4.5rem);">
+    <header>
+      <h2 id="timeline-heading">Milestones &amp; notes</h2>
+      <p class="lede">A running log of the experiments and releases shaping nbdevlab.</p>
+    </header>
+    {timeline.length > 0 ? (
+      <ol class="timeline" role="list">
+        {timeline.map((item) => (
+          <li class="timeline__item" role="listitem">
+            <p class="timestamp">{item.date}</p>
+            <h3>{item.title}</h3>
+            <p>{item.detail}</p>
+          </li>
+        ))}
+      </ol>
+    ) : (
+      <div class="projects-empty" role="status">Milestones are drafting — check back soon.</div>
+    )}
+  </section>
+
+  <section aria-labelledby="now-heading" style="margin-top: clamp(3rem, 6vw, 4.5rem);">
+    <header>
+      <h2 id="now-heading">What’s in focus right now</h2>
+      <p class="lede">A snapshot of the initiatives and instrumentation keeping the lab on track.</p>
+    </header>
+    {nowItems.length > 0 ? (
+      <div class="now-card-grid" role="list">
+        {nowItems.map((item) => (
+          <article class="now-card" role="listitem">
+            <div class="now-card__icon" aria-hidden="true">⚙️</div>
+            <h3 class="card__title">{item.label}</h3>
+            <p>{item.detail}</p>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="projects-empty" role="status">Focus areas will refresh shortly.</div>
+    )}
   </section>
 </SiteLayout>

@@ -15,7 +15,7 @@ const applyTheme = (theme: Theme) => {
 };
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -44,15 +44,19 @@ export function ThemeToggle() {
     window.localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
 
+  const label = theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
+
   return (
     <button
       type="button"
       className="theme-toggle"
-      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={label}
       aria-pressed={theme === "dark"}
       onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
     >
       <span aria-hidden="true">{theme === "dark" ? "🌙" : "☀️"}</span>
+      <span className="sr-only">{label}</span>
+      <span aria-hidden="true">Theme</span>
     </button>
   );
 }

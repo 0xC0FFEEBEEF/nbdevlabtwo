@@ -24,11 +24,18 @@ export function resolveProjectSlug(entry: ProjectEntry): string {
 }
 
 export function normalizeProjects(entries: ProjectEntry[]): ProjectEntry[] {
-  return entries.map((entry) => ({
-    ...entry,
-    data: {
-      ...entry.data,
-      slug: resolveProjectSlug(entry),
-    },
-  }));
+  const seen = new Map<string, number>();
+  return entries.map((entry) => {
+    const base = resolveProjectSlug(entry);
+    const count = (seen.get(base) ?? 0) + 1;
+    seen.set(base, count);
+    const uniqueSlug = count === 1 ? base : `${base}-${count}`;
+    return {
+      ...entry,
+      data: {
+        ...entry.data,
+        slug: uniqueSlug,
+      },
+    };
+  });
 }

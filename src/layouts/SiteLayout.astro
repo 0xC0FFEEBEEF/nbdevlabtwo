@@ -1,8 +1,6 @@
 ---
-
 import BaseHead from "../components/BaseHead.astro";
 import "../styles/global.css";
-import { cn } from "../lib/utils";
 import BackToTopButton from "../components/BackToTopButton.astro";
 import { SearchDialog } from "../components/SearchDialog";
 import { ThemeToggle } from "../components/ThemeToggle";
@@ -10,10 +8,17 @@ import { ThemeToggle } from "../components/ThemeToggle";
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  structuredData?: Array<Record<string, unknown>> | Record<string, unknown>;
 }
-const { title = "Nathan Bullock — My Website", description = "" } = Astro.props;
 
-// Simple nav config. Add/remove links here.
+const {
+  title = "nbdevlab — Nathan Bullock",
+  description = "Builder notes, project breakdowns, and homelab experiments from nbdevlab.",
+  image,
+  structuredData,
+} = Astro.props as Props;
+
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/about/", label: "About" },
@@ -22,709 +27,117 @@ const NAV_LINKS = [
   { href: "/now/", label: "Now" },
   { href: "/status/", label: "Status" },
   { href: "/admin/", label: "Admin" },
-  // add new routes here:
-//  { href: "/test/", label: "Test" },
-];
+] as const;
 
-const currentPath = Astro.url.pathname;
-const isActive = (href: string) => (href === "/" ? currentPath === "/" : currentPath.startsWith(href));
-const showRails = !currentPath.startsWith("/admin");
-const navLinkClass = (href: string) =>
-  cn(
-    "nav-link",
-    isActive(href) && "is-active"
-  );
+const currentPath = Astro.url.pathname.replace(/\/+/g, "/");
+
+function isActive(href: string) {
+  return href === "/" ? currentPath === "/" : currentPath.startsWith(href);
+}
+
+const footerYear = new Date().getFullYear();
 ---
-
-
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
-    <BaseHead title={title} description={description} />
+    <BaseHead title={title} description={description} image={image} structuredData={structuredData} />
     <script is:inline>
-      try {
-        const storageKey = 'nbdevlab-theme';
-        const stored = localStorage.getItem(storageKey);
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = stored || (prefersDark ? 'dark' : 'light');
-        document.documentElement.dataset.theme = theme;
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
+      (() => {
+        try {
+          const storageKey = "nbdevlab-theme";
+          const stored = localStorage.getItem(storageKey);
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          const theme = stored ?? (prefersDark ? "dark" : "light");
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.classList.toggle("dark", theme === "dark");
+        } catch (error) {
+          console.warn("Failed to restore theme", error);
         }
-      } catch (error) {
-        console.warn('Unable to initialise theme', error);
-      }
+      })();
     </script>
-    <style is:global>
-      :root{
-       --bg: #05070d;
-       --card: #121a2b;
-       --card-2: #0b111f;
-       --fg: #f7faff;
-       --muted: #d3daf2;
-       --link: #ffb255;
-       --accent: #ff9b2b;
-       --radius: 16px;
-       --shadow: 0 12px 30px rgba(0,0,0,.55);
-       --container: 1240px;
-       --border: #ffd19d;
-       --outline: #ffd19d;
-  /* Force removal of leftover honeycomb pattern vars (seen in DevTools cache) */
-  --hex-line: transparent !important;
-  --hex-line-strong: transparent !important;
-  --hxGlow: 0 !important;
-        /* ✦ Subtle fancy background (vignette + slow aurora) */
-        --fx-strength: .12;      /* overall aurora opacity (0–.25 sweet spot) */
-        --fx-blur: 110px;        /* softness of the aurora glow */
-        --fx-orange: 255 145 0;  /* accent */
-        --fx-cyan: 80 170 255;   /* cool counter tint */
-        --fx-mag: 255 70 160;    /* gentle magenta */
-     }
-     *{box-sizing:border-box}
-     html,body{height:100%}
-     body{
-       margin:0;
-       background: var(--bg);
-       /* tiny top vignette + gentle center lift */
-       background-image:
-         radial-gradient(1200px 700px at 50% -10%, rgba(255,255,255,.045), transparent 60%),
-         radial-gradient(900px 600px at 50% 120%, rgba(255,255,255,.035), transparent 65%);
-       background-attachment: fixed, fixed;
-       color:var(--fg);
-       font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
-     }
-     /* soft static glows painted behind content */
-   body::before{
-       content:"";
-       position:fixed; inset:-12%;
-       pointer-events:none; z-index:-1;
-       background:
-     radial-gradient(800px 520px at 18% 8%,  rgb(var(--fx-orange) / .10), transparent 80%),
-     radial-gradient(700px 480px at 82% 14%, rgb(var(--fx-cyan)   / .07), transparent 80%),
-     radial-gradient(720px 520px at 50% 110%, rgb(var(--fx-mag)    / .06), transparent 85%);
-       filter: blur(42px) saturate(110%);
-       opacity:.55;
-     }
-     /* register animating angle */
-     @property --angle{ syntax: '<angle>'; initial-value: 0deg; inherits:false; }
-     @keyframes spin-aurora{ to { --angle: 360deg; } }
-     /* ultra-subtle animated aurora sheet */
-     body::after{
-       content:"";
-       position:fixed; inset:-20%;
-       pointer-events:none; z-index:-1;
-       background:
-         conic-gradient(from var(--angle),
-           rgb(var(--fx-orange) / calc(var(--fx-strength) * .50)) 0deg,
-           transparent 40deg,
-           rgb(var(--fx-cyan)   / calc(var(--fx-strength) * .8)) 90deg,
-           transparent 160deg,
-           rgb(var(--fx-mag)    / calc(var(--fx-strength) * .75)) 210deg,
-           transparent 300deg,
-           rgb(var(--fx-orange) / calc(var(--fx-strength) * .50)) 360deg);
-       filter: blur(var(--fx-blur)) saturate(110%);
-       mix-blend-mode: screen;
-       opacity: var(--fx-strength);
-       animation: spin-aurora 42s linear infinite;
-       will-change: transform, filter;
-     }
-     @media (prefers-reduced-motion: reduce){ body::after{ animation:none; } }
-     @media (min-width: 1440px){
-       :root{ --container: 1320px; }
-     }
-     .container{
-       width:100%;
-       max-width:min(var(--container), calc(100vw - 2.75rem));
-       margin:0 auto;
-       padding:clamp(2.25rem, 4vw, 3.5rem) clamp(1.75rem, 4.5vw, 3.25rem) clamp(4.25rem, 6vw, 5.5rem);
-     }
-     header{
-       position:sticky;
-       top:0;
-       z-index:50;
-       backdrop-filter:blur(6px);
-       background:linear-gradient(to bottom,rgba(10,10,10,.9),rgba(10,10,10,.55));
-       border-bottom:1px solid rgba(255,255,255,.12);
-       box-shadow:0 2px 8px -2px rgba(0,0,0,.55);
-     }
-     .nav{
-       display:flex;
-       align-items:center;
-       justify-content:space-between;
-       max-width:var(--container);
-       margin:0 auto;
-       padding:clamp(.75rem, 2vw, .95rem) clamp(1.25rem, 3vw, 2.5rem)
-     }
-     .brand{
-       display:flex;
-       gap:.6rem;
-       align-items:center;
-       font-weight:800;
-       color:var(--fg); /* Add this line to ensure correct color */
-     }
-     .dot{
-       width:.6rem;
-       height:.6rem;
-       border-radius:999px;
-       background:var(--accent);
-       box-shadow:0 0 16px var(--accent)
-     }
-  /* Remove legacy nav link/button styles, use shadcn/ui */
-  a{color:var(--link)}
-     h1{
-       font-size:clamp(2rem,2.6vw + 1.2rem,3.4rem);
-       line-height:1.1;
-       margin:0 0 .4rem;
-       font-weight:900;
-       color: var(--fg);
-       letter-spacing: -1px;
-     }
-     h2{
-       font-size:clamp(1.3rem,1.2vw + .9rem,1.8rem);
-       margin:0 0 .75rem;
-       font-weight:800
-       color: var(--fg);
-     }
-     h3{
-       font-size:1.05rem;
-       margin:0 0 .25rem;
-       font-weight:700
-       color: var(--fg);
-     }
-     p{margin:0 0 .75rem}
-     .muted{color:var(--muted)}
-
-     /* Button and outline accent styles */
-     .btn, .button, .shadcn-btn, .shadcn-outline, .shadcn-ui-outline {
-       --_accent: var(--accent);
-       --_btn-bg: linear-gradient(135deg,#141414,#1c1c1c);
-       --_btn-border: var(--outline);
-       --_btn-shadow: 0 0 0 1px rgba(255,145,0,.45), 0 0 18px -6px rgba(255,145,0,.55);
-       position:relative;
-       border:1px solid var(--_btn-border)!important;
-       background:var(--_btn-bg)!important;
-       color:#f7f7f5!important;
-       box-shadow:var(--_btn-shadow);
-       transition:background .25s,box-shadow .25s,border-color .25s,color .25s;
-     }
-     .btn:hover, .button:hover, .shadcn-btn:hover, .shadcn-outline:hover, .shadcn-ui-outline:hover {
-       background:linear-gradient(135deg,#1f1f1f,#292929)!important;
-       box-shadow:0 0 0 1px rgba(255,145,0,.65),0 0 26px -4px rgba(255,145,0,.65);
-       color:#ffe7cc!important;
-     }
-     .btn[data-variant="ghost"], .shadcn-ghost {
-       background:rgba(255,145,0,.05)!important;
-       box-shadow:none;
-       color:var(--accent)!important;
-     }
-     .btn[data-variant="ghost"]:hover, .shadcn-ghost:hover {
-       background:rgba(255,145,0,.12)!important;
-       color:#ffd199!important;
-     }
-     /* For shadcn/ui ghost variant */
-     .shadcn-ghost {
-       border: 1.5px solid var(--outline) !important;
-       color: var(--accent) !important;
-       background: transparent !important;
-     }
-     .shadcn-ghost:hover {
-       background: var(--accent) !important;
-       color: #181818 !important;
-     }
-     .hero{padding-top:3.5rem;padding-bottom:1.5rem}
-     .hero-rails{
-       position:fixed;
-       inset:0;
-       display:none;
-       justify-content:space-between;
-       align-items:stretch;
-       pointer-events:none;
-       z-index:0;
-     }
-     @media (min-width: 900px){
-       .hero-rails{display:flex;}
-     }
-     .hero-rail{
-       display:block;
-       height:100%;
-       width:clamp(72px,9vw,118px);
-       border-radius:120px;
-       filter:blur(46px);
-       opacity:var(--rail-opacity,.34);
-       transform:scaleX(var(--rail-scale,1));
-       transition:opacity .35s ease, transform .35s ease, box-shadow .35s ease;
-       will-change:opacity,transform,box-shadow;
-       background-repeat:no-repeat;
-       background-size:100% 100%;
-       background-position:center;
-       --rail-glow:0px;
-     }
-     .hero-rail--warm{
-       margin-left:max(-4rem,-5vw);
-       background-image:linear-gradient(180deg,rgba(255,120,40,0) 0%,rgba(255,138,70,.08) 12%,rgba(255,158,95,.35) 30%,rgba(255,168,118,.58) 47%,rgba(255,142,70,.42) 68%,rgba(255,120,40,0) 100%),
-         radial-gradient(ellipse at center,rgba(255,180,120,.75) 0%,rgba(255,150,70,.55) 40%,rgba(255,110,25,.22) 72%,rgba(255,110,25,0) 100%);
-       --rail-shadow-size:120px;
-       --rail-shadow-spread:36px;
-       box-shadow:0 0 calc(var(--rail-shadow-size) + var(--rail-glow)) var(--rail-shadow-spread) rgba(255,150,70,.32);
-     }
-     .hero-rail--cool{
-       margin-right:max(-4rem,-5vw);
-       background-image:linear-gradient(180deg,rgba(30,160,255,0) 0%,rgba(56,170,255,.08) 14%,rgba(92,190,255,.34) 32%,rgba(130,210,255,.56) 50%,rgba(82,185,255,.4) 68%,rgba(30,160,255,0) 100%),
-         radial-gradient(ellipse at center,rgba(150,210,255,.72) 0%,rgba(110,190,255,.52) 42%,rgba(70,160,240,.2) 74%,rgba(70,160,240,0) 100%);
-       --rail-shadow-size:118px;
-       --rail-shadow-spread:34px;
-       box-shadow:0 0 calc(var(--rail-shadow-size) + var(--rail-glow)) var(--rail-shadow-spread) rgba(90,180,255,.3);
-     }
-     .badges{
-       display:flex;
-       flex-wrap:wrap;
-       gap:.5rem;
-       margin-top:.75rem
-     }
-  /* Remove legacy badge style, use shadcn/ui */
-     .grid{
-       display:grid;
-       gap:1rem;
-       grid-template-columns:1fr
-     }
-     @media(min-width:820px){
-       .grid{grid-template-columns:repeat(3,1fr)}
-     }
-     .card{
-       background:linear-gradient(180deg,var(--card),var(--card-2));
-       border:1.5px solid var(--border);
-       border-radius:var(--radius);
-       padding:1rem;
-       box-shadow:var(--shadow);
-       transition:transform .15s,border-color .15s
-     }
-     .card:hover{
-       transform:translateY(-2px);
-       border-color:var(--accent);
-     }
-     a.card{
-       color:inherit;
-       text-decoration:none;
-       display:block
-     }
-     .section{margin:2.2rem 0 1.2rem}
-     .cta-row{
-       display:flex;
-       gap:.8rem;
-       flex-wrap:wrap;
-       margin-top:1rem
-     }
-  /* Remove legacy .btn styles, use shadcn/ui */
-     footer{
-       border-top:1px solid rgba(255,255,255,.12);
-       margin-top:2.5rem
-     }
-     footer .inner{
-       max-width:var(--container);
-       margin:0 auto;
-       padding:1.25rem;
-       color:var(--muted);
-       font-size:.9rem;
-       text-align:center
-     }
-     .kbd{
-       font:600 .8rem ui-monospace,SFMono-Regular,Menlo,monospace;
-       background:#0d1117;
-       border:1px solid rgba(255,255,255,.12);
-       padding:.15rem .4rem;
-       border-radius:6px;
-       color:#e5e7eb
-     }
-      :root[data-theme="dark"] {
-        --bg: #060708;
-        --card: #101214;
-        --card-2: #0c0d10;
-        --fg: #f5f6f7;
-        --muted: #a7b0c0;
-        --link: #ffd18a;
-        --accent: #ff9100;
-        --outline: rgba(255, 145, 0, 0.8);
-      }
-      :root[data-theme="light"] {
-        --bg: #f7f8fa;
-        --card: #ffffff;
-        --card-2: #f0f2f7;
-        --fg: #121419;
-        --muted: #445061;
-        --link: #c04a00;
-        --accent: #d16000;
-        --outline: rgba(193, 96, 0, 0.75);
-      }
-      :focus-visible {
-        outline: 2px solid var(--outline);
-        outline-offset: 3px;
-      }
-      .skip-link {
-        position: absolute;
-        top: 0.5rem;
-        left: 1rem;
-        padding: 0.35rem 0.75rem;
-        background: #0f172a;
-        color: #f8fafc;
-        border-radius: 0.5rem;
-        transform: translateY(-200%);
-        transition: transform 0.2s ease;
-        z-index: 1000;
-      }
-      .skip-link:focus {
-        transform: translateY(0);
-      }
-      .nav {
-        gap: 1.25rem;
-      }
-      .nav-links {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .nav-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.35rem;
-        padding: 0.45rem 0.95rem;
-        min-width: 3.5rem;
-        border-radius: 999px;
-        border: 1px solid transparent;
-        font-size: 0.9rem;
-        letter-spacing: 0.02em;
-        text-decoration: none;
-        color: rgba(246, 248, 255, 0.9);
-        background: transparent;
-        transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      }
-      .nav-link:hover,
-      .nav-link:focus-visible {
-        color: var(--fg);
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
-        outline: none;
-      }
-      .nav-link.is-active {
-        background: linear-gradient(135deg, rgba(255, 145, 0, 0.95), rgba(255, 183, 82, 0.95));
-        color: #0b0f14;
-        border-color: rgba(255, 206, 135, 0.85);
-        box-shadow: 0 16px 40px -22px rgba(255, 160, 50, 0.9);
-      }
-      .nav-link.is-active:hover,
-      .nav-link.is-active:focus-visible {
-        color: #0b0f14;
-        border-color: rgba(255, 206, 135, 1);
-        box-shadow: 0 22px 48px -18px rgba(255, 170, 60, 1);
-      }
-      :root[data-theme="light"] .nav-link {
-        color: rgba(24, 30, 42, 0.82);
-      }
-      :root[data-theme="light"] .nav-link:hover,
-      :root[data-theme="light"] .nav-link:focus-visible {
-        background: rgba(0, 0, 0, 0.06);
-        border-color: rgba(0, 0, 0, 0.12);
-        color: rgba(20, 24, 32, 0.9);
-      }
-      :root[data-theme="light"] .nav-link.is-active {
-        color: #1b1304;
-      }
-      .nav-actions {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .theme-toggle {
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        background: rgba(255, 255, 255, 0.06);
-        color: inherit;
-        padding: 0.4rem 0.55rem;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background 0.2s ease, border-color 0.2s ease;
-      }
-      .theme-toggle:hover,
-      .theme-toggle:focus-visible {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: var(--outline);
-      }
-      .search-trigger {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.4rem 0.75rem;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        background: rgba(255, 255, 255, 0.05);
-        color: inherit;
-        cursor: pointer;
-        font-size: 0.875rem;
-        transition: background 0.2s ease, border-color 0.2s ease;
-      }
-      .search-trigger kbd {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-        font-size: 0.7rem;
-        padding: 0.2rem 0.45rem;
-        border-radius: 0.4rem;
-        background: rgba(255, 255, 255, 0.1);
-      }
-      .search-trigger:hover,
-      .search-trigger:focus-visible {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: var(--outline);
-      }
-      .search-overlay {
-        position: fixed;
-        inset: 0;
-        display: grid;
-        place-items: center;
-        padding: 2rem 1rem;
-        z-index: 80;
-      }
-      .search-backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(8, 11, 19, 0.75);
-        backdrop-filter: blur(6px);
-        border: none;
-      }
-      .search-panel {
-        position: relative;
-        width: min(720px, 100%);
-        background: rgba(11, 13, 20, 0.96);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-        color: inherit;
-        display: flex;
-        flex-direction: column;
-        max-height: min(600px, 90vh);
-      }
-      .search-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      }
-      .search-header input {
-        flex: 1;
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 0.65rem 0.85rem;
-        color: inherit;
-      }
-      .search-header input:focus {
-        border-color: var(--outline);
-        outline: none;
-      }
-      .search-close {
-        background: none;
-        border: none;
-        color: inherit;
-        font-size: 0.875rem;
-        cursor: pointer;
-      }
-      .search-close:hover,
-      .search-close:focus-visible {
-        color: var(--link);
-      }
-      .search-body {
-        padding: 1rem 0.5rem 1.25rem;
-        overflow-y: auto;
-      }
-      .search-state {
-        padding: 0.5rem 1.25rem;
-        color: rgba(255, 255, 255, 0.7);
-      }
-      .search-results {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        gap: 0.5rem;
-      }
-      .search-results li a {
-        display: block;
-        border-radius: 14px;
-        padding: 0.85rem 1.1rem;
-        text-decoration: none;
-        color: inherit;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.02);
-        transition: border-color 0.2s ease, background 0.2s ease;
-      }
-      .search-results li a.is-active,
-      .search-results li a:hover,
-      .search-results li a:focus-visible {
-        border-color: var(--outline);
-        background: rgba(255, 145, 0, 0.15);
-      }
-      .search-title {
-        font-weight: 600;
-        display: block;
-      }
-      .search-summary {
-        font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.7);
-        margin-top: 0.3rem;
-        display: block;
-      }
-      .search-meta {
-        display: flex;
-        gap: 0.75rem;
-        font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.6);
-        margin-top: 0.45rem;
-      }
-      .search-meta span,
-      .search-meta time {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-      }
-      .search-meta span::before,
-      .search-meta time::before {
-        content: "•";
-        margin-right: 0.25rem;
-      }
-      .search-meta span:first-child::before,
-      .search-meta time:first-child::before {
-        content: "";
-        margin-right: 0;
-      }
-      .back-to-top {
-        position: fixed;
-        bottom: 1.5rem;
-        right: 1.5rem;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        background: rgba(255, 255, 255, 0.08);
-        color: inherit;
-        padding: 0.65rem 0.85rem;
-        font-size: 1.1rem;
-        cursor: pointer;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.2s ease, transform 0.2s ease;
-        z-index: 60;
-      }
-      .back-to-top[data-visible="true"] {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      .back-to-top:hover,
-      .back-to-top:focus-visible {
-        border-color: var(--outline);
-        background: rgba(255, 145, 0, 0.2);
-      }
-      mark {
-        background: rgba(255, 145, 0, 0.35);
-        color: inherit;
-        border-radius: 4px;
-        padding: 0 0.15rem;
-      }
-    </style>
   </head>
   <body>
-    <a class="skip-link" href="#main-content">Skip to main content</a>
-    {showRails && (
-      <div class="hero-rails" aria-hidden="true">
-        <span class="hero-rail hero-rail--warm"></span>
-        <span class="hero-rail hero-rail--cool"></span>
+    <a href="#main-content" class="skip-nav">Skip to main content</a>
+    <header class="site-header" role="banner">
+      <div class="layout-shell">
+        <div class="site-header__row">
+          <a class="site-header__brand" href="/">
+            <span class="site-header__logo" aria-hidden="true">NB</span>
+            <span class="sr-only">nbdevlab — Home</span>
+            <span aria-hidden="true">nbdevlab</span>
+          </a>
+          <button
+            type="button"
+            class="site-header__menu"
+            data-nav-toggle
+            aria-label="Toggle navigation"
+            aria-controls="site-navigation"
+            aria-expanded="false"
+          >
+            Menu
+          </button>
+          <nav id="site-navigation" class="site-header__nav" aria-label="Primary navigation" data-nav>
+            <div class="site-header__links">
+              {NAV_LINKS.map((item) => (
+                <a class={isActive(item.href) ? "is-active" : undefined} href={item.href}>
+                  <span>{item.label}</span>
+                </a>
+              ))}
+            </div>
+            <div class="site-header__utilities">
+              <SearchDialog client:load />
+              <ThemeToggle client:load />
+            </div>
+          </nav>
+        </div>
       </div>
-    )}
-    <header>
-      <nav class="nav" role="navigation" aria-label="Primary">
-        <div class="brand"><span class="dot" aria-hidden="true"></span> <span>Nathan Bullock</span></div>
-        <div class="nav-links">
-          {NAV_LINKS.map(({ href, label }) => (
-            <a
-              href={href}
-              aria-current={isActive(href) ? "page" : undefined}
-              class={navLinkClass(href)}
-            >
-              {label}
-            </a>
-          ))}
-        </div>
-        <div class="nav-actions">
-          <SearchDialog client:load />
-          <ThemeToggle client:load />
-        </div>
-      </nav>
-      <slot name="after-header" />
     </header>
-
-    <main class="container" id="main-content" tabindex="-1">
-      <slot />
+    <main id="main-content" class="site-main">
+      <div class="layout-shell">
+        <slot />
+      </div>
     </main>
-
-    <footer>
-      <slot name="before-footer" />
-      <div class="inner">© {new Date().getFullYear()} Nathan Bullock</div>
+    <footer class="site-footer">
+      <div class="layout-shell">
+        <div class="site-footer__row">
+          <p>© {footerYear} Nathan Bullock. Built in Astro, deployed on Cloudflare Pages.</p>
+          <div class="chip-row" role="list">
+            <a role="listitem" href="/projects/" class="button button--ghost">Projects</a>
+            <a role="listitem" href="/blog/" class="button button--ghost">Lab Notes</a>
+          </div>
+        </div>
+      </div>
     </footer>
     <BackToTopButton />
-    {showRails && (
-      <script is:inline>
-        const initRailProximity = () => {
-          const warm = document.querySelector('.hero-rail--warm');
-          const cool = document.querySelector('.hero-rail--cool');
-          if (!warm || !cool) return;
-
-          const baseOpacity = 0.34;
-          const boost = 0.28;
-          const baseScale = 1;
-          const scaleBoost = 0.08;
-          const glowBoost = 90;
-
-          const proximityFactor = (value) => Math.max(0, (value - baseOpacity) / boost);
-
-          const applyState = (rail, intensity) => {
-            const clamped = Math.min(baseOpacity + boost, Math.max(baseOpacity, intensity));
-            const factor = proximityFactor(clamped);
-            rail.style.setProperty('--rail-opacity', clamped.toFixed(3));
-            rail.style.setProperty('--rail-scale', (baseScale + factor * scaleBoost).toFixed(3));
-            rail.style.setProperty('--rail-glow', `${(factor * glowBoost).toFixed(2)}px`);
-          };
-
-          const reset = () => {
-            applyState(warm, baseOpacity);
-            applyState(cool, baseOpacity);
-          };
-
-          const handlePointerMove = (event) => {
-            const width = window.innerWidth || 1;
-            const range = Math.min(width * 0.35, 360);
-            const leftDistance = Math.max(0, event.clientX);
-            const rightDistance = Math.max(0, width - event.clientX);
-            const warmProximity = Math.max(0, 1 - leftDistance / range);
-            const coolProximity = Math.max(0, 1 - rightDistance / range);
-            applyState(warm, baseOpacity + boost * warmProximity);
-            applyState(cool, baseOpacity + boost * coolProximity);
-          };
-
-          reset();
-          window.addEventListener('pointermove', handlePointerMove, { passive: true });
-          window.addEventListener('pointerout', (event) => {
-            if (!event.relatedTarget) {
-              reset();
-            }
-          });
-          window.addEventListener('blur', reset);
+    <script is:inline>
+      (() => {
+        const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+        const nav = document.querySelector<HTMLElement>("[data-nav]");
+        if (!toggle || !nav) return;
+        const closeNav = () => {
+          nav.classList.remove("is-open");
+          toggle.setAttribute("aria-expanded", "false");
         };
-
-        if (typeof window !== 'undefined') {
-          window.requestAnimationFrame(initRailProximity);
-        }
-      </script>
-    )}
+        toggle.addEventListener("click", () => {
+          const isOpen = nav.classList.toggle("is-open");
+          toggle.setAttribute("aria-expanded", String(isOpen));
+          if (isOpen) {
+            const firstLink = nav.querySelector<HTMLAnchorElement>("a");
+            firstLink?.focus();
+          }
+        });
+        document.addEventListener("keyup", (event) => {
+          if (event.key === "Escape") {
+            closeNav();
+            toggle.focus();
+          }
+        });
+        nav.addEventListener("click", (event) => {
+          if (event.target instanceof HTMLAnchorElement) {
+            closeNav();
+          }
+        });
+      })();
+    </script>
   </body>
 </html>

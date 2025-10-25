@@ -1,17 +1,89 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
 ---
-<SiteLayout title="About — Nathan Bullock">
-<section class="hero">
-<h1>About Me</h1>
-<p class="muted">For those who don't know me.</p>
-</section>
+<SiteLayout
+  title="About Nathan Bullock — nbdevlab"
+  description="Meet Nathan Bullock, the builder behind nbdevlab. Learn about the journey, skills, and how to connect."
+>
+  <section class="projects-shell" aria-labelledby="about-heading">
+    <header>
+      <h1 id="about-heading">Hi, I’m Nathan</h1>
+      <p>
+        I run nbdevlab as a perpetual workshop for edge-native automation, UI systems, and homelab infrastructure. I love pairing
+        OpenAI’s tooling with intentional design to ship approachable, resilient products.
+      </p>
+    </header>
 
+    <article class="card" aria-labelledby="bio-heading">
+      <h2 id="bio-heading" class="card__title">Biography</h2>
+      <p>
+        I started my career as a systems engineer, wiring up VMware clusters and keeping high-availability networks honest. The lab
+        quickly became my sandbox for testing failovers, hardening services, and experimenting with automation. Over the years the
+        command line made room for TypeScript, Astro, and interface design — the ingredients I use today to build helpful tooling.
+      </p>
+      <p>
+        nbdevlab is where those threads meet. I sketch ideas in notebooks, pair with OpenAI’s Codex to accelerate implementation,
+        and deploy to Cloudflare’s edge so experiments stay close to the metal. Every project is an opportunity to learn,
+        document, and share.
+      </p>
+    </article>
 
-<section class="section">
-<div class="card">
-<p> Ill do this later
-</p>
-</div>
-</section>
+    <section aria-labelledby="skills-heading" class="card" role="list">
+      <h2 id="skills-heading" class="card__title">Skills snapshot</h2>
+      <div class="card-grid" role="list">
+        <article class="card" role="listitem">
+          <h3 class="card__title">Edge &amp; automation</h3>
+          <p>Cloudflare Workers, Durable Objects, KV storage, and TypeScript-first deployment pipelines.</p>
+        </article>
+        <article class="card" role="listitem">
+          <h3 class="card__title">UI &amp; UX systems</h3>
+          <p>Astro, React/Preact islands, accessible navigation, and design systems tuned for dark/light modes.</p>
+        </article>
+        <article class="card" role="listitem">
+          <h3 class="card__title">Homelab operations</h3>
+          <p>Proxmox, TrueNAS, pfSense, observability stacks, and runbooks that keep services resilient.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="timeline-heading" class="card">
+      <h2 id="timeline-heading" class="card__title">Highlights</h2>
+      <ol class="timeline" role="list">
+        <li class="timeline__item" role="listitem">
+          <p class="timestamp">2025</p>
+          <h3>nbdevlab goes public</h3>
+          <p>Rebuilt the site with Astro + Cloudflare Pages, exposing the dashboards and automation powering the lab.</p>
+        </li>
+        <li class="timeline__item" role="listitem">
+          <p class="timestamp">2023</p>
+          <h3>Edge-first automation</h3>
+          <p>Shifted personal tooling to Workers, Durable Objects, and queue-driven pipelines to remove on-prem bottlenecks.</p>
+        </li>
+        <li class="timeline__item" role="listitem">
+          <p class="timestamp">2019</p>
+          <h3>Homelab resilience sprint</h3>
+          <p>Overhauled backups, observability, and failover processes after a cascading UPS outage. Wrote the runbooks that still
+            guide the lab.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="contact-heading" class="card">
+      <h2 id="contact-heading" class="card__title">Let’s connect</h2>
+      <ul class="list-reset">
+        <li>
+          <strong>Email:</strong>
+          <a href="mailto:hello@nbdevlab.com">hello@nbdevlab.com</a>
+        </li>
+        <li>
+          <strong>GitHub:</strong>
+          <a href="https://github.com/0xC0FFEEBEEF" target="_blank" rel="noopener noreferrer">0xC0FFEEBEEF ↗</a>
+        </li>
+        <li>
+          <strong>LinkedIn:</strong>
+          <a href="https://www.linkedin.com/in/nathan-bullock" target="_blank" rel="noopener noreferrer">Nathan Bullock ↗</a>
+        </li>
+      </ul>
+    </section>
+  </section>
 </SiteLayout>
