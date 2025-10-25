@@ -1,6 +1,17 @@
 name = "nbdevlab"
 compatibility_date = "2025-10-24"
 
+[vars]
+GITHUB_USERNAME = "nbullock"
+
+[[kv_namespaces]]
+binding = "GITHUB_CACHE"
+id = "REPLACE_WITH_PRODUCTION_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_PREVIEW_NAMESPACE_ID"
+
+# GITHUB_TOKEN should be added as a Pages secret:
+#   wrangler pages secret put GITHUB_TOKEN
+
 [env.preview]
 workers_dev = true
 

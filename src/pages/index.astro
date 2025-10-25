@@ -3,11 +3,15 @@ import SiteLayout from "../layouts/SiteLayout.astro";
 import { buttonVariants } from "../components/ui/button";
 import { cn } from "../lib/utils";
 import { getEntry } from "astro:content";
+import GithubActivityCard from "../components/GithubActivityCard.astro";
 
 const homepageEntry = await getEntry("homepage", "dashboard");
 const heroCards = homepageEntry.data.highlightCards;
 const activityCard = homepageEntry.data.activityCard;
-const featureCards = [...heroCards, activityCard];
+const featureCards = heroCards;
+// Example usage:
+// <GithubActivityCard limit={5} />
+// Remember to keep this page dynamic when using the activity card.
 const nowItems = homepageEntry.data.nowItems;
 const timeline = homepageEntry.data.timeline;
 ---
@@ -171,31 +175,34 @@ const timeline = homepageEntry.data.timeline;
       <div class="feature-grid">
         {featureCards.map((card) => (
           <a
-            class={`feature-card ${card.badge === "GitHub" ? "feature-card--activity" : ""}`}
+            class="feature-card"
             href={card.href}
             style={`--card-accent:${card.accent ?? "255 145 0"}`}
-            target={card.badge === "GitHub" ? "_blank" : undefined}
-            rel={card.badge === "GitHub" ? "noreferrer" : undefined}
           >
             <span class="feature-card__badge">{card.badge}</span>
             <span class="feature-card__title">{card.title}</span>
             <span class="feature-card__description">{card.description}</span>
-            {card.timestamp && (
-              <span class="feature-card__meta">
-                <span>{card.repo}</span>
-                <span aria-hidden="true">•</span>
-                <span>{card.timestamp}</span>
-                {card.meta && (
-                  <span class="feature-card__meta-detail">{card.meta}</span>
-                )}
-              </span>
-            )}
             <span class="feature-card__cta">
-              {card.badge === "GitHub" ? "View on GitHub" : "Explore"}
+              Explore
               <span aria-hidden="true">↗</span>
             </span>
           </a>
         ))}
+        <section class="feature-grid__github">
+          <GithubActivityCard limit={5} />
+          <div class="feature-grid__github-meta">
+            <span class="feature-grid__github-badge">{activityCard.badge}</span>
+            {activityCard.description && <p>{activityCard.description}</p>}
+            <a
+              class="feature-grid__github-link"
+              href={activityCard.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {activityCard.title} ↗
+            </a>
+          </div>
+        </section>
       </div>
 
       <div class="now-grid">
@@ -419,6 +426,11 @@ const timeline = homepageEntry.data.timeline;
       }
       
       .feature-grid{display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+      .feature-grid__github{display:flex;flex-direction:column;gap:1rem}
+      .feature-grid__github-meta{display:flex;flex-direction:column;gap:0.35rem;color:rgba(220,230,255,.72);font-size:.9rem}
+      .feature-grid__github-badge{font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;color:rgba(255,199,125,.88)}
+      .feature-grid__github-link{display:inline-flex;align-items:center;gap:.35rem;text-decoration:none;color:rgba(255,208,165,.95);font-weight:600}
+      .feature-grid__github-link:hover,.feature-grid__github-link:focus-visible{text-decoration:underline;color:rgba(255,230,200,1);outline:none}
       .feature-card{
         --card-accent:255 145 0;
         position:relative;

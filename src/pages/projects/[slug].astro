@@ -1,0 +1,130 @@
+---
+// Add a new case study by creating a Markdown file inside src/content/projects.
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "../../lib/date";
+import "../../styles/projects.css";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { slug: project.data.slug ?? project.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const projects = await getCollection("projects");
+const sorted = [...projects].sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const entry = sorted.find((item) => item.data.slug === slug);
+
+if (!entry) {
+  return Astro.redirect("/projects");
+}
+
+const index = sorted.findIndex((item) => item.id === entry.id);
+const previous: CollectionEntry<"projects"> | undefined = index > 0 ? sorted[index - 1] : undefined;
+const next: CollectionEntry<"projects"> | undefined = index < sorted.length - 1 ? sorted[index + 1] : undefined;
+const previousSlug = previous ? previous.data.slug ?? previous.slug : undefined;
+const nextSlug = next ? next.data.slug ?? next.slug : undefined;
+const { Content } = await entry.render();
+---
+<html lang="en">
+  <head>
+    <title>{entry.data.title} · nbdevlab Projects</title>
+    <meta name="description" content={entry.data.problem} />
+  </head>
+  <body>
+    <main class="projects-shell">
+      <article class="project-detail" aria-labelledby="project-title">
+        <header>
+          <h1 id="project-title">{entry.data.title}</h1>
+          <div class="project-meta">
+            <span class="status-chip">{entry.data.status}</span>
+            <span>{formatDate(entry.data.date)}</span>
+          </div>
+          <ul class="tags" aria-label="Tags">
+            {entry.data.tags.map((tag) => (
+              <li>
+                <span class="tag-chip" role="presentation" aria-hidden="true">#{tag}</span>
+              </li>
+            ))}
+          </ul>
+        </header>
+        <table class="projects-facts">
+          <tbody>
+            <tr>
+              <th scope="row">Status</th>
+              <td>{entry.data.status}</td>
+            </tr>
+            <tr>
+              <th scope="row">Published</th>
+              <td>{formatDate(entry.data.date)}</td>
+            </tr>
+            <tr>
+              <th scope="row">Stack</th>
+              <td>{entry.data.stack.join(", ")}</td>
+            </tr>
+            <tr>
+              <th scope="row">Constraints</th>
+              <td>
+                <ul>
+                  {entry.data.constraints.map((constraint) => (
+                    <li>{constraint}</li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Lessons</th>
+              <td>
+                <ul>
+                  {entry.data.lessons.map((lesson) => (
+                    <li>{lesson}</li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+            {entry.data.links && (
+              <tr>
+                <th scope="row">Links</th>
+                <td>
+                  <ul>
+                    {entry.data.links.repo && (
+                      <li>
+                        <a href={entry.data.links.repo} target="_blank" rel="noopener noreferrer">Repository ↗</a>
+                      </li>
+                    )}
+                    {entry.data.links.demo && (
+                      <li>
+                        <a href={entry.data.links.demo} target="_blank" rel="noopener noreferrer">Demo ↗</a>
+                      </li>
+                    )}
+                  </ul>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        <section class="projects-markdown">
+          <Content />
+        </section>
+      </article>
+      <nav class="projects-navigation" aria-label="Project navigation">
+        {previous && previousSlug ? (
+          <a href={`/projects/${previousSlug}/`} aria-label={`Previous project: ${previous.data.title}`}>
+            ← {previous.data.title}
+          </a>
+        ) : (
+          <span aria-hidden="true"></span>
+        )}
+        {next && nextSlug ? (
+          <a href={`/projects/${nextSlug}/`} aria-label={`Next project: ${next.data.title}`}>
+            {next.data.title} →
+          </a>
+        ) : (
+          <span aria-hidden="true"></span>
+        )}
+      </nav>
+    </main>
+  </body>
+</html>

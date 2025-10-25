@@ -1,0 +1,128 @@
+---
+// Add a new case study by creating a Markdown file inside src/content/projects.
+import { getCollection } from "astro:content";
+import { formatDate } from "../../lib/date";
+import "../../styles/projects.css";
+
+const allProjects = await getCollection("projects");
+const requestUrl = Astro.request?.url ?? "https://nbdevlab.pages.dev/projects";
+const url = new URL(requestUrl);
+const selectedStatusRaw = url.searchParams.get("status");
+const validStatuses = new Set(["shipped", "building", "research"]);
+const selectedStatus = selectedStatusRaw && validStatuses.has(selectedStatusRaw) ? selectedStatusRaw : null;
+const selectedTags = url.searchParams.getAll("tag").filter(Boolean);
+
+const projects = allProjects
+  .filter((entry) => {
+    if (selectedStatus && entry.data.status !== selectedStatus) return false;
+    if (selectedTags.length > 0 && !selectedTags.every((tag) => entry.data.tags.includes(tag))) return false;
+    return true;
+  })
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const allTags = Array.from(new Set(allProjects.flatMap((entry) => entry.data.tags))).sort((a, b) => a.localeCompare(b));
+
+function buildStatusUrl(status: string | null) {
+  const next = new URL(url);
+  if (status && status !== selectedStatus) {
+    next.searchParams.set("status", status);
+  } else {
+    next.searchParams.delete("status");
+  }
+  return `${next.pathname}${next.search ? `?${next.searchParams.toString()}` : ""}`;
+}
+
+function buildTagUrl(tag: string) {
+  const next = new URL(url);
+  const current = new Set(selectedTags);
+  if (current.has(tag)) {
+    current.delete(tag);
+  } else {
+    current.add(tag);
+  }
+  next.searchParams.delete("tag");
+  for (const value of current) {
+    next.searchParams.append("tag", value);
+  }
+  return `${next.pathname}${next.search ? `?${next.searchParams.toString()}` : ""}`;
+}
+---
+<html lang="en">
+  <head>
+    <title>Projects · nbdevlab</title>
+    <meta name="description" content="Deep-dives into nbdevlab projects, case studies, and experiments." />
+  </head>
+  <body>
+    <main class="projects-shell">
+      <header>
+        <h1>Projects &amp; Case Studies</h1>
+        <p>Stories from the lab — what we built, why it mattered, and what we learned along the way.</p>
+      </header>
+      <section class="filters" aria-label="Project filters">
+        <div class="filter-group" role="group" aria-label="Status">
+          <span>Status:</span>
+          <a
+            class="tag-chip"
+            role="button"
+            aria-pressed={selectedStatus === null}
+            href={buildStatusUrl(null)}
+          >
+            All
+          </a>
+          {Array.from(validStatuses).map((status) => (
+            <a
+              class="tag-chip"
+              role="button"
+              aria-pressed={selectedStatus === status}
+              href={buildStatusUrl(status)}
+            >
+              {status}
+            </a>
+          ))}
+        </div>
+        {allTags.length > 0 && (
+          <div class="filter-group" role="group" aria-label="Tags">
+            <span>Tags:</span>
+            {allTags.map((tag) => (
+              <a
+                class="tag-chip"
+                role="button"
+                aria-pressed={selectedTags.includes(tag)}
+                href={buildTagUrl(tag)}
+              >
+                #{tag}
+              </a>
+            ))}
+          </div>
+        )}
+      </section>
+      <ol class="projects-list">
+        {projects.map((project) => {
+          const slug = project.data.slug ?? project.slug;
+          return (
+            <li>
+              <a class="project-card" href={`/projects/${slug}/`}>
+                <div class="project-meta">
+                  <span class="status-chip">{project.data.status}</span>
+                  <span>{formatDate(project.data.date)}</span>
+                </div>
+                <h2>{project.data.title}</h2>
+                <p>{project.data.problem}</p>
+                <ul class="tags">
+                  {project.data.tags.map((tag) => (
+                    <li>
+                      <span class="tag-chip" role="presentation" aria-hidden="true">#{tag}</span>
+                    </li>
+                  ))}
+                </ul>
+              </a>
+            </li>
+          );
+        })}
+      </ol>
+      {projects.length === 0 && (
+        <p role="status">No projects found. Adjust your filters to see more work.</p>
+      )}
+    </main>
+  </body>
+</html>

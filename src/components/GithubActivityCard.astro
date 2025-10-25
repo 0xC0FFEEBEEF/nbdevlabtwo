@@ -1,0 +1,369 @@
+---
+interface Props {
+  limit?: number;
+}
+
+const { limit = 5 } = Astro.props as Props;
+const requestUrl = Astro.request?.url ?? "https://nbdevlab.pages.dev";
+const canFetchServer = typeof Astro.request !== "undefined";
+let items: Array<{
+  type: string;
+  repo: string;
+  url: string;
+  title: string;
+  timestamp: string;
+}> = [];
+let errored = false;
+
+function formatRelativeTime(iso: string): string {
+  try {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return "just now";
+    const diffSeconds = Math.round((Date.now() - date.getTime()) / 1000);
+    const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+    const intervals: Array<{
+      limit: number;
+      divisor: number;
+      unit: Intl.RelativeTimeFormatUnit;
+    }> = [
+      { limit: 60, divisor: 1, unit: "seconds" },
+      { limit: 3600, divisor: 60, unit: "minutes" },
+      { limit: 86400, divisor: 3600, unit: "hours" },
+      { limit: 604800, divisor: 86400, unit: "days" },
+      { limit: 2419200, divisor: 604800, unit: "weeks" },
+      { limit: 29030400, divisor: 2419200, unit: "months" },
+      { limit: Number.POSITIVE_INFINITY, divisor: 29030400, unit: "years" },
+    ];
+    const absSeconds = Math.abs(diffSeconds);
+    for (const { limit, divisor, unit } of intervals) {
+      if (absSeconds < limit) {
+        const value = Math.round(diffSeconds / divisor);
+        return formatter.format(-value, unit);
+      }
+    }
+    return formatter.format(0, "seconds");
+  } catch {
+    return "just now";
+  }
+}
+
+if (canFetchServer) {
+  try {
+    const apiUrl = new URL("/api/github", requestUrl);
+    const response = await fetch(apiUrl.toString(), {
+      headers: { Accept: "application/json" },
+    });
+    if (response.ok) {
+      const data = (await response.json()) as { items?: typeof items };
+      if (Array.isArray(data.items)) {
+        items = data.items.slice(0, limit);
+      }
+    } else {
+      errored = true;
+    }
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.error("github-activity-card", error);
+    }
+    errored = true;
+  }
+}
+
+const hasItems = items.length > 0;
+const cardId = `github-card-${Math.random().toString(36).slice(2, 10)}`;
+const shouldHydrateClient = !canFetchServer || errored;
+const initialState = hasItems ? "ready" : shouldHydrateClient ? "loading" : "empty";
+const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "No recent public activity yet.";
+---
+<section
+  class="github-card"
+  aria-labelledby="github-activity-heading"
+  role="region"
+  id={cardId}
+  data-github-card
+  data-state={initialState}
+>
+  <div class="github-card__header">
+    <h2 id="github-activity-heading">Last GitHub activity</h2>
+    <p>Edge-cached in Cloudflare KV for fast, respectful polling.</p>
+  </div>
+  <div
+    class="github-card__loading"
+    role="status"
+    aria-live="polite"
+    data-loading
+    hidden={initialState !== "loading"}
+  >
+    <span class="skeleton skeleton--title"></span>
+    <span class="skeleton skeleton--line"></span>
+    <span class="skeleton skeleton--line"></span>
+  </div>
+  <ol
+    class="github-card__list"
+    data-items
+    hidden={initialState !== "ready"}
+  >
+    {items.map((item) => (
+      <li class="github-card__item" data-type={item.type}>
+        <div class="github-card__meta">
+          <span class="github-card__repo" aria-label={`Repository ${item.repo}`}>
+            {item.repo}
+          </span>
+          <span class="github-card__type">{item.type.replace("Event", "")}</span>
+          <span class="github-card__time">{formatRelativeTime(item.timestamp)}</span>
+        </div>
+        <a class="github-card__link" href={item.url} target="_blank" rel="noopener noreferrer">
+          <span>{item.title}</span>
+          <span class="github-card__icon" aria-hidden="true">↗</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+  <div
+    class="github-card__empty"
+    role="status"
+    aria-live="polite"
+    data-empty
+    hidden={initialState !== "empty"}
+  >
+    {emptyMessage}
+  </div>
+</section>
+
+<style>
+.github-card {
+  background: rgba(9, 12, 20, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  padding: clamp(1.5rem, 4vw, 2rem);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.github-card__header h2 {
+  margin: 0;
+  font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+}
+
+.github-card__header p {
+  margin: 0.35rem 0 0;
+  color: rgba(235, 240, 255, 0.7);
+  font-size: 0.95rem;
+}
+
+.github-card__list {
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.github-card__item {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.25rem 0;
+}
+
+.github-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: rgba(220, 230, 255, 0.55);
+}
+
+.github-card__repo {
+  font-weight: 600;
+}
+
+.github-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: inherit;
+  text-decoration: none;
+  font-size: 1.02rem;
+  border-radius: 0.6rem;
+  padding: 0.25rem 0.4rem;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.github-card__link:hover,
+.github-card__link:focus-visible {
+  background: rgba(112, 152, 255, 0.14);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.github-card__icon {
+  font-size: 1.1rem;
+}
+
+.github-card__time {
+  color: rgba(173, 190, 255, 0.65);
+}
+
+.github-card__loading,
+.github-card__empty {
+  display: grid;
+  gap: 0.65rem;
+  font-size: 0.95rem;
+  color: rgba(220, 230, 255, 0.6);
+}
+
+.skeleton {
+  display: block;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(120, 140, 185, 0.18) 0%,
+    rgba(120, 140, 185, 0.32) 50%,
+    rgba(120, 140, 185, 0.18) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton--title {
+  width: 70%;
+  height: 1.1rem;
+}
+
+.skeleton--line {
+  width: 55%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+</style>
+
+<script is:inline>
+  (() => {
+    if (typeof window === "undefined") return;
+    const root = document.getElementById("${cardId}");
+    if (!root || root.dataset.state !== "loading") return;
+    const loading = root.querySelector("[data-loading]");
+    const list = root.querySelector("[data-items]");
+    const empty = root.querySelector("[data-empty]");
+    const limit = ${limit};
+
+    function showLoading(show) {
+      if (!loading) return;
+      loading.hidden = !show;
+    }
+
+    function showEmpty(message) {
+      if (!empty) return;
+      empty.textContent = message;
+      empty.hidden = false;
+    }
+
+    function relativeTime(iso) {
+      try {
+        const date = new Date(iso);
+        if (Number.isNaN(date.getTime())) return "just now";
+        const diffSeconds = Math.round((Date.now() - date.getTime()) / 1000);
+        const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+        const intervals = [
+          { limit: 60, divisor: 1, unit: "seconds" },
+          { limit: 3600, divisor: 60, unit: "minutes" },
+          { limit: 86400, divisor: 3600, unit: "hours" },
+          { limit: 604800, divisor: 86400, unit: "days" },
+          { limit: 2419200, divisor: 604800, unit: "weeks" },
+          { limit: 29030400, divisor: 2419200, unit: "months" },
+          { limit: Infinity, divisor: 29030400, unit: "years" },
+        ];
+        const absSeconds = Math.abs(diffSeconds);
+        for (const { limit, divisor, unit } of intervals) {
+          if (absSeconds < limit) {
+            const value = Math.round(diffSeconds / divisor);
+            return formatter.format(-value, unit);
+          }
+        }
+        return formatter.format(0, "seconds");
+      } catch {
+        return "just now";
+      }
+    }
+
+    function renderItems(entries) {
+      if (!list) return;
+      list.innerHTML = "";
+      const fragment = document.createDocumentFragment();
+      for (const item of entries.slice(0, limit)) {
+        const li = document.createElement("li");
+        li.className = "github-card__item";
+        li.dataset.type = item.type;
+
+        const meta = document.createElement("div");
+        meta.className = "github-card__meta";
+
+        const repo = document.createElement("span");
+        repo.className = "github-card__repo";
+        repo.setAttribute("aria-label", `Repository ${item.repo}`);
+        repo.textContent = item.repo;
+
+        const type = document.createElement("span");
+        type.className = "github-card__type";
+        type.textContent = item.type.replace("Event", "");
+
+        const time = document.createElement("span");
+        time.className = "github-card__time";
+        time.textContent = relativeTime(item.timestamp);
+
+        meta.append(repo, type, time);
+
+        const link = document.createElement("a");
+        link.className = "github-card__link";
+        link.href = item.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.innerHTML = `<span>${item.title}</span><span class="github-card__icon" aria-hidden="true">↗</span>`;
+
+        li.append(meta, link);
+        fragment.append(li);
+      }
+      list.append(fragment);
+      list.hidden = false;
+    }
+
+    async function hydrate() {
+      try {
+        showLoading(true);
+        const response = await fetch("/api/github", { headers: { Accept: "application/json" } });
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+        const data = await response.json();
+        const entries = Array.isArray(data.items) ? data.items : [];
+        if (entries.length === 0) {
+          showLoading(false);
+          showEmpty("No recent public activity yet.");
+          root.dataset.state = "empty";
+          return;
+        }
+        showLoading(false);
+        renderItems(entries);
+        if (empty) empty.hidden = true;
+        root.dataset.state = "ready";
+      } catch (error) {
+        console.error("github-activity-card-client", error);
+        showLoading(false);
+        showEmpty("GitHub is quiet right now. Try again soon.");
+        root.dataset.state = "empty";
+      }
+    }
+
+    hydrate();
+  })();
+</script>

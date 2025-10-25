@@ -2,16 +2,16 @@ local_backend: false
 
 backend:
   name: github
-  repo: 0xC0FFEEBEEF/nbdevlab        
+  repo: 0xC0FFEEBEEF/nbdevlab
   branch: main
   base_url: https://www.nbdevlab.com
 
-  
+
   auth_endpoint: api/auth
   site_domain: www.nbdevlab.com
 
-media_folder: "public/src/assets/uploads"       # files committed here
-public_folder: "/src/assets/uploads"         # how they’re referenced in pages
+media_folder: "public/src/assets/uploads"
+public_folder: "/src/assets/uploads"
 
 collections:
   - name: "projects"
@@ -20,18 +20,31 @@ collections:
     folder: "src/content/projects"
     create: true
     slug: "{{slug}}"
-    preview_path: "projects/"
+    preview_path: "projects/{{slug}}"
     fields:
       - { name: "title", label: "Title", widget: "string" }
-      - { name: "description", label: "Description", widget: "text", required: false }
-      - { name: "link", label: "Link (optional)", widget: "string", required: false }
-      - { name: "tags", label: "Tags", widget: "list", required: false }
-      - { name: "image", label: "Image (optional)", widget: "image", required: false }   # ← not required
-      - { name: "featured", label: "Featured", widget: "boolean", required: false, default: false }
-      - { name: "weight", label: "Weight (sort higher first)", widget: "number", required: false, value_type: "int", default: 0 }
-      - { name: "pubDate", label: "Published", widget: "datetime", required: false }
-      - { name: "draft", label: "Draft", widget: "boolean", required: false, default: false }
-      - { name: "body", label: "Body", widget: "markdown", required: false }
+      - { name: "slug", label: "Slug", widget: "string" }
+      - { name: "date", label: "Date", widget: "datetime", format: "YYYY-MM-DD" }
+      - name: "status"
+        label: "Status"
+        widget: "select"
+        options:
+          - { label: "Shipped", value: "shipped" }
+          - { label: "Building", value: "building" }
+          - { label: "Research", value: "research" }
+      - { name: "tags", label: "Tags", widget: "list" }
+      - { name: "problem", label: "Problem Summary", widget: "text" }
+      - { name: "constraints", label: "Constraints", widget: "list" }
+      - { name: "stack", label: "Stack", widget: "list" }
+      - { name: "lessons", label: "Lessons", widget: "list" }
+      - name: "links"
+        label: "Links"
+        widget: "object"
+        required: false
+        fields:
+          - { name: "repo", label: "Repository URL", widget: "string", required: false }
+          - { name: "demo", label: "Demo URL", widget: "string", required: false }
+      - { name: "body", label: "Case Study", widget: "markdown" }
   - name: "homepage"
     label: "Homepage"
     files:

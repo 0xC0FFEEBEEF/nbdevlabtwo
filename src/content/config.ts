@@ -1,7 +1,5 @@
 import { defineCollection, z } from "astro:content";
 
-
-
 const blog = defineCollection({
   type: "content",
   schema: z.object({
@@ -19,14 +17,20 @@ const projects = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
-    description: z.string().optional(),
-    link: z.string().url().optional(),
-    tags: z.array(z.string()).optional(),
-    image: z.string().optional(),
-    featured: z.boolean().optional(),
-    weight: z.number().int().optional(),
-    pubDate: z.coerce.date().optional(),
-    draft: z.boolean().optional(),
+    slug: z.string().optional(),
+    date: z.string(),
+    status: z.enum(["shipped", "building", "research"]),
+    tags: z.array(z.string()),
+    problem: z.string(),
+    constraints: z.array(z.string()),
+    stack: z.array(z.string()),
+    lessons: z.array(z.string()),
+    links: z
+      .object({
+        repo: z.string().url().optional(),
+        demo: z.string().url().optional(),
+      })
+      .optional(),
   }),
 });
 
