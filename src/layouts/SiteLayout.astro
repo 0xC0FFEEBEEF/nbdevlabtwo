@@ -44,7 +44,7 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
        --accent: #ff9100;
        --radius: 16px;
        --shadow: 0 12px 30px rgba(0,0,0,.55);
-       --container: 1100px;
+       --container: 1240px;
        --border: #ff9100;
        --outline: #ff9100;
   /* Force removal of leftover honeycomb pattern vars (seen in DevTools cache) */
@@ -107,7 +107,15 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
        will-change: transform, filter;
      }
      @media (prefers-reduced-motion: reduce){ body::after{ animation:none; } }
-     .container{max-width:var(--container);margin:0 auto;padding:2rem 1.25rem 4rem}
+     @media (min-width: 1440px){
+       :root{ --container: 1320px; }
+     }
+     .container{
+       width:100%;
+       max-width:min(var(--container), calc(100vw - 2.75rem));
+       margin:0 auto;
+       padding:clamp(2.25rem, 4vw, 3.5rem) clamp(1.75rem, 4.5vw, 3.25rem) clamp(4.25rem, 6vw, 5.5rem);
+     }
      header{
        position:sticky;
        top:0;
@@ -123,7 +131,7 @@ const isActive = (href: string) => (href === "/" ? currentPath === "/" : current
        justify-content:space-between;
        max-width:var(--container);
        margin:0 auto;
-       padding:.9rem 1.25rem
+       padding:clamp(.75rem, 2vw, .95rem) clamp(1.25rem, 3vw, 2.5rem)
      }
      .brand{
        display:flex;

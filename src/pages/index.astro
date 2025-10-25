@@ -13,19 +13,20 @@ const timeline = homepageEntry.data.timeline;
 ---
 
 <SiteLayout title="Home — Nathan Bullock" description="My Website!.">
-  <section class="hero flex flex-col items-center justify-center min-h-[70vh] px-2">
-    <div class="hero-inner relative flex flex-col items-center">
-      <div class="hero-pre text-[11px] tracking-[.25em] font-semibold text-[rgba(255,255,255,.55)] mb-4 uppercase">Building • Automating • Learning</div>
+  <section class="hero relative flex flex-col items-center justify-center min-h-[70vh] px-2">
+    <div class="hero-shell">
+    <div class="hero-inner relative flex flex-col items-center md:items-start text-center md:text-left mx-auto">
+      <div class="hero-pre text-[11px] tracking-[.25em] font-semibold text-[rgba(255,255,255,.55)] mb-4 uppercase text-center md:text-left">Building • Automating • Learning</div>
       <h1 class="hero-title text-4xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f2f2f2] via-[#f2f2f2] to-[#ff9a24]/80 mb-6">
         Nathan Bullock
       </h1>
-      <div class="hero-divider my-4 h-[1px] opacity-70" aria-hidden="true"></div>
-      <p class="hero-tagline muted text-lg md:text-xl mt-6 mb-10 text-center max-w-2xl">
+      <div class="hero-divider my-4 h-[1px] opacity-70 mx-auto md:ml-0" aria-hidden="true"></div>
+      <p class="hero-tagline muted text-lg md:text-xl mt-6 mb-10 text-center md:text-left max-w-2xl">
         This space documents and shares my personal experiments, tinkering, and the lessons I've learned.
       </p>
         </div>
 
-    <div class="w-full max-w-2xl mb-8">
+    <div class="hero-terminal w-full mb-10">
       <div id="terminal" class="terminal-wrapper group darker-terminal">
         <div class="terminal-chrome">
           <div class="traffic">
@@ -101,7 +102,7 @@ const timeline = homepageEntry.data.timeline;
       .terminal-wrapper:hover{box-shadow:0 0 0 1px rgba(255,170,64,.42),0 0 22px -8px rgba(255,140,40,.4)}
       .terminal-wrapper:focus-within{box-shadow:0 0 0 1px rgba(255,170,64,.55),0 0 0 4px rgba(255,170,64,.12)}
     .hero{position:relative}
-  .hero:before,.hero-inner:after{content:none !important}
+  .hero-inner:after{content:none !important}
   .hero-title{text-shadow:0 2px 4px rgba(0,0,0,.3);}
       .hero-divider{position:relative;width:240px;max-width:60%;height:2px;background:linear-gradient(90deg,transparent,#ffb04a,#ff8c24,transparent);border-radius:2px;box-shadow:0 0 0 1px rgba(255,150,40,.35),0 6px 22px -8px rgba(0,0,0,.6)}
       .hero-tagline{color:#cfcfcf}
@@ -114,7 +115,7 @@ const timeline = homepageEntry.data.timeline;
   /* (Removed ornament honeycomb / zigzag background) */
     </style>
 
-    <div class="flex gap-3 mt-4 mb-8 flex-wrap">
+    <div class="hero-cta flex gap-3 mt-6 mb-10 flex-wrap justify-center md:justify-start">
       <a
         href="/projects/"
         class={cn(
@@ -133,7 +134,7 @@ const timeline = homepageEntry.data.timeline;
       >About Me</a>
     </div>
 
-    <div class="mt-8 flex flex-wrap gap-2 justify-center">
+    <div class="hero-tags mt-6 flex flex-wrap gap-2 justify-center md:justify-start">
       {[
         ["Cloudflare","#0ea5e9"],
         ["Astro","#ff5d01"],
@@ -150,7 +151,7 @@ const timeline = homepageEntry.data.timeline;
       .tag-bubble:hover{border-color:color-mix(in srgb,var(--tag),#ffffff 10%);box-shadow:0 0 0 1px color-mix(in srgb,var(--tag),#ffffff 20%),0 4px 14px -4px color-mix(in srgb,var(--tag),transparent 30%)}
     </style>
 
-    <div class="mt-16 w-full max-w-5xl space-y-8">
+    <div class="feature-wrap mt-16 w-full space-y-8">
       <div class="feature-grid">
         {featureCards.map((card) => (
           <a
@@ -222,8 +223,68 @@ const timeline = homepageEntry.data.timeline;
         </article>
       </div>
     </div>
+    </div>
     <style is:global>
-      .feature-grid{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+      .hero-shell,
+      .feature-wrap{
+        width:min(100%, 1260px);
+        margin:0 auto;
+        padding:0 clamp(1.5rem, 4vw, 3.25rem);
+      }
+      @media (min-width: 1280px){
+        .hero-shell,
+        .feature-wrap{padding-inline:0;}
+      }
+      .hero-shell{
+        display:flex;
+        flex-direction:column;
+        gap:1.75rem;
+        align-items:center;
+      }
+      @media (min-width: 1100px){
+        .hero-shell{align-items:flex-start;}
+      }
+      .hero-inner{max-width:min(100%, 640px);}
+      @media (min-width: 1100px){
+        .hero-inner{margin-left:0;}
+      }
+      .hero-terminal{max-width:min(100%, 840px);margin:0 auto;}
+      @media (min-width: 1100px){
+        .hero-terminal{margin-left:0;}
+      }
+      .hero-cta{row-gap:.75rem;}
+      .hero-tags{max-width:min(100%, 840px);margin:0 auto;}
+      @media (min-width: 1100px){
+        .hero-tags{margin-left:0;}
+      }
+      .hero::before,
+      .hero::after{
+        content:"";
+        position:absolute;
+        top:9rem;
+        bottom:6rem;
+        width:min(260px, 26vw);
+        border-radius:999px;
+        filter:blur(38px);
+        opacity:.7;
+        pointer-events:none;
+        transition:opacity .35s ease;
+      }
+      .hero::before{
+        left:max(-6rem, -12vw);
+        background:linear-gradient(180deg,rgba(255,145,0,.22),rgba(255,145,0,0));
+      }
+      .hero::after{
+        right:max(-6rem, -12vw);
+        background:linear-gradient(180deg,rgba(74,144,255,.18),rgba(74,144,255,0));
+      }
+      @media (max-width: 900px){
+        .hero::before,
+        .hero::after{opacity:.4;top:6rem;bottom:4rem;width:42vw;}
+        .hero::before{left:-18vw;}
+        .hero::after{right:-18vw;}
+      }
+      .feature-grid{display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
       .feature-card{
         --card-accent:255 145 0;
         position:relative;
