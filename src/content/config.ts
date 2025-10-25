@@ -1,4 +1,5 @@
 import { defineCollection, z } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 
 const blog = defineCollection({
   type: "content",
@@ -13,25 +14,34 @@ const blog = defineCollection({
   }),
 });
 
+const slugPattern = /^[a-z0-9]+(?:[\-_][a-z0-9]+)*$/;
+
+const projectSchema = z.object({
+  title: z.string(),
+  slug: z
+    .string()
+    .regex(slugPattern, "Slug must contain only lowercase letters, numbers, dashes, or underscores.")
+    .optional(),
+  date: z.string().refine((value) => !Number.isNaN(Date.parse(value)), {
+    message: "Date must be ISO-8601 compliant.",
+  }),
+  status: z.enum(["shipped", "building", "research"]),
+  tags: z.array(z.string()).min(1),
+  problem: z.string(),
+  constraints: z.array(z.string()).min(1),
+  stack: z.array(z.string()).min(1),
+  lessons: z.array(z.string()).min(1),
+  links: z
+    .object({
+      repo: z.string().url().optional(),
+      demo: z.string().url().optional(),
+    })
+    .optional(),
+});
+
 const projects = defineCollection({
   type: "content",
-  schema: z.object({
-    title: z.string(),
-    slug: z.string().optional(),
-    date: z.string(),
-    status: z.enum(["shipped", "building", "research"]),
-    tags: z.array(z.string()),
-    problem: z.string(),
-    constraints: z.array(z.string()),
-    stack: z.array(z.string()),
-    lessons: z.array(z.string()),
-    links: z
-      .object({
-        repo: z.string().url().optional(),
-        demo: z.string().url().optional(),
-      })
-      .optional(),
-  }),
+  schema: projectSchema,
 });
 
 const homepage = defineCollection({
@@ -71,5 +81,8 @@ const homepage = defineCollection({
     }),
   }),
 });
+
+export type ProjectCollectionEntry = CollectionEntry<"projects">;
+export type ProjectFrontmatter = z.infer<typeof projectSchema>;
 
 export const collections = { blog, projects, homepage };

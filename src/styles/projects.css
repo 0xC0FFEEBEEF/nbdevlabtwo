@@ -102,14 +102,113 @@
 .filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem 1rem;
   align-items: center;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 16, 25, 0.6);
+  box-shadow: 0 14px 40px -28px rgba(9, 12, 19, 0.9);
 }
 
 .filter-group {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.45rem;
   align-items: center;
+}
+.filter-group span,
+.filter-group label {
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(226, 234, 255, 0.72);
+}
+.filters select {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(240, 244, 255, 0.92);
+  border-radius: 999px;
+  padding: 0.4rem 1.75rem 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  position: relative;
+}
+.filters select:focus-visible {
+  outline: 3px solid rgba(255, 145, 0, 0.55);
+  outline-offset: 3px;
+}
+.reset-link {
+  margin-left: auto;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 145, 0, 0.45);
+  color: rgba(255, 214, 176, 0.95);
+  text-decoration: none;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.reset-link:hover,
+.reset-link:focus-visible {
+  background: rgba(255, 145, 0, 0.18);
+  border-color: rgba(255, 175, 95, 0.65);
+  color: #1a1104;
+  outline: none;
+}
+.empty-state {
+  margin: 2rem 0 0;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  text-align: center;
+  background: rgba(12, 16, 25, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(226, 234, 255, 0.8);
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2.25rem;
+}
+.pagination-link {
+  color: rgba(230, 236, 255, 0.88);
+  text-decoration: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+.pagination-link:hover,
+.pagination-link:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--projects-focus);
+  outline: none;
+}
+.pagination-status {
+  color: rgba(205, 214, 235, 0.7);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .reset-link {
+    align-self: flex-start;
+  }
+  .pagination {
+    flex-direction: column;
+  }
+  .pagination-link {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 .projects-facts {

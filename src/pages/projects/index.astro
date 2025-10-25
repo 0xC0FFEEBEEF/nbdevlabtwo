@@ -1,107 +1,224 @@
 ---
 // Add a new case study by creating a Markdown file inside src/content/projects.
+import SiteLayout from "../../layouts/SiteLayout.astro";
 import { getCollection } from "astro:content";
+import type { ProjectCollectionEntry } from "../../content/config";
 import { formatDate } from "../../lib/date";
+import { normalizeProjects, resolveProjectSlug } from "../../lib/projects";
 import "../../styles/projects.css";
 
-const allProjects = await getCollection("projects");
-const requestUrl = Astro.request?.url ?? "https://nbdevlab.pages.dev/projects";
+const requestUrl = Astro.request?.url ?? "https://www.nbdevlab.com/projects/";
 const url = new URL(requestUrl);
-const selectedStatusRaw = url.searchParams.get("status");
-const validStatuses = new Set(["shipped", "building", "research"]);
-const selectedStatus = selectedStatusRaw && validStatuses.has(selectedStatusRaw) ? selectedStatusRaw : null;
-const selectedTags = url.searchParams.getAll("tag").filter(Boolean);
 
-const projects = allProjects
+const rawProjects = await getCollection("projects");
+const projectsCollection = normalizeProjects(rawProjects);
+
+const validStatuses = ["shipped", "building", "research"] as const;
+const validStatusSet = new Set(validStatuses);
+const selectedStatuses = Array.from(
+  new Set(
+    url
+      .searchParams
+      .getAll("status")
+      .filter((status) => validStatusSet.has(status as (typeof validStatuses)[number])) as (typeof validStatuses)[number][]
+  )
+);
+const selectedTags = Array.from(new Set(url.searchParams.getAll("tag").filter(Boolean)));
+
+const sortParam = url.searchParams.get("sort") ?? "date-desc";
+const SORT_OPTIONS = new Map<
+  string,
+  { label: string; compare: (a: ProjectCollectionEntry, b: ProjectCollectionEntry) => number }
+>([
+  [
+    "date-desc",
+    {
+      label: "Newest",
+      compare: (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+    },
+  ],
+  [
+    "date-asc",
+    {
+      label: "Oldest",
+      compare: (a, b) => new Date(a.data.date).getTime() - new Date(b.data.date).getTime(),
+    },
+  ],
+  [
+    "status",
+    {
+      label: "Status",
+      compare: (a, b) =>
+        a.data.status.localeCompare(b.data.status) ||
+        new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+    },
+  ],
+]);
+const sort = SORT_OPTIONS.has(sortParam) ? sortParam : "date-desc";
+
+const filtered = projectsCollection
   .filter((entry) => {
-    if (selectedStatus && entry.data.status !== selectedStatus) return false;
-    if (selectedTags.length > 0 && !selectedTags.every((tag) => entry.data.tags.includes(tag))) return false;
+    if (selectedStatuses.length > 0 && !selectedStatuses.includes(entry.data.status)) {
+      return false;
+    }
+    if (selectedTags.length > 0 && !selectedTags.every((tag) => entry.data.tags.includes(tag))) {
+      return false;
+    }
     return true;
   })
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+  .sort(SORT_OPTIONS.get(sort)!.compare);
 
-const allTags = Array.from(new Set(allProjects.flatMap((entry) => entry.data.tags))).sort((a, b) => a.localeCompare(b));
+const PER_PAGE = 12;
+const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+const currentPage = (() => {
+  const fromParam = Number.parseInt(url.searchParams.get("page") ?? "1", 10);
+  if (Number.isNaN(fromParam) || fromParam < 1) return 1;
+  if (fromParam > totalPages) return totalPages;
+  return fromParam;
+})();
 
-function buildStatusUrl(status: string | null) {
+const paginated = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+
+const allTags = Array.from(new Set(projectsCollection.flatMap((entry) => entry.data.tags))).sort((a, b) =>
+  a.localeCompare(b)
+);
+
+function buildUrl(modifier: (draft: URL) => void) {
   const next = new URL(url);
-  if (status && status !== selectedStatus) {
-    next.searchParams.set("status", status);
-  } else {
-    next.searchParams.delete("status");
-  }
+  modifier(next);
   return `${next.pathname}${next.search ? `?${next.searchParams.toString()}` : ""}`;
+}
+
+function buildStatusUrl(status: (typeof validStatuses)[number]) {
+  return buildUrl((next) => {
+    const active = new Set(next.searchParams.getAll("status"));
+    if (active.has(status)) {
+      active.delete(status);
+    } else {
+      active.add(status);
+    }
+    next.searchParams.delete("status");
+    for (const value of active) {
+      if (validStatusSet.has(value as (typeof validStatuses)[number])) {
+        next.searchParams.append("status", value);
+      }
+    }
+    next.searchParams.delete("page");
+  });
 }
 
 function buildTagUrl(tag: string) {
-  const next = new URL(url);
-  const current = new Set(selectedTags);
-  if (current.has(tag)) {
-    current.delete(tag);
-  } else {
-    current.add(tag);
-  }
-  next.searchParams.delete("tag");
-  for (const value of current) {
-    next.searchParams.append("tag", value);
-  }
-  return `${next.pathname}${next.search ? `?${next.searchParams.toString()}` : ""}`;
+  return buildUrl((next) => {
+    const active = new Set(next.searchParams.getAll("tag"));
+    if (active.has(tag)) {
+      active.delete(tag);
+    } else {
+      active.add(tag);
+    }
+    next.searchParams.delete("tag");
+    for (const value of active) {
+      next.searchParams.append("tag", value);
+    }
+    next.searchParams.delete("page");
+  });
 }
+
+function buildSortUrl(option: string) {
+  return buildUrl((next) => {
+    next.searchParams.set("sort", option);
+    next.searchParams.delete("page");
+  });
+}
+
+function buildPageUrl(page: number) {
+  return buildUrl((next) => {
+    next.searchParams.set("page", String(page));
+  });
+}
+
+const resetUrl = `${url.pathname}`;
+
+const jsonLd = paginated.map((project) => ({
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  name: project.data.title,
+  dateCreated: project.data.date,
+  programmingLanguage: project.data.stack.join(", "),
+  keywords: project.data.tags.join(", "),
+  url: new URL(`/projects/${resolveProjectSlug(project)}/`, "https://www.nbdevlab.com").toString(),
+  maintainer: {
+    "@type": "Person",
+    name: "Nathan Bullock",
+    url: "https://www.nbdevlab.com/",
+  },
+}));
 ---
-<html lang="en">
-  <head>
-    <title>Projects · nbdevlab</title>
-    <meta name="description" content="Deep-dives into nbdevlab projects, case studies, and experiments." />
-  </head>
-  <body>
-    <main class="projects-shell">
-      <header>
-        <h1>Projects &amp; Case Studies</h1>
-        <p>Stories from the lab — what we built, why it mattered, and what we learned along the way.</p>
-      </header>
-      <section class="filters" aria-label="Project filters">
-        <div class="filter-group" role="group" aria-label="Status">
-          <span>Status:</span>
+<SiteLayout title="Projects — Nathan Bullock" description="Deep-dives into nbdevlab projects, case studies, and experiments.">
+  <script type="application/ld+json" is:inline>{JSON.stringify(jsonLd)}</script>
+  <section class="projects-shell">
+    <header>
+      <h1>Projects &amp; Case Studies</h1>
+      <p>Stories from the lab — what we built, why it mattered, and what we learned along the way.</p>
+    </header>
+    <section class="filters" aria-label="Project filters">
+      <div class="filter-group" role="group" aria-label="Status filters">
+        <span id="status-label">Status:</span>
+        {validStatuses.map((status) => (
           <a
-            class="tag-chip"
+            class={`tag-chip${selectedStatuses.includes(status) ? " is-active" : ""}`}
             role="button"
-            aria-pressed={selectedStatus === null}
-            href={buildStatusUrl(null)}
+            aria-pressed={selectedStatuses.includes(status)}
+            aria-describedby="status-label"
+            href={buildStatusUrl(status)}
           >
-            All
+            {status}
           </a>
-          {Array.from(validStatuses).map((status) => (
+        ))}
+      </div>
+      {allTags.length > 0 && (
+        <div class="filter-group" role="group" aria-label="Tag filters">
+          <span id="tags-label">Tags:</span>
+          {allTags.map((tag) => (
             <a
-              class="tag-chip"
+              class={`tag-chip${selectedTags.includes(tag) ? " is-active" : ""}`}
               role="button"
-              aria-pressed={selectedStatus === status}
-              href={buildStatusUrl(status)}
+              aria-pressed={selectedTags.includes(tag)}
+              aria-describedby="tags-label"
+              href={buildTagUrl(tag)}
             >
-              {status}
+              #{tag}
             </a>
           ))}
         </div>
-        {allTags.length > 0 && (
-          <div class="filter-group" role="group" aria-label="Tags">
-            <span>Tags:</span>
-            {allTags.map((tag) => (
-              <a
-                class="tag-chip"
-                role="button"
-                aria-pressed={selectedTags.includes(tag)}
-                href={buildTagUrl(tag)}
-              >
-                #{tag}
-              </a>
-            ))}
-          </div>
-        )}
-      </section>
+      )}
+      <div class="filter-group" role="group" aria-label="Sort projects">
+        <label for="projects-sort">Sort:</label>
+        <select
+          id="projects-sort"
+          name="sort"
+          onChange="location.href=this.value"
+          aria-label="Sort projects"
+        >
+          {[...SORT_OPTIONS.entries()].map(([key, meta]) => (
+            <option value={buildSortUrl(key)} selected={key === sort}>
+              {meta.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      {(selectedStatuses.length > 0 || selectedTags.length > 0 || sort !== "date-desc") && (
+        <a class="reset-link" href={resetUrl} aria-label="Reset filters">Reset filters</a>
+      )}
+    </section>
+    {paginated.length === 0 ? (
+      <p role="status" class="empty-state">No projects found. Adjust your filters to see more work.</p>
+    ) : (
       <ol class="projects-list">
-        {projects.map((project) => {
-          const slug = project.data.slug ?? project.slug;
+        {paginated.map((project) => {
+          const slug = resolveProjectSlug(project);
           return (
             <li>
-              <a class="project-card" href={`/projects/${slug}/`}>
+              <a class="project-card" href={`/projects/${slug}/`} aria-label={`Read ${project.data.title}`}>
                 <div class="project-meta">
                   <span class="status-chip">{project.data.status}</span>
                   <span>{formatDate(project.data.date)}</span>
@@ -120,9 +237,23 @@ function buildTagUrl(tag: string) {
           );
         })}
       </ol>
-      {projects.length === 0 && (
-        <p role="status">No projects found. Adjust your filters to see more work.</p>
-      )}
-    </main>
-  </body>
-</html>
+    )}
+    {totalPages > 1 && (
+      <nav class="pagination" aria-label="Projects pagination">
+        {currentPage > 1 ? (
+          <a href={buildPageUrl(currentPage - 1)} aria-label="Previous page" class="pagination-link">← Previous</a>
+        ) : (
+          <span class="pagination-link" aria-hidden="true">← Previous</span>
+        )}
+        <span aria-live="polite" class="pagination-status">
+          Page {currentPage} of {totalPages}
+        </span>
+        {currentPage < totalPages ? (
+          <a href={buildPageUrl(currentPage + 1)} aria-label="Next page" class="pagination-link">Next →</a>
+        ) : (
+          <span class="pagination-link" aria-hidden="true">Next →</span>
+        )}
+      </nav>
+    )}
+  </section>
+</SiteLayout>

@@ -2,7 +2,6 @@
 
 import BaseHead from "../components/BaseHead.astro";
 import "../styles/global.css";
-import { buttonVariants } from "../components/ui/button";
 import { cn } from "../lib/utils";
 import BackToTopButton from "../components/BackToTopButton.astro";
 import { SearchDialog } from "../components/SearchDialog";
@@ -31,6 +30,11 @@ const NAV_LINKS = [
 const currentPath = Astro.url.pathname;
 const isActive = (href: string) => (href === "/" ? currentPath === "/" : currentPath.startsWith(href));
 const showRails = !currentPath.startsWith("/admin");
+const navLinkClass = (href: string) =>
+  cn(
+    "nav-link",
+    isActive(href) && "is-active"
+  );
 ---
 
 
@@ -384,12 +388,52 @@ const showRails = !currentPath.startsWith("/admin");
         flex-wrap: wrap;
       }
       .nav-link {
-        min-width: 3.5rem;
+        display: inline-flex;
+        align-items: center;
         justify-content: center;
+        gap: 0.35rem;
+        padding: 0.45rem 0.95rem;
+        min-width: 3.5rem;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
         text-decoration: none;
+        color: rgba(238, 242, 255, 0.78);
+        background: transparent;
+        transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .nav-link:hover,
+      .nav-link:focus-visible {
+        color: var(--fg);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+        outline: none;
       }
       .nav-link.is-active {
-        color: var(--fg);
+        background: linear-gradient(135deg, rgba(255, 145, 0, 0.95), rgba(255, 183, 82, 0.95));
+        color: #0b0f14;
+        border-color: rgba(255, 206, 135, 0.85);
+        box-shadow: 0 16px 40px -22px rgba(255, 160, 50, 0.9);
+      }
+      .nav-link.is-active:hover,
+      .nav-link.is-active:focus-visible {
+        color: #0b0f14;
+        border-color: rgba(255, 206, 135, 1);
+        box-shadow: 0 22px 48px -18px rgba(255, 170, 60, 1);
+      }
+      :root[data-theme="light"] .nav-link {
+        color: rgba(30, 36, 45, 0.74);
+      }
+      :root[data-theme="light"] .nav-link:hover,
+      :root[data-theme="light"] .nav-link:focus-visible {
+        background: rgba(0, 0, 0, 0.06);
+        border-color: rgba(0, 0, 0, 0.12);
+        color: rgba(20, 24, 32, 0.9);
+      }
+      :root[data-theme="light"] .nav-link.is-active {
+        color: #1b1304;
       }
       .nav-actions {
         display: flex;
@@ -606,11 +650,7 @@ const showRails = !currentPath.startsWith("/admin");
             <a
               href={href}
               aria-current={isActive(href) ? "page" : undefined}
-              class={cn(
-                buttonVariants({ variant: isActive(href) ? "default" : "ghost" }),
-                "nav-link",
-                isActive(href) ? "is-active" : ""
-              )}
+              class={navLinkClass(href)}
             >
               {label}
             </a>
