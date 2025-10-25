@@ -3,7 +3,6 @@ import BaseHead from "../components/BaseHead.astro";
 import "../styles/global.css";
 import BackToTopButton from "../components/BackToTopButton.astro";
 import { SearchDialog } from "../components/SearchDialog";
-import { ThemeToggle } from "../components/ThemeToggle";
 
 interface Props {
   title?: string;
@@ -29,7 +28,7 @@ const NAV_LINKS = [
   { href: "/admin/", label: "Admin" },
 ] as const;
 
-const currentPath = Astro.url.pathname.replace(/\/+/g, "/");
+const currentPath = Astro.url.pathname.replace(/\/+$/g, "/");
 
 function isActive(href: string) {
   return href === "/" ? currentPath === "/" : currentPath.startsWith(href);
@@ -43,32 +42,37 @@ const footerYear = new Date().getFullYear();
     <BaseHead title={title} description={description} image={image} structuredData={structuredData} />
     <script is:inline>
       (() => {
+        const storageKey = "nbdevlab-theme";
+        const root = document.documentElement;
         try {
-          const storageKey = "nbdevlab-theme";
           const stored = localStorage.getItem(storageKey);
-          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          const theme = stored ?? (prefersDark ? "dark" : "light");
-          document.documentElement.dataset.theme = theme;
-          document.documentElement.classList.toggle("dark", theme === "dark");
+          if (stored === "dark" || stored === "light") {
+            root.dataset.theme = stored;
+            root.classList.toggle("dark", stored === "dark");
+            return;
+          }
         } catch (error) {
-          console.warn("Failed to restore theme", error);
+          console.warn("theme-init", error);
         }
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = prefersDark ? "dark" : "light";
+        root.dataset.theme = theme;
+        root.classList.toggle("dark", theme === "dark");
       })();
     </script>
   </head>
   <body>
-    <a href="#main-content" class="skip-nav">Skip to main content</a>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <header class="site-header" role="banner">
       <div class="layout-shell">
-        <div class="site-header__row">
-          <a class="site-header__brand" href="/">
-            <span class="site-header__logo" aria-hidden="true">NB</span>
-            <span class="sr-only">nbdevlab — Home</span>
-            <span aria-hidden="true">nbdevlab</span>
+        <div class="site-header__inner">
+          <a class="site-header__brand" href="/" aria-label="nbdevlab home">
+            <span class="site-header__mark" aria-hidden="true">NB</span>
+            <span class="site-header__title" aria-hidden="true">nbdevlab</span>
           </a>
           <button
             type="button"
-            class="site-header__menu"
+            class="site-header__toggle"
             data-nav-toggle
             aria-label="Toggle navigation"
             aria-controls="site-navigation"
@@ -85,8 +89,11 @@ const footerYear = new Date().getFullYear();
               ))}
             </div>
             <div class="site-header__utilities">
+              <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">
+                <span aria-hidden="true">🌓</span>
+                <span>Theme</span>
+              </button>
               <SearchDialog client:load />
-              <ThemeToggle client:load />
             </div>
           </nav>
         </div>
@@ -109,23 +116,24 @@ const footerYear = new Date().getFullYear();
       </div>
     </footer>
     <BackToTopButton />
-    <script is:inline>
-      (() => {
-        const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
-        const nav = document.querySelector<HTMLElement>("[data-nav]");
-        if (!toggle || !nav) return;
-        const closeNav = () => {
-          nav.classList.remove("is-open");
-          toggle.setAttribute("aria-expanded", "false");
-        };
-        toggle.addEventListener("click", () => {
-          const isOpen = nav.classList.toggle("is-open");
-          toggle.setAttribute("aria-expanded", String(isOpen));
-          if (isOpen) {
-            const firstLink = nav.querySelector<HTMLAnchorElement>("a");
-            firstLink?.focus();
-          }
-        });
+    <script type="module" src="/src/scripts/theme-toggle.ts"></script>
+      <script is:inline>
+        (() => {
+          const toggle = document.querySelector("[data-nav-toggle]");
+          const nav = document.querySelector("[data-nav]");
+          if (!toggle || !nav) return;
+          const closeNav = () => {
+            nav.classList.remove("is-open");
+            toggle.setAttribute("aria-expanded", "false");
+          };
+          toggle.addEventListener("click", () => {
+            const isOpen = nav.classList.toggle("is-open");
+            toggle.setAttribute("aria-expanded", String(isOpen));
+            if (isOpen) {
+              const firstLink = nav.querySelector("a");
+              firstLink?.focus();
+            }
+          });
         document.addEventListener("keyup", (event) => {
           if (event.key === "Escape") {
             closeNav();

@@ -1,6 +1,6 @@
 .projects-shell {
   display: grid;
-  gap: clamp(1.5rem, 4vw, 2.5rem);
+  gap: var(--space-6);
 }
 
 .projects-shell header p {
@@ -8,44 +8,24 @@
 }
 
 .projects-filters label {
-  background: color-mix(in srgb, var(--color-surface-muted) 45%, transparent);
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  background: color-mix(in srgb, var(--color-surface-2) 80%, transparent);
+  transition: background var(--motion-fast) ease, border-color var(--motion-fast) ease, color var(--motion-fast) ease;
 }
 
 .projects-filters label:focus-within,
 .projects-filters label:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border) 60%);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
 }
 
-.projects-filters input[type="checkbox"]:checked + span,
-.projects-filters input[type="checkbox"]:checked + span + span {
+.projects-filters input[type="checkbox"]:checked ~ span {
   font-weight: 600;
-}
-
-.projects-filters input[type="checkbox"]:checked ~ strong,
-.projects-filters input[type="checkbox"]:checked + span {
-  color: var(--color-heading);
+  color: var(--color-text);
 }
 
 .projects-filters input[type="checkbox"]:checked + span::before {
   background: var(--color-accent);
-}
-
-.projects-filters label span:first-of-type::before {
-  content: "";
-  width: 0.65rem;
-  height: 0.65rem;
-  border-radius: 999px;
-  border: 2px solid var(--color-border);
-  display: inline-block;
-  transition: background 0.2s ease, border-color 0.2s ease;
-}
-
-.projects-filters input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  border-color: var(--color-accent);
 }
 
 .status-chip {
@@ -55,30 +35,50 @@
   border-radius: 999px;
   border: 1px solid var(--color-border);
   padding: 0.2rem 0.7rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-heading-subtle);
+  color: var(--color-text-muted);
 }
 
 .status-chip[data-status="shipped"] {
-  border-color: color-mix(in srgb, var(--color-good) 55%, transparent);
-  color: var(--color-good);
+  border-color: color-mix(in srgb, var(--color-success) 35%, var(--color-border) 65%);
+  color: var(--color-success);
 }
 
 .status-chip[data-status="building"] {
-  border-color: color-mix(in srgb, var(--color-warn) 55%, transparent);
-  color: var(--color-warn);
+  border-color: color-mix(in srgb, var(--color-warning) 35%, var(--color-border) 65%);
+  color: var(--color-warning);
 }
 
 .status-chip[data-status="research"] {
-  border-color: color-mix(in srgb, var(--color-link) 55%, transparent);
-  color: var(--color-link);
+  border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-border) 65%);
+  color: var(--color-accent);
 }
 
 .projects-pagination__status {
   font-size: 0.85rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text-muted) 80%, transparent);
+  color: var(--color-text-muted);
+}
+
+.project-card__title {
+  word-break: break-word;
+}
+
+.project-card__description {
+  overflow-wrap: anywhere;
+}
+
+.project-detail .chip-row {
+  gap: var(--space-2);
+}
+
+.project-detail .tag-chip {
+  text-transform: none;
+}
+
+.projects-nav span[aria-hidden="true"] {
+  flex: 1;
 }

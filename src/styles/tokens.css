@@ -1,0 +1,78 @@
+:root {
+  color-scheme: light;
+  --font-sans: "Inter", "SF Pro Text", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 48px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 6px 18px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 12px 32px rgba(15, 23, 42, 0.14);
+
+  --motion-fast: 120ms;
+  --motion-base: 180ms;
+  --motion-slow: 260ms;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-bg: #f5f7fb;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef1f7;
+  --color-text: #1c2333;
+  --color-text-muted: #576078;
+  --color-border: #ccd2e3;
+  --color-accent: #2454d3;
+  --color-accent-contrast: #fdfdff;
+  --color-focus: #1c3ecf;
+  --color-success: #1b7f4b;
+  --color-warning: #c47316;
+  --color-danger: #c1352b;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #060b16;
+  --color-surface: #0d1526;
+  --color-surface-2: #172236;
+  --color-text: #f2f4fb;
+  --color-text-muted: #b4bfd6;
+  --color-border: #29334a;
+  --color-accent: #86a9ff;
+  --color-accent-contrast: #0b1224;
+  --color-focus: #7b97ff;
+  --color-success: #4fd28f;
+  --color-warning: #f7b955;
+  --color-danger: #ff7a6f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --color-bg: #060b16;
+    --color-surface: #0d1526;
+    --color-surface-2: #172236;
+    --color-text: #f2f4fb;
+    --color-text-muted: #b4bfd6;
+    --color-border: #29334a;
+    --color-accent: #86a9ff;
+    --color-accent-contrast: #0b1224;
+    --color-focus: #7b97ff;
+    --color-success: #4fd28f;
+    --color-warning: #f7b955;
+    --color-danger: #ff7a6f;
+  }
+}

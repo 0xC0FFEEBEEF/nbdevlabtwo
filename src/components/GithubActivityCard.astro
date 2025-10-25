@@ -4,7 +4,7 @@ interface Props {
 }
 
 const { limit = 5 } = Astro.props as Props;
-const requestUrl = Astro.request?.url ?? "https://nbdevlab.pages.dev";
+const requestUrl = Astro.request?.url ?? "https://www.nbdevlab.com";
 const canFetchServer = typeof Astro.request !== "undefined";
 let items: Array<{
   type: string;
@@ -45,10 +45,14 @@ function formatRelativeTime(iso: string): string {
 
 if (canFetchServer) {
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3500);
     const apiUrl = new URL("/api/github", requestUrl);
     const response = await fetch(apiUrl.toString(), {
       headers: { Accept: "application/json" },
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
     if (response.ok) {
       const data = (await response.json()) as { items?: typeof items };
       if (Array.isArray(data.items)) {
@@ -59,7 +63,7 @@ if (canFetchServer) {
     }
   } catch (error) {
     if (import.meta.env.DEV) {
-      console.error("github-activity-card", error);
+      console.error("github-activity", error);
     }
     errored = true;
   }
@@ -69,10 +73,10 @@ const hasItems = items.length > 0;
 const cardId = `github-card-${Math.random().toString(36).slice(2, 10)}`;
 const shouldHydrateClient = !canFetchServer || errored;
 const initialState = hasItems ? "ready" : shouldHydrateClient ? "loading" : "empty";
-const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "No recent public commits or merges yet.";
+const emptyMessage = errored ? "Unable to load GitHub activity right now." : "No recent public activity yet.";
 ---
 <section
-  class="github-card"
+  class="card github-card"
   aria-labelledby="github-activity-heading"
   role="region"
   id={cardId}
@@ -85,6 +89,9 @@ const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "N
   <div class="card__header">
     <h2 id="github-activity-heading">Latest GitHub activity</h2>
     <p class="muted">Edge-cached events refreshed regularly without over-polling the API.</p>
+  </div>
+  <div class="github-card__actions" hidden={initialState === "ready"}>
+    <button type="button" class="button button--ghost" data-retry hidden>Retry</button>
   </div>
   <div
     class="github-card__loading"
@@ -105,14 +112,20 @@ const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "N
           <span>{item.type.replace("Event", "")}</span>
           <span>{formatRelativeTime(item.timestamp)}</span>
         </div>
-        <a class="github-card__link" href={item.url} target="_blank" rel="noopener noreferrer">
+        <a
+          class="github-card__link"
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          title={item.title}
+        >
           <span>{item.title}</span>
           <span aria-hidden="true">↗</span>
         </a>
       </li>
     ))}
   </ol>
-  <div class="github-card__empty" role="status" aria-live="polite" data-empty hidden={initialState !== "empty"}>
+  <div class="github-card__empty muted" role="status" aria-live="polite" data-empty hidden={initialState !== "empty"}>
     {emptyMessage}
   </div>
 </section>
@@ -121,97 +134,122 @@ const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "N
   (() => {
     const card = document.getElementById({JSON.stringify(cardId)});
     if (!card) return;
-    const loading = card.querySelector<HTMLElement>("[data-loading]");
-    const list = card.querySelector<HTMLOListElement>("[data-items]");
-    const empty = card.querySelector<HTMLElement>("[data-empty]");
+    const loading = card.querySelector("[data-loading]");
+    const list = card.querySelector("[data-items]");
+    const empty = card.querySelector("[data-empty]");
+    const retry = card.querySelector("[data-retry]");
+    const actions = card.querySelector(".github-card__actions");
     const limit = Number(card.dataset.limit ?? "5") || 5;
+    let skeletonTimer;
 
     const setState = (state) => {
       card.dataset.state = state;
       loading?.toggleAttribute("hidden", state !== "loading");
       list?.toggleAttribute("hidden", state !== "ready");
       empty?.toggleAttribute("hidden", state !== "empty");
+      retry?.toggleAttribute("hidden", state !== "empty");
+      actions?.toggleAttribute("hidden", state === "ready");
     };
 
-    if (card.dataset.state === "loading") {
-      const timeout = window.setTimeout(() => {
+    const formatRelativeTime = (value) => {
+      try {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "just now";
+        const diffSeconds = Math.round((Date.now() - date.getTime()) / 1000);
+        const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+        const intervals = [
+          { limit: 60, divisor: 1, unit: "seconds" },
+          { limit: 3600, divisor: 60, unit: "minutes" },
+          { limit: 86400, divisor: 3600, unit: "hours" },
+          { limit: 604800, divisor: 86400, unit: "days" },
+          { limit: 2419200, divisor: 604800, unit: "weeks" },
+          { limit: 29030400, divisor: 2419200, unit: "months" },
+          { limit: Number.POSITIVE_INFINITY, divisor: 29030400, unit: "years" },
+        ];
+        const absSeconds = Math.abs(diffSeconds);
+        for (const interval of intervals) {
+          if (absSeconds < interval.limit) {
+            const value = Math.round(diffSeconds / interval.divisor);
+            return formatter.format(-value, interval.unit);
+          }
+        }
+        return formatter.format(0, "seconds");
+      } catch {
+        return "just now";
+      }
+    };
+
+    const renderItems = (items) => {
+      if (!list) return;
+      list.innerHTML = items
+        .map(
+          (item) => `
+            <li class="github-card__item" data-type="${item.type}">
+              <div class="github-card__meta">
+                <span class="github-card__repo" aria-label="Repository ${item.repo}">${item.repo}</span>
+                <span>${item.type.replace("Event", "")}</span>
+                <span>${formatRelativeTime(item.timestamp)}</span>
+              </div>
+              <a class="github-card__link" href="${item.url}" target="_blank" rel="noopener noreferrer" title="${item.title}">
+                <span>${item.title}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+          `
+        )
+        .join("");
+    };
+
+    const setEmptyMessage = (message) => {
+      if (empty) {
+        empty.textContent = message;
+      }
+    };
+
+    const fetchActivity = () => {
+      setState("loading");
+      if (skeletonTimer) {
+        window.clearTimeout(skeletonTimer);
+      }
+      skeletonTimer = window.setTimeout(() => {
         if (card.dataset.state === "loading") {
-          empty && (empty.textContent = card.dataset.emptyMessage ?? "No recent activity");
+          setEmptyMessage(card.dataset.emptyMessage ?? "No recent activity");
           setState("empty");
         }
-      }, 3500);
-      card.addEventListener(
-        "github:ready",
-        () => {
-          window.clearTimeout(timeout);
-        },
-        { once: true }
-      );
-    }
+      }, 2000);
 
-    if (card.dataset.fetch === "true") {
-      const formatRelativeTime = (value) => {
-        try {
-          const date = new Date(value);
-          if (Number.isNaN(date.getTime())) return "just now";
-          const diffSeconds = Math.round((Date.now() - date.getTime()) / 1000);
-          const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-          const intervals = [
-            { limit: 60, divisor: 1, unit: "seconds" },
-            { limit: 3600, divisor: 60, unit: "minutes" },
-            { limit: 86400, divisor: 3600, unit: "hours" },
-            { limit: 604800, divisor: 86400, unit: "days" },
-            { limit: 2419200, divisor: 604800, unit: "weeks" },
-            { limit: 29030400, divisor: 2419200, unit: "months" },
-            { limit: Number.POSITIVE_INFINITY, divisor: 29030400, unit: "years" },
-          ];
-          const absSeconds = Math.abs(diffSeconds);
-          for (const { limit: l, divisor, unit } of intervals) {
-            if (absSeconds < l) {
-              const value = Math.round(diffSeconds / divisor);
-              return formatter.format(-value, unit);
-            }
-          }
-          return formatter.format(0, "seconds");
-        } catch {
-          return "just now";
-        }
-      };
-
-      fetch(`/api/github?limit=${limit}`)
+      const controller = new AbortController();
+      const abortTimer = window.setTimeout(() => controller.abort(), 3500);
+      fetch(`/api/github?limit=${limit}`, {
+        signal: controller.signal,
+        headers: { Accept: "application/json" },
+      })
         .then((response) => (response.ok ? response.json() : Promise.reject(new Error("Request failed"))))
         .then((data) => {
           if (!Array.isArray(data?.items) || data.items.length === 0) {
-            empty && (empty.textContent = card.dataset.emptyMessage ?? "No recent activity");
+            setEmptyMessage(card.dataset.emptyMessage ?? "No recent activity");
             setState("empty");
             return;
           }
-          const items = data.items.slice(0, limit);
-          if (!list) return;
-          list.innerHTML = items
-            .map(
-              (item) => `
-              <li class="github-card__item" data-type="${item.type}">
-                <div class="github-card__meta">
-                  <span class="github-card__repo" aria-label="Repository ${item.repo}">${item.repo}</span>
-                  <span>${item.type.replace("Event", "")}</span>
-                  <span>${formatRelativeTime(item.timestamp)}</span>
-                </div>
-                <a class="github-card__link" href="${item.url}" target="_blank" rel="noopener noreferrer">
-                  <span>${item.title}</span>
-                  <span aria-hidden="true">↗</span>
-                </a>
-              </li>
-            `
-            )
-            .join("");
+          renderItems(data.items.slice(0, limit));
           setState("ready");
-          card.dispatchEvent(new CustomEvent("github:ready"));
         })
         .catch(() => {
-          empty && (empty.textContent = "Unable to load GitHub activity right now.");
+          setEmptyMessage("Unable to load GitHub activity right now.");
           setState("empty");
+        })
+        .finally(() => {
+          window.clearTimeout(abortTimer);
+          if (skeletonTimer) {
+            window.clearTimeout(skeletonTimer);
+          }
         });
+    };
+
+    if (card.dataset.state === "loading" && card.dataset.fetch === "true") {
+      fetchActivity();
     }
+
+    retry?.addEventListener("click", fetchActivity);
   })();
 </script>

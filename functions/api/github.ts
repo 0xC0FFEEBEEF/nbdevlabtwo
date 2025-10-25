@@ -28,11 +28,19 @@ const SUPPORTED_TYPES = new Set<NormalizedEvent["type"]>([
   "ReleaseEvent",
 ]);
 
-const headers = new Headers({
+const baseHeaders = new Headers({
   "content-type": "application/json; charset=utf-8",
   "access-control-allow-origin": "*",
   "cache-control": "public, max-age=60, s-maxage=900",
 });
+
+const createHeaders = (etag?: string | null) => {
+  const headers = new Headers(baseHeaders);
+  if (etag) {
+    headers.set("etag", etag);
+  }
+  return headers;
+};
 
 async function readCache(env: EnvBindings, key: string): Promise<CachedPayload | null> {
   try {
@@ -121,6 +129,10 @@ export const onRequestGet: PagesFunction<EnvBindings> = async ({ env, request })
   const key = `feed:v1:${username.toLowerCase()}`;
 
   const cached = await readCache(env, key);
+  const clientEtag = request.headers.get("if-none-match");
+  if (clientEtag && cached?.etag && clientEtag === cached.etag) {
+    return new Response(null, { status: 304, headers: createHeaders(cached.etag) });
+  }
   const requestHeaders = new Headers({
     "User-Agent": "nbdevlab-pages-function",
     Accept: "application/vnd.github+json",
@@ -139,14 +151,14 @@ export const onRequestGet: PagesFunction<EnvBindings> = async ({ env, request })
     });
 
     if (ghResponse.status === 304 && cached) {
-      return new Response(JSON.stringify(cached.body), { status: 200, headers });
+      return new Response(JSON.stringify(cached.body), { status: 200, headers: createHeaders(cached.etag) });
     }
 
     if (!ghResponse.ok) {
       if (cached) {
-        return new Response(JSON.stringify(cached.body), { status: 200, headers });
+        return new Response(JSON.stringify(cached.body), { status: 200, headers: createHeaders(cached.etag) });
       }
-      return new Response(JSON.stringify({ items: [] }), { status: 200, headers });
+      return new Response(JSON.stringify({ items: [] }), { status: 200, headers: createHeaders(null) });
     }
 
     const etag = ghResponse.headers.get("etag") ?? undefined;
@@ -160,13 +172,13 @@ export const onRequestGet: PagesFunction<EnvBindings> = async ({ env, request })
       cachedAt: new Date().toISOString(),
     });
 
-    return new Response(JSON.stringify(body), { status: 200, headers });
+    return new Response(JSON.stringify(body), { status: 200, headers: createHeaders(etag) });
   } catch (error) {
     console.error("github-fetch-error", error);
     if (cached) {
-      return new Response(JSON.stringify(cached.body), { status: 200, headers });
+      return new Response(JSON.stringify(cached.body), { status: 200, headers: createHeaders(cached.etag) });
     }
-    return new Response(JSON.stringify({ items: [] }), { status: 200, headers });
+    return new Response(JSON.stringify({ items: [] }), { status: 200, headers: createHeaders(null) });
   }
 };
 
