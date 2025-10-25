@@ -1,9 +1,9 @@
 import {
-  IconCreditCard,
+  IconBrandGithub,
   IconDotsVertical,
-  IconLogout,
-  IconNotification,
-  IconUserCircle,
+  IconExternalLink,
+  IconMail,
+  IconSettings,
 } from "@tabler/icons-react"
 
 import {
@@ -37,6 +37,12 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const initials = user.name
+    .split(/\s+/)
+    .map((part) => part[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase()
 
   return (
     <SidebarMenu>
@@ -49,7 +55,7 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -70,7 +76,7 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
@@ -82,23 +88,39 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
+              <DropdownMenuItem asChild>
+                <a href="/admin/" className="flex items-center gap-2">
+                  <IconSettings />
+                  Content Studio
+                </a>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
+              <DropdownMenuItem asChild>
+                <a href="/status/" className="flex items-center gap-2">
+                  <IconExternalLink />
+                  Status Dashboard
+                </a>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
+              <DropdownMenuItem asChild>
+                <a
+                  href="https://github.com/0xC0FFEEBEEF/nbdevlab"
+                  className="flex items-center gap-2"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <IconBrandGithub />
+                  View Repository
+                </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <IconLogout />
-              Log out
+            <DropdownMenuItem asChild>
+              <a
+                href="mailto:hello@nbdevlab.com"
+                className="flex items-center gap-2"
+              >
+                <IconMail />
+                Contact Nathan
+              </a>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
