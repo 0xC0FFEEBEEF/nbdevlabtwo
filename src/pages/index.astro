@@ -313,13 +313,10 @@ const timeline = homepageEntry.data.timeline;
       }
       .hero-rails{
         position:fixed;
-        top:8vh;
-        bottom:10vh;
-        left:0;
-        right:0;
+        inset:0;
         display:none;
         justify-content:space-between;
-        align-items:flex-start;
+        align-items:stretch;
         pointer-events:none;
         z-index:0;
       }
@@ -327,32 +324,42 @@ const timeline = homepageEntry.data.timeline;
         .hero-rails{display:flex;}
       }
       .hero-rail{
-        width:clamp(180px,22vw,280px);
+        display:block;
+        height:100%;
+        width:clamp(110px,14vw,180px);
         border-radius:999px;
         filter:blur(38px);
-        opacity:.58;
-        transition:opacity .4s ease;
+        opacity:.52;
+        transition:opacity .4s ease, transform .4s ease;
         will-change:opacity,transform;
-        animation:rail-flicker 6.5s ease-in-out infinite;
+        animation:rail-flicker 4.8s ease-in-out infinite;
+        background-repeat:no-repeat;
+        background-size:100% 100%;
       }
       .hero-rail--warm{
-        margin-left:max(-6rem,-8vw);
-        background:linear-gradient(180deg,rgba(255,145,0,.26),rgba(255,145,0,0));
-        animation-delay:.8s;
+        margin-left:max(-5rem,-6vw);
+        background-image:linear-gradient(180deg,rgba(255,105,0,0) 0%,rgba(255,140,0,.12) 12%,rgba(255,155,60,.48) 32%,rgba(255,170,90,.8) 50%,rgba(255,150,55,.48) 68%,rgba(255,115,20,.14) 86%,rgba(255,105,0,0) 100%);
+        box-shadow:0 0 160px 45px rgba(255,140,40,.35);
+        animation-delay:.6s;
+        animation-duration:5.4s;
       }
       .hero-rail--cool{
-        margin-right:max(-6rem,-8vw);
-        background:linear-gradient(180deg,rgba(74,144,255,.22),rgba(74,144,255,0));
-        animation-delay:1.9s;
+        margin-right:max(-5rem,-6vw);
+        background-image:linear-gradient(180deg,rgba(12,140,255,0) 0%,rgba(40,150,255,.12) 12%,rgba(70,170,255,.45) 30%,rgba(110,200,255,.78) 50%,rgba(70,170,255,.45) 70%,rgba(34,140,240,.14) 88%,rgba(12,140,255,0) 100%);
+        box-shadow:0 0 160px 45px rgba(64,160,255,.33);
+        animation-delay:1.7s;
+        animation-duration:4.6s;
       }
       @keyframes rail-flicker{
-        0%{opacity:.54;transform:scaleX(1);}
-        18%{opacity:.64;transform:scaleX(1.015);}
-        33%{opacity:.5;transform:scaleX(.99);}
-        52%{opacity:.68;transform:scaleX(1.02);}
-        71%{opacity:.53;transform:scaleX(.985);}
-        86%{opacity:.66;transform:scaleX(1.01);}
-        100%{opacity:.56;transform:scaleX(1);}
+        0%{opacity:.48;transform:scaleX(.96);}
+        8%{opacity:.67;transform:scaleX(1.02);}
+        18%{opacity:.56;transform:scaleX(.98);}
+        32%{opacity:.75;transform:scaleX(1.05);}
+        45%{opacity:.5;transform:scaleX(.94);}
+        57%{opacity:.7;transform:scaleX(1.04);}
+        68%{opacity:.46;transform:scaleX(.9);}
+        82%{opacity:.72;transform:scaleX(1.03);}
+        100%{opacity:.5;transform:scaleX(.97);}
       }
       .hero-aside__frame{
         position:relative;
