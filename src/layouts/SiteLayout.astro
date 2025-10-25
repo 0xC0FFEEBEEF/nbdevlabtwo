@@ -1,7 +1,7 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
 import "../styles/global.css";
-import themeToggleScript from "../scripts/theme-toggle.ts?raw";
+import ambientScript from "../scripts/ambient-canvas.ts?raw";
 import BackToTopButton from "../components/BackToTopButton.astro";
 import { SearchDialog } from "../components/SearchDialog";
 
@@ -38,26 +38,12 @@ function isActive(href: string) {
 const footerYear = new Date().getFullYear();
 ---
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
   <head>
     <BaseHead title={title} description={description} image={image} structuredData={structuredData} />
-    <script is:inline>
-      (() => {
-        const root = document.documentElement;
-        const storageKey = "nbdevlab-theme";
-        try {
-          const stored = localStorage.getItem(storageKey);
-          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          const theme = stored === "dark" || stored === "light" ? stored : prefersDark ? "dark" : "light";
-          root.dataset.theme = theme;
-          root.classList.toggle("dark", theme === "dark");
-        } catch {
-          root.dataset.theme = root.dataset.theme || "light";
-        }
-      })();
-    </script>
   </head>
   <body>
+    <div class="ambient-field" aria-hidden="true"></div>
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <header class="site-header" role="banner">
       <div class="layout-shell">
@@ -95,11 +81,6 @@ const footerYear = new Date().getFullYear();
             </ul>
             <div class="site-nav__utilities">
               <SearchDialog client:load />
-              <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">
-                <span aria-hidden="true" data-theme-icon>☀️</span>
-                <span aria-hidden="true" data-theme-label>Light</span>
-                <span class="sr-only">Toggle theme</span>
-              </button>
             </div>
           </nav>
         </div>
@@ -122,7 +103,7 @@ const footerYear = new Date().getFullYear();
       </div>
     </footer>
     <BackToTopButton />
-    <script type="module" is:inline>{themeToggleScript}</script>
+    <script type="module" is:inline>{ambientScript}</script>
     <script is:inline>
       (() => {
         const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
