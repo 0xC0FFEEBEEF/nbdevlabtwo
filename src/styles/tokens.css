@@ -1,21 +1,21 @@
 :root {
   color-scheme: dark;
-  --background: 222 52% 6%;
-  --foreground: 213 31% 92%;
-  --muted: 223 45% 14%;
-  --muted-foreground: 216 18% 68%;
-  --accent-surface: 223 36% 18%;
+  --background: 0 0% 5%;
+  --foreground: 0 0% 92%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 70%;
+  --accent-surface: 0 0% 14%;
   --accent-foreground: var(--foreground);
-  --card: 223 38% 10%;
+  --card: 0 0% 8%;
   --card-foreground: var(--foreground);
-  --popover: 223 46% 12%;
+  --popover: 0 0% 10%;
   --popover-foreground: var(--foreground);
-  --primary: 217 91% 60%;
+  --primary: 215 93% 62%;
   --primary-foreground: 210 40% 98%;
-  --secondary: 225 45% 16%;
+  --secondary: 0 0% 14%;
   --secondary-foreground: var(--foreground);
-  --border-tone: 222 34% 22%;
-  --input-tone: 222 34% 22%;
+  --border-tone: 0 0% 18%;
+  --input-tone: 0 0% 18%;
   --ring: var(--primary);
   --destructive: 0 72% 50%;
   --destructive-foreground: 210 40% 98%;
@@ -36,9 +36,9 @@
   --color-warn: hsl(var(--warning));
   --color-bad: hsl(var(--danger));
 
-  --shadow-xs: 0 8px 20px rgba(5, 9, 19, 0.24);
-  --shadow-sm: 0 18px 40px rgba(5, 9, 19, 0.32);
-  --shadow-md: 0 28px 60px rgba(5, 9, 19, 0.38);
+  --shadow-xs: 0 8px 20px rgba(0, 0, 0, 0.24);
+  --shadow-sm: 0 18px 40px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 28px 60px rgba(0, 0, 0, 0.4);
 
   --radius-sm: 6px;
   --radius-md: 12px;
