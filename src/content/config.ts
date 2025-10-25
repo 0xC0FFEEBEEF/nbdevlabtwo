@@ -30,4 +30,42 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { blog, projects };
+const homepage = defineCollection({
+  type: "data",
+  schema: z.object({
+    highlightCards: z.array(
+      z.object({
+        title: z.string(),
+        description: z.string(),
+        href: z.string(),
+        badge: z.string(),
+        accent: z.string().optional(),
+      })
+    ),
+    nowItems: z.array(
+      z.object({
+        label: z.string(),
+        detail: z.string(),
+      })
+    ),
+    timeline: z.array(
+      z.object({
+        date: z.string(),
+        title: z.string(),
+        detail: z.string(),
+      })
+    ),
+    activityCard: z.object({
+      title: z.string(),
+      description: z.string(),
+      href: z.string(),
+      badge: z.string(),
+      accent: z.string().optional(),
+      repo: z.string(),
+      timestamp: z.string(),
+      meta: z.string().optional(),
+    }),
+  }),
+});
+
+export const collections = { blog, projects, homepage };
