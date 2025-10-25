@@ -1,0 +1,68 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+
+<SiteLayout title="Talks & Demos — nbdevlab" description="Recorded walkthroughs and lightning talks from the lab.">
+  <section aria-labelledby="talks-title">
+    <h1 id="talks-title">Talks &amp; Demos</h1>
+    <p>Short sessions that capture how I build, ship, and tinker. Captions are included so you can follow along quietly.</p>
+  </section>
+
+  <section class="talks-grid" aria-label="Recorded talks">
+    <article>
+      <h2>Shipping Astro to Cloudflare Pages</h2>
+      <p class="talk-meta">8 minutes • Recorded October 2025</p>
+      <video controls preload="metadata" width="640" height="360" poster="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.jpg">
+        <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4" />
+        <track src="/captions/demo-talk.vtt" kind="captions" srclang="en" label="English" default />
+        Sorry, your browser doesn't support embedded videos. You can download it instead.
+      </video>
+      <p class="talk-description">How nbdevlab builds static assets, generates edge caches, and deploys to Cloudflare with confidence.</p>
+    </article>
+    <article>
+      <h2>Codex-assisted runbook automation</h2>
+      <p class="talk-meta">5 minutes • Recorded September 2025</p>
+      <video controls preload="metadata" width="640" height="360" poster="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.jpg">
+        <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4" />
+        <track src="/captions/demo-talk.vtt" kind="captions" srclang="en" label="English" default />
+        Sorry, your browser doesn't support embedded videos. You can download it instead.
+      </video>
+      <p class="talk-description">A guided tour through the GitHub activity cache worker and the Decap-managed dashboards.</p>
+    </article>
+  </section>
+
+  <style>
+    h1 {
+      font-size: clamp(2.25rem, 2.6vw + 1rem, 3.2rem);
+      margin-bottom: 0.75rem;
+    }
+    p {
+      color: rgba(255, 255, 255, 0.75);
+      max-width: 70ch;
+    }
+    .talks-grid {
+      display: grid;
+      gap: 2rem;
+      margin-top: 2.5rem;
+    }
+    article {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 1.5rem;
+    }
+    .talk-meta {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    video {
+      width: 100%;
+      max-width: 640px;
+      border-radius: 14px;
+      margin-top: 1rem;
+    }
+    .talk-description {
+      margin-top: 1rem;
+    }
+  </style>
+</SiteLayout>

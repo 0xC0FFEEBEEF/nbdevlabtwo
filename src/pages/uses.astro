@@ -1,0 +1,77 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+
+<SiteLayout title="Homelab & Uses — nbdevlab" description="Hardware, software, and services powering the nbdevlab homelab.">
+  <section aria-labelledby="uses-title">
+    <h1 id="uses-title">Homelab &amp; Uses</h1>
+    <p>The nbdevlab rack is a rotating collection of gear, but these are the staples that stay powered on and patched.</p>
+  </section>
+
+  <section aria-labelledby="hardware-title" class="mt-10">
+    <h2 id="hardware-title">Core hardware</h2>
+    <ul class="uses-list">
+      <li>
+        <h3>Compute</h3>
+        <p>
+          Proxmox VE cluster running on a pair of HP ProLiant DL360 Gen9 nodes with dual Xeon E5-2680v4 CPUs, 128&nbsp;GB ECC RAM,
+          and mirrored NVMe boot drives. GPU passthrough to an RTX 4000 for AI workloads.
+        </p>
+      </li>
+      <li>
+        <h3>Storage</h3>
+        <p>
+          TrueNAS SCALE with 6×12&nbsp;TB drives in RAID-Z2, plus a fast NVMe cache pool. Backups replicate to a Wasabi bucket nightly.
+        </p>
+      </li>
+      <li>
+        <h3>Networking</h3>
+        <p>
+          pfSense gateway with dual WAN failover, UniFi aggregation switch, and a Wi-Fi 7 AP covering the lab and office.
+        </p>
+      </li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="software-title" class="mt-12">
+    <h2 id="software-title">Favorite tooling</h2>
+    <ul class="uses-list">
+      <li>
+        <h3>Observability</h3>
+        <p>Grafana, Loki, and Tempo pipelines with k6 for synthetic checks and Uptime Kuma for quick pings.</p>
+      </li>
+      <li>
+        <h3>Developer workflow</h3>
+        <p>Astro, Cloudflare Pages, GitHub Actions, and task runners scripted with npm and justfiles.</p>
+      </li>
+      <li>
+        <h3>Automation</h3>
+        <p>n8n for event-driven flows, Ansible for patch windows, and Cloudflare Workers for edge-side glue.</p>
+      </li>
+    </ul>
+  </section>
+
+  <style>
+    h1 {
+      font-size: clamp(2.2rem, 2.6vw + 1rem, 3.2rem);
+      margin-bottom: 0.75rem;
+    }
+    p {
+      color: rgba(255, 255, 255, 0.75);
+      max-width: 60ch;
+    }
+    .uses-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 1.5rem;
+    }
+    .uses-list h3 {
+      margin-bottom: 0.35rem;
+    }
+    .uses-list p {
+      margin: 0;
+    }
+  </style>
+</SiteLayout>

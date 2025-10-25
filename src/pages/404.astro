@@ -1,0 +1,105 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { getCollection } from "astro:content";
+import { formatDate } from "../lib/date";
+import { resolveProjectSlug } from "../lib/projects";
+
+const [projects, posts] = await Promise.all([
+  getCollection("projects"),
+  getCollection("blog"),
+]);
+
+const recentProjects = projects
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+
+const recentPosts = posts
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+---
+
+<SiteLayout title="Page not found — nbdevlab" description="The page you're looking for isn't available. Here are other things to explore.">
+  <section aria-labelledby="not-found-title">
+    <h1 id="not-found-title">Lost in the lab?</h1>
+    <p>The route you followed fizzled out, but the latest experiments are still running. Try one of these instead.</p>
+  </section>
+
+  <section aria-labelledby="project-suggestions" class="mt-10">
+    <h2 id="project-suggestions">Recent projects</h2>
+    <ul class="suggestions">
+      {recentProjects.map((project) => (
+        <li>
+          <a href={`/projects/${resolveProjectSlug(project)}/`} aria-label={`Read ${project.data.title}`}>
+            <span class="suggestion-title">{project.data.title}</span>
+            <span class="suggestion-meta">{formatDate(project.data.date)}</span>
+            <span class="suggestion-summary">{project.data.problem}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section aria-labelledby="post-suggestions" class="mt-12">
+    <h2 id="post-suggestions">Latest lab notes</h2>
+    <ul class="suggestions">
+      {recentPosts.map((post) => (
+        <li>
+          <a href={`/blog/${post.slug}/`} aria-label={`Read ${post.data.title}`}>
+            <span class="suggestion-title">{post.data.title}</span>
+            <span class="suggestion-meta">{formatDate(post.data.pubDate.toISOString())}</span>
+            <span class="suggestion-summary">{post.data.description ?? ""}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <style>
+    h1 {
+      font-size: clamp(2.25rem, 2.6vw + 1rem, 3.4rem);
+      margin-bottom: 0.5rem;
+    }
+    p {
+      color: rgba(255, 255, 255, 0.75);
+      max-width: 50ch;
+    }
+    .suggestions {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 1rem;
+    }
+    .suggestions li a {
+      display: block;
+      padding: 1rem 1.2rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .suggestions li a:hover,
+    .suggestions li a:focus-visible {
+      border-color: var(--outline);
+      transform: translateY(-2px);
+    }
+    .suggestion-title {
+      font-weight: 600;
+      display: block;
+    }
+    .suggestion-meta {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      display: block;
+      margin-top: 0.25rem;
+    }
+    .suggestion-summary {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.75);
+    }
+  </style>
+</SiteLayout>

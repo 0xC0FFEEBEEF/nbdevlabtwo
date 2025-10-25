@@ -1,0 +1,27 @@
+<button id="back-to-top" class="back-to-top" type="button" aria-label="Scroll back to top" aria-hidden="true">
+  ↑
+</button>
+<script is:inline>
+  const button = document.getElementById('back-to-top');
+  if (button) {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const threshold = 600;
+    const updateVisibility = () => {
+      if (window.scrollY > threshold) {
+        button.dataset.visible = 'true';
+        button.setAttribute('aria-hidden', 'false');
+      } else {
+        button.dataset.visible = 'false';
+        button.setAttribute('aria-hidden', 'true');
+      }
+    };
+    const handleClick = () => {
+      const behavior = prefersReducedMotion.matches ? 'auto' : 'smooth';
+      window.scrollTo({ top: 0, behavior });
+    };
+    button.addEventListener('click', handleClick);
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    window.addEventListener('load', updateVisibility);
+    updateVisibility();
+  }
+</script>

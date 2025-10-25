@@ -1,6 +1,7 @@
 {
   "name": "nbdevlab",
   "description": "Infrastructure, experiments, and writing for nbdevlab.com.",
+  "type": "module",
   "dependencies": {
     "@astrojs/mdx": "4.3.0",
     "@astrojs/react": "4.3.0",
@@ -48,12 +49,12 @@
   },
   "scripts": {
     "astro": "astro",
+    "prebuild": "node scripts/validate-projects.mjs",
     "build": "astro build",
     "check": "astro check && tsc --noEmit",
     "dev": "astro dev",
     "preview": "astro preview",
     "registry:build": "shadcn build",
     "sync": "astro sync"
-  },
-  "type": "module"
+  }
 }

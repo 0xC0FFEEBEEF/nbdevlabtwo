@@ -1,0 +1,70 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+---
+
+<SiteLayout title="Now — nbdevlab" description="What I am experimenting with at the moment.">
+  <section aria-labelledby="now-title">
+    <h1 id="now-title">Now</h1>
+    <p>This is what’s currently running through the nbdevlab brain, updated whenever the calendar reminders nag me.</p>
+  </section>
+
+  <section aria-labelledby="focus-title" class="mt-10">
+    <h2 id="focus-title">Active focus areas</h2>
+    <ul class="now-list">
+      <li>
+        <h3>Edge automation</h3>
+        <p>Refining Cloudflare Workers that cache GitHub activity, sync Decap CMS content, and hydrate dashboards in milliseconds.</p>
+      </li>
+      <li>
+        <h3>Homelab resilience</h3>
+        <p>Testing UPS failover drills, updating ZFS snapshots, and verifying incident runbooks stay accurate.</p>
+      </li>
+      <li>
+        <h3>OpenAI Codex exploration</h3>
+        <p>Pairing Codex with CLI automation to scaffold repeatable notebook-to-worker pipelines.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="reading-title" class="mt-12">
+    <h2 id="reading-title">Reading &amp; listening</h2>
+    <ul class="now-list">
+      <li>
+        <h3>Book</h3>
+        <p>Re-reading "Building Microservices" by Sam Newman to refresh observability patterns.</p>
+      </li>
+      <li>
+        <h3>Podcast</h3>
+        <p>Stack Overflow Podcast — episodes on edge deployment stories and AI pairing.</p>
+      </li>
+      <li>
+        <h3>Newsletter</h3>
+        <p>Last Week in AWS to keep tabs on interesting managed service launches that can complement Cloudflare.</p>
+      </li>
+    </ul>
+  </section>
+
+  <style>
+    h1 {
+      font-size: clamp(2.2rem, 2.5vw + 1rem, 3.1rem);
+      margin-bottom: 0.75rem;
+    }
+    p {
+      color: rgba(255, 255, 255, 0.75);
+      max-width: 65ch;
+    }
+    .now-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 1.25rem;
+    }
+    .now-list h3 {
+      margin-bottom: 0.35rem;
+    }
+    .now-list p {
+      margin: 0;
+    }
+  </style>
+</SiteLayout>
