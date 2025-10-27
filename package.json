@@ -1,7 +1,6 @@
 {
   "name": "nbdevlab",
   "description": "Infrastructure, experiments, and writing for nbdevlab.com.",
-  "type": "module",
   "dependencies": {
     "@astrojs/mdx": "4.3.0",
     "@astrojs/react": "4.3.0",
@@ -44,8 +43,8 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "0.5.16",
-    "tw-animate-css": "1.3.7"
+    "@tailwindcss/typography": "^0.5.16",
+    "tw-animate-css": "^1.3.7"
   },
   "scripts": {
     "astro": "astro",
@@ -56,5 +55,6 @@
     "preview": "astro preview",
     "registry:build": "shadcn build",
     "sync": "astro sync"
-  }
+  },
+  "type": "module"
 }

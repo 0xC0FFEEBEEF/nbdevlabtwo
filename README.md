@@ -6,7 +6,6 @@ nbdevlab is Nathan Bullock's living lab notebook for experiments across Astro, C
 - **Living lab notebook** – project logs and field notes captured as Markdown content collections.
 - **Status + telemetry** – lightweight dashboards surface uptime snapshots and current areas of focus.
 - **Hand-crafted UI** – Tailwind CSS, shadcn/ui, and custom theming create a cohesive dark interface without starter template clutter.
-- **Exploring OpenAI's Codex** – documenting how OpenAI's Codex helps prototype automations and accelerate experiment cycles.
 
 ## Tech Stack
 - [Astro](https://astro.build/) for static-first site generation with islands of interactivity.
