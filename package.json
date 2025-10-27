@@ -49,7 +49,7 @@
   },
   "scripts": {
     "astro": "astro",
-    "prebuild": "node scripts/validate-projects.mjs",
+    "prebuild": "node scripts/ensure-astro-slug.mjs && node scripts/validate-projects.mjs",
     "build": "astro build",
     "check": "astro check && tsc --noEmit",
     "dev": "astro dev",

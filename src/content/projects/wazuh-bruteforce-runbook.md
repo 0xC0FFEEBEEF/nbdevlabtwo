@@ -2,7 +2,7 @@
 title: "Wazuh Bruteforce Runbook"
 slug: "wazuh-bruteforce-runbook"
 date: "2025-05-18"
-status: "shipped"
+status: "published"
 tags:
   - security
   - automation

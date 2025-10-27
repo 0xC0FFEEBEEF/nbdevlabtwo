@@ -2,10 +2,80 @@
 import SiteLayout from "../layouts/SiteLayout.astro";
 import { buttonVariants } from "../components/ui/button";
 import { cn } from "../lib/utils";
-import { getEntry } from "astro:content";
 import GithubActivityCard from "../components/GithubActivityCard.astro";
+import dashboardRaw from "../content/homepage/dashboard.yaml?raw";
 
-const homepageEntry = await getEntry("homepage", "dashboard");
+const parseValue = (input: string) => input.trim().replace(/^"|"$/g, "");
+
+const parseDashboardYaml = (source: string) => {
+  const result: Record<string, any> = {};
+  let currentArray: any[] | null = null;
+  let currentObject: Record<string, any> | null = null;
+
+  const lines = source.split(/\r?\n/);
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    if (!rawLine.trim()) continue;
+
+    const indent = rawLine.match(/^ */)?.[0].length ?? 0;
+    const line = rawLine.trim();
+
+    if (indent === 0) {
+      const [keyPart, ...rest] = line.split(":");
+      const key = keyPart.trim();
+      const valuePart = rest.join(":").trim();
+
+      currentArray = null;
+      currentObject = null;
+
+      if (valuePart) {
+        result[key] = parseValue(valuePart);
+        continue;
+      }
+
+      const nextLine = lines.slice(i + 1).find((candidate) => candidate.trim().length > 0);
+      if (nextLine && nextLine.trim().startsWith("- ")) {
+        currentArray = [];
+        result[key] = currentArray;
+      } else {
+        currentObject = {};
+        result[key] = currentObject;
+      }
+      continue;
+    }
+
+    if (indent === 2 && line.startsWith("- ")) {
+      if (!currentArray) continue;
+      const content = line.slice(2).trim();
+      const item: Record<string, any> = {};
+      if (content) {
+        const [itemKey, ...rest] = content.split(":");
+        if (itemKey) {
+          item[itemKey.trim()] = parseValue(rest.join(":").trim());
+        }
+      }
+      currentArray.push(item);
+      currentObject = item;
+      continue;
+    }
+
+    if (indent === 2 && currentObject && !currentArray) {
+      const [propKey, ...rest] = line.split(":");
+      currentObject[propKey.trim()] = parseValue(rest.join(":").trim());
+      continue;
+    }
+
+    if (indent >= 4 && currentObject) {
+      const [propKey, ...rest] = line.split(":");
+      currentObject[propKey.trim()] = parseValue(rest.join(":").trim());
+    }
+  }
+
+  return result;
+};
+
+const homepageEntry = { data: parseDashboardYaml(dashboardRaw) };
 const heroCards = homepageEntry.data.highlightCards;
 const activityCard = homepageEntry.data.activityCard;
 const featureCards = heroCards;
