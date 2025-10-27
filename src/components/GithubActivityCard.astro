@@ -74,6 +74,25 @@ const cardId = `github-card-${Math.random().toString(36).slice(2, 10)}`;
 const shouldHydrateClient = !canFetchServer || errored;
 const initialState = hasItems ? "ready" : shouldHydrateClient ? "loading" : "empty";
 const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "No recent public activity yet.";
+const wranglerSnippet = `{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "WORKER-NAME",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-02-04",
+  "observability": {
+    "enabled": true
+  },
+
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "0ecb8a3e4fbf41d5820429eca176e9ba",
+
+      // Optional: preview_id used when running \`wrangler dev\` for local dev
+      "preview_id": "<ID_OF_PREVIEW_KV_NAMESPACE_FOR_LOCAL_DEVELOPMENT>"
+    }
+  ]
+}`;
 ---
 <section
   class="github-card"
@@ -86,6 +105,10 @@ const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "N
   <div class="github-card__header">
     <h2 id="github-activity-heading">Last GitHub activity</h2>
     <p>Edge-cached in Cloudflare KV for fast, respectful polling.</p>
+    <details class="github-card__config" data-config>
+      <summary>Configure Wrangler KV</summary>
+      <pre><code>{wranglerSnippet}</code></pre>
+    </details>
   </div>
   <div
     class="github-card__loading"
@@ -151,6 +174,44 @@ const emptyMessage = errored ? "GitHub is quiet right now. Try again soon." : "N
   margin: 0.35rem 0 0;
   color: rgba(232, 237, 255, 0.82);
   font-size: 0.95rem;
+}
+
+.github-card__config {
+  margin-top: 0.75rem;
+  background: rgba(11, 18, 32, 0.78);
+  border: 1px solid rgba(142, 178, 255, 0.28);
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  color: rgba(226, 237, 255, 0.9);
+}
+
+.github-card__config summary {
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: rgba(148, 182, 255, 0.88);
+}
+
+.github-card__config[open] summary {
+  margin-bottom: 0.65rem;
+}
+
+.github-card__config pre {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  background: rgba(7, 11, 21, 0.95);
+  border-radius: 0.6rem;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.github-card__config code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  color: rgba(231, 239, 255, 0.96);
+  white-space: pre;
 }
 
 .github-card__list {
