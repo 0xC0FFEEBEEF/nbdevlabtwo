@@ -16,4 +16,5 @@ preview_id = "REPLACE_WITH_PREVIEW_NAMESPACE_ID"
 workers_dev = true
 
 [env.production]
+name = "nbdevlab"
 routes = ["https://www.nbdevlab.com/*", "https://nbdevlab.com/*"]
