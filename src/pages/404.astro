@@ -9,12 +9,14 @@ const [projects, posts] = await Promise.all([
   getCollection("blog"),
 ]);
 
+const toDate = (value: unknown) => (value instanceof Date ? value : new Date(String(value)));
+
 const recentProjects = projects
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 3);
 
 const recentPosts = posts
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .sort((a, b) => toDate(b.data.pubDate).getTime() - toDate(a.data.pubDate).getTime())
   .slice(0, 3);
 ---
 
@@ -46,7 +48,7 @@ const recentPosts = posts
         <li>
           <a href={`/blog/${post.slug}/`} aria-label={`Read ${post.data.title}`}>
             <span class="suggestion-title">{post.data.title}</span>
-            <span class="suggestion-meta">{formatDate(post.data.pubDate.toISOString())}</span>
+            <span class="suggestion-meta">{formatDate(toDate(post.data.pubDate).toISOString())}</span>
             <span class="suggestion-summary">{post.data.description ?? ""}</span>
           </a>
         </li>

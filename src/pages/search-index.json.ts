@@ -2,6 +2,8 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { resolveProjectSlug } from "../lib/projects";
 
+const toDate = (value: unknown) => (value instanceof Date ? value : new Date(String(value)));
+
 export const prerender = true;
 
 const stripMarkdown = (value: string) =>
@@ -43,7 +45,7 @@ export const GET: APIRoute = async () => {
       tags: entry.data.tags ?? [],
       summary: entry.data.description ?? "",
       content: stripMarkdown(entry.body),
-      date: entry.data.pubDate.toISOString(),
+      date: toDate(entry.data.pubDate).toISOString(),
     };
   });
 

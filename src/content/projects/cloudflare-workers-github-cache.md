@@ -1,8 +1,8 @@
 ---
 title: "Cloudflare Workers GitHub Cache"
-slug: "cloudflare-workers-github-cache"
+slug: cloudflare-workers-github-cache
 date: "2025-09-07"
-status: "building"
+status: "published"
 tags:
   - observability
   - integrations
