@@ -5,24 +5,21 @@ workers_dev = true
 [vars]
 GITHUB_USERNAME = "nbullock"
 
-[[kv_namespaces]]
-binding = "KV"
-id = "0ecb8a3e4fbf41d5820429eca176e9ba"
-preview_id = "REPLACE_WITH_PREVIEW_NAMESPACE_ID"
+kv_namespaces = [
+  { binding = "KV", id = "0ecb8a3e4fbf41d5820429eca176e9ba", preview_id = "REPLACE_WITH_PREVIEW_NAMESPACE_ID" }
+]
 
 # GITHUB_TOKEN should be added as a Pages secret:
 #   wrangler pages secret put GITHUB_TOKEN
 
 [env.preview]
 workers_dev = true
+kv_namespaces = [
+  { binding = "KV", id = "0ecb8a3e4fbf41d5820429eca176e9ba", preview_id = "REPLACE_WITH_PREVIEW_NAMESPACE_ID" }
+]
 
 [env.preview.vars]
 GITHUB_USERNAME = "nbullock"
-
-[[env.preview.kv_namespaces]]
-binding = "KV"
-id = "0ecb8a3e4fbf41d5820429eca176e9ba"
-preview_id = "REPLACE_WITH_PREVIEW_NAMESPACE_ID"
 
 [env.production]
 routes = ["https://www.nbdevlab.com/*", "https://nbdevlab.com/*"]
