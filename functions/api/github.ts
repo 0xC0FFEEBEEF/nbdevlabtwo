@@ -34,9 +34,10 @@ const headers = new Headers({
   "cache-control": "public, max-age=60, s-maxage=900",
 });
 
-async function readCache(env: EnvBindings, key: string): Promise<CachedPayload | null> {
+async function readCache(kv: KVNamespace | null, key: string): Promise<CachedPayload | null> {
+  if (!kv) return null;
   try {
-    const raw = await env.GITHUB_CACHE.get(key);
+    const raw = await kv.get(key);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as CachedPayload;
     if (!parsed.body || !Array.isArray(parsed.body.items)) return null;
@@ -47,9 +48,9 @@ async function readCache(env: EnvBindings, key: string): Promise<CachedPayload |
   }
 }
 
-async function writeCache(env: EnvBindings, key: string, payload: CachedPayload): Promise<void> {
+async function writeCache(kv: KVNamespace, key: string, payload: CachedPayload): Promise<void> {
   try {
-    await env.GITHUB_CACHE.put(key, JSON.stringify(payload));
+    await kv.put(key, JSON.stringify(payload));
   } catch (error) {
     console.error("github-cache-write", error);
   }
@@ -111,7 +112,8 @@ function normalizeEvents(events: GitHubEvent[]): NormalizedEvent[] {
 }
 
 type EnvBindings = {
-  GITHUB_CACHE: KVNamespace;
+  GITHUB_CACHE?: KVNamespace;
+  KV?: KVNamespace;
   GITHUB_TOKEN?: string;
   GITHUB_USERNAME?: string;
 };
@@ -120,7 +122,13 @@ export const onRequestGet: PagesFunction<EnvBindings> = async ({ env, request })
   const username = env.GITHUB_USERNAME?.trim() || "nbullock";
   const key = `feed:v1:${username.toLowerCase()}`;
 
-  const cached = await readCache(env, key);
+  const kv = env.GITHUB_CACHE ?? env.KV ?? null;
+
+  if (!kv) {
+    console.warn("github-cache-missing", "No KV namespace bound as GITHUB_CACHE or KV.");
+  }
+
+  const cached = await readCache(kv, key);
   const requestHeaders = new Headers({
     "User-Agent": "nbdevlab-pages-function",
     Accept: "application/vnd.github+json",
@@ -154,11 +162,13 @@ export const onRequestGet: PagesFunction<EnvBindings> = async ({ env, request })
     const items = normalizeEvents(rawEvents).slice(0, 5);
     const body = { items };
 
-    await writeCache(env, key, {
-      etag,
-      body,
-      cachedAt: new Date().toISOString(),
-    });
+    if (kv) {
+      await writeCache(kv, key, {
+        etag,
+        body,
+        cachedAt: new Date().toISOString(),
+      });
+    }
 
     return new Response(JSON.stringify(body), { status: 200, headers });
   } catch (error) {
@@ -175,5 +185,5 @@ Example request:
   curl -i https://<your-pages-domain>/api/github
 
 Local bindings for Pages dev:
-  wrangler pages dev --kv GITHUB_CACHE --binding GITHUB_USERNAME=nbullock
+  wrangler pages dev --kv KV --binding GITHUB_USERNAME=nbullock
 */

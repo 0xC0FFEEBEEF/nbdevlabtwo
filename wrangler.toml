@@ -1,12 +1,13 @@
 name = "nbdevlab"
 compatibility_date = "2025-10-24"
+workers_dev = true
 
 [vars]
 GITHUB_USERNAME = "nbullock"
 
 [[kv_namespaces]]
-binding = "GITHUB_CACHE"
-id = "REPLACE_WITH_PRODUCTION_NAMESPACE_ID"
+binding = "KV"
+id = "0ecb8a3e4fbf41d5820429eca176e9ba"
 preview_id = "REPLACE_WITH_PREVIEW_NAMESPACE_ID"
 
 # GITHUB_TOKEN should be added as a Pages secret:
