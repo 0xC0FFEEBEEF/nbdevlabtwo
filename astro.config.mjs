@@ -4,11 +4,16 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
+import netlify from "@astrojs/netlify";
+
 export default defineConfig({
   site: "https://www.nbdevlab.com",
   integrations: [react(), mdx(), sitemap()],
   output: "static",
+
   vite: {
     plugins: [tailwindcss()],
   },
+
+  adapter: netlify(),
 });
