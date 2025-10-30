@@ -4,7 +4,8 @@ const projects = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
-    slug: z.string(),
+    // Optional: if omitted, we derive from file path via entry.slug
+    slug: z.string().optional(),
     // Keep 'date' as STRING to match existing content
     date: z.string(),
     status: z.enum(["draft", "published"]).default("published"),
