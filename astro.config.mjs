@@ -13,6 +13,14 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      // Allow Netlify Dev’s remote devserver host and any *.netlify.app
+      // This unblocks proxied dev (e.g., devserver-main--nbdev2.netlify.app)
+      allowedHosts: [
+        'devserver-main--nbdev2.netlify.app',
+        /\.netlify\.app$/,
+      ],
+    },
   },
 
   adapter: netlify(),
